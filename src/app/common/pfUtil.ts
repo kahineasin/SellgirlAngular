@@ -141,7 +141,7 @@ getLocalStorage  (key:any):any {
   }
 }
 
-interface ProcedureLink<T> {
+interface ProcedureLink<T extends IPfObject> {
   source: T;
   target: T;
 }
@@ -160,15 +160,15 @@ interface ProcedureLink<T> {
               "procedureId","from","to"
             );
  */
-export class ProcedureManager<T extends IPfObject> {
-  nodes: T[] = []; //格式如{procedureId,from:[],to:[]}
-  links: ProcedureLink<T>[] = []; //格式如[{ source: node, target: node }]
+export class ProcedureManager<T1 extends IPfObject> {
+  nodes: T1[] = []; //格式如{procedureId,from:[],to:[]}
+  links: ProcedureLink<T1>[] = []; //格式如[{ source: node, target: node }]
   constructor(
     protected key: string,
     protected from: string,
-    protected to: string
+    public to: string
   ) {}
-  public getNode(v:any): T|null {
+  public getNode(v:any): T1|null {
     var me = this;
     for (var i = 0; i < me.nodes.length; i++) {
       if (v == me.nodes[i][me.key]) {
@@ -223,46 +223,47 @@ export class ProcedureManager<T extends IPfObject> {
       }
     }
     //删原node的相关from to
+    var tmpN:T1|null;
     for (var i = 0; i < me.nodes[oldI][me.from].length; i++) {
-      var n = me.getNode(me.nodes[oldI][me.from][i]);
+      var n :any= me.getNode(me.nodes[oldI][me.from][i]);
       if(n==null){continue;}
       n[me.to] = n[me.to].filter((a:any) => a != me.nodes[oldI][me.key]);
     }
     for (var i = 0; i < me.nodes[oldI][me.to].length; i++) {
-      var n = me.getNode(me.nodes[oldI][me.to][i]);
+      var n:any = me.getNode(me.nodes[oldI][me.to][i]);
       if(n==null){continue;}
       n[me.from] = n[me.from].filter((a:any) => a != me.nodes[oldI][me.key]);
     }
     //加线
     for (var i = 0; i < node[me.from].length; i++) {
-      var n = me.getNode(node[me.from][i]);
+      var n:any = me.getNode(node[me.from][i]);
       if (n != null) {
         me.links.push({ source: n, target: node });
       }
     }
     for (var i = 0; i < node[me.to].length; i++) {
-      var n = me.getNode(node[me.to][i]);
-      if (n != null) {
-        me.links.push({ source: node, target: n });
+       tmpN= me.getNode(node[me.to][i]);
+      if (tmpN != null) {
+        me.links.push({ source: node, target: tmpN });
       }
     }
     //加node的相关from to
     for (var i = 0; i < node[me.from].length; i++) {
-      var n = me.getNode(node[me.from][i]);
-      if (n != null) {
-        n[me.to].push(node[me.key]); //必要
+      tmpN = me.getNode(node[me.from][i]);
+      if (tmpN != null) {
+        tmpN[me.to].push(node[me.key]); //必要
       }
     }
     for (var i = 0; i < node[me.to].length; i++) {
-      var n = me.getNode(node[me.to][i]);
-      if (n != null) {
-        n[me.from].push(node[me.key]);
+      tmpN= me.getNode(node[me.to][i]);
+      if (tmpN != null) {
+        tmpN[me.from].push(node[me.key]);
       }
     }
     //替换node
     me.nodes.splice(oldI, 1, node);
   }
-  public deleteProcedure  (node: T) {
+  public deleteProcedure  (node: T1) {
     var me = this;
     //old这样不能删除此节点在其它节点里的 from to引用
     // for (var i = 0; i < me.nodes.length; i++) {
@@ -275,8 +276,10 @@ export class ProcedureManager<T extends IPfObject> {
       if (node[me.key] == me.nodes[i][me.key]) {
         me.nodes.splice(i, 1);
       } else {
-        me.nodes[i].from = me.nodes[i].from.filter((a:any) => a != node[me.key]);
-        me.nodes[i].to = me.nodes[i].to.filter((a:any) => a != node[me.key]);
+        // me.nodes[i][me.from] = me.nodes[i].from.filter((a:any) => a != node[me.key]);
+        // me.nodes[i][me.to] = me.nodes[i].to.filter((a:any) => a != node[me.key]);
+        Object.assign(me.nodes[i],{[me.from] :me.nodes[i].from.filter((a:any) => a != node[me.key])});
+        Object.assign(me.nodes[i],{[me.to] :me.nodes[i].to.filter((a:any) => a != node[me.key])});
       }
     }
     for (var i = me.links.length - 1; i >= 0; i--) {
@@ -296,18 +299,25 @@ export class ProcedureManager<T extends IPfObject> {
         me.links.splice(i, 1);
       }
     }
-    var ln = me.getNode(l);
+    var ln:T1|null = me.getNode(l);
     if(ln!=null){
+      //var tmpArr:string[]=ln[me.to].filter((a:string) => a != r);
+      // var testO:Object={};
+      // testO.valueOf(@aa)=5;
+      // //ln[me.to] ;
+      // Object.
+      //ln[me.to] = tmpArr;
 
-      ln[me.to] = ln[me.to].filter((a:any) => a != r);
+      // ln[me.to] = ln[me.to].filter((a:string) => a != r);
+      Object.assign(ln,{[me.to]:ln[me.to].filter((a:string) => a != r)});
     }
     var rn = me.getNode(r);
     if(rn!=null){
-
-      rn[me.from] = rn[me.from].filter((a:any) => a != l);
+      Object.assign(rn,{[me.from]:rn[me.from].filter((a:any) => a != l)});
+      // rn[me.from] = rn[me.from].filter((a:any) => a != l);
     }
   }
-  public deleteLink(l: T, r: T): void {
+  public deleteLink(l: T1, r: T1): void {
     var me = this;
     for (var i = me.links.length - 1; i >= 0; i--) {
       if (
@@ -319,14 +329,16 @@ export class ProcedureManager<T extends IPfObject> {
     }
     var ln = me.getNode(l[me.key]);
     if(ln!=null){
-      ln[me.to] = ln[me.to].filter((a:any) => a != r[me.key]);}
+      Object.assign(ln,{[me.to]:ln[me.to].filter((a:any) => a != r[me.key])});
+      // ln[me.to] = ln[me.to].filter((a:any) => a != r[me.key]);
+    }
     var rn = me.getNode(r[me.key]);
     if(rn!=null){
-      rn[me.from] = rn[me.from].filter((a:any) => a != l[me.key]);}
-    // l[me.to] = l[me.to].filter((a) => a != r);
-    // r[me.from] = r[me.from].filter((a) => a != l);
+      Object.assign(rn,{[me.from]:rn[me.from].filter((a:any) => a != l[me.key])});
+      // rn[me.from] = rn[me.from].filter((a:any) => a != l[me.key]);
+    }
   }
-  public addLink(l: T, r: T): void {
+  public addLink(l: T1, r: T1): void {
     var me = this;
     for (var i = me.links.length - 1; i >= 0; i--) {
       if (
@@ -348,11 +360,11 @@ export class ProcedureManager<T extends IPfObject> {
     }
     me.links.push({ source: l, target: r });
   }
-  public getLinks(): ProcedureLink<T>[] {
+  public getLinks(): ProcedureLink<T1>[] {
     var me = this;
     return me.links;
   }
-  public getNodes(): T[] {
+  public getNodes(): T1[] {
     var me = this;
     return me.nodes;
   }

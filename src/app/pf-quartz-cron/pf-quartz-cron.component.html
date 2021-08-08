@@ -6,12 +6,13 @@
   integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
   crossorigin="anonymous"
 /> -->
+<!--  [localization]="localization" 报错没有这个属性 --benjamin todo-->
 <quartz-cron
   class="cron"
   *ngIf="visible"
   [ngModel]="cronData"
   (ngModelChange)="change($event)"
-  [localization]="localization"
+ 
   (changed)="onChanged($event)"
 ></quartz-cron>
 

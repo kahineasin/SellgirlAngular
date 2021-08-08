@@ -413,7 +413,7 @@ export class JobDigraphComponent implements OnInit {
   private userId = "";
 
   constructor(
-    private config: ConfigService,
+    public config: ConfigService,
     private reference: ComputesReferenceService,
     private userProvider: UserProviderService,
     //private dcosReference: DcosReferenceService,
@@ -1059,6 +1059,18 @@ export class JobDigraphComponent implements OnInit {
     //   });
   }
 
+  getNewNodeName():string{
+    var me=this;
+    var i:number=me.jobConfigData.length + 1;
+    while(true){
+      var n="n" + me.pfUtil.padZeroLeft(i , 3);
+      if(me.jobConfigData.findIndex(a=>a.procedureName==n)>-1){
+        i++;
+      }else{
+        return n;
+      }
+    }
+  }
   addProcedure(): void {
     //this.message.info('This is a normal message');
     var me = this;
@@ -1068,7 +1080,8 @@ export class JobDigraphComponent implements OnInit {
       isAdd: true, //正式时改为true--benjamin todo
       procedureId: Guid.create().toString(),
       procedureName:
-        "n" + me.pfUtil.padZeroLeft(me.jobConfigData.length + 1, 3),
+        // "n" + me.pfUtil.padZeroLeft(me.jobConfigData.length + 1, 3),
+        me.getNewNodeName(),
       from: [],
       to: [],
       maxLaunchDelay: 3600,
@@ -1727,7 +1740,7 @@ export class JobDigraphComponent implements OnInit {
       envShort: Object.keys(me.validENV).join(","),
     });
   }
-  handleUpload = (item:any): void => {
+  handleUpload = (item:any): any => {
     //debugger;
     console.info("aaaaaaaaaaaaaaaaaaaaaaaaa");
     var me = this;
@@ -1764,38 +1777,123 @@ export class JobDigraphComponent implements OnInit {
     });
     me.uploadedPercent = 0;
     me.uploadStatus = "active";
-    me.fetchPopupsUploadingSubscription = me.http
-      .request(req)
-      .pipe(
-        filter((e) => {
-          // // var aa=e instanceof HttpResponse;
-          // ////debugger;
-          // return e instanceof HttpResponse; //如果不过滤,会有{type:0}的返回,真正成功时是{type:4}
-          switch (e.type) {
-            case HttpEventType.UploadProgress: {
-              if(e.total!=null){
 
-                me.uploadedPercent = Math.ceil((e.loaded * 100) / e.total);
-                console.info(me.uploadedPercent);
-              }
-              break;
-            }
-            case HttpEventType.Response: {
-              return true;
-              break;
-            }
-          }
-          return false;
-        })
-      )
+    //远程
+    // me.fetchPopupsUploadingSubscription = me.http
+    //   .request(req)
+    //   .pipe(
+    //     filter((e) => {
+    //       // // var aa=e instanceof HttpResponse;
+    //       // ////debugger;
+    //       // return e instanceof HttpResponse; //如果不过滤,会有{type:0}的返回,真正成功时是{type:4}
+    //       switch (e.type) {
+    //         case HttpEventType.UploadProgress: {
+    //           if(e.total!=null){
+
+    //             me.uploadedPercent = Math.ceil((e.loaded * 100) / e.total);
+    //             console.info(me.uploadedPercent);
+    //           }
+    //           break;
+    //         }
+    //         case HttpEventType.Response: {
+    //           return true;
+    //           break;
+    //         }
+    //       }
+    //       return false;
+    //     })
+    //   )
+    //   .subscribe(
+    //     (event: HttpEvent<any>) => {
+    //       //debugger;
+    //       // this.uploading = false;
+    //       // this.fileList = [];
+    //       //debugger;
+    //       this.msg.success("上传镜像成功.");
+    //       var uri = (event as HttpResponse<string>).body||"";
+    //       // //
+    //       // // if(me.baseForm.value.fetch==null){
+    //       // //   me.baseForm.value.fetch=[];
+    //       // // }
+    //       // //me.baseForm.value.fetch.push({uri:uri,extract:true,executable:true,cache:false});
+    //       // //me.baseForm.patchValue({fetchShort:"已上传"+me.baseForm.value.fetch.length+"个"});
+    //       // var oldFetch= me.baseForm.value.fetch;
+    //       // if(oldFetch==null){
+    //       //   oldFetch=[];
+    //       // }
+    //       // oldFetch.push({uri:uri,extract:true,executable:true,cache:false});
+    //       // me.baseForm.patchValue({
+    //       //   fetchShort:"已上传"+oldFetch.length+"个",
+    //       //   fetch:oldFetch
+    //       // });
+    //       // // var oldFetch= me.baseForm.value.fetch;
+    //       // // oldFetch.push()
+    //       // // me.baseForm.patchValue({uri:uri,extract:true,executable:true,cache:false})
+
+    //       //me.fetchGridData.push(new FetchUri{uri:uri,extract:true,executable:true,cache:false});
+
+    //       //me.fetchGridData.push({uri:uri,extract:true,executable:true,cache:false});
+
+    //       // //原版fetch用gird
+    //       me.validFetch = [
+    //         ...me.validFetch,
+    //         {
+    //           uri: me.getFetchDownloadUri(uri),
+    //           extract: true,
+    //           executable: true,
+    //           cache: false,
+    //         },
+    //       ];
+    //       //me.procedureForm.patchValue({ fetch: me.validFetch });
+
+    //       //新版fetch用下拉
+    //       var fetch = [
+    //         ...(baseFormObj.fetch || []),
+    //         me.getFetchDownloadUri(uri),
+    //       ];
+    //       //me.getHistoryData();
+    //       me.getFetchList();
+    //       me.selectUriToCmd(uri);
+    //       me.procedureForm.patchValue({ fetch: fetch });
+
+    //       me.updateUploadShort();
+    //       me.isFetchPopupsLoading = false;
+    //       me.isFetchPopupsUploading = false;
+    //       me.mainLoading = false;
+    //     },
+    //     (err) => {
+    //       //debugger;
+    //       // this.uploading = false;
+    //       me.msg.error("上传失败.");
+    //       me.uploadStatus = "exception";
+    //     }
+    //   );
+    
+    //本地模拟
+    const observable = new Observable<string>((subscriber) => {
+      var total=100;
+      for(var i=0;i<10;i++){
+          me.uploadedPercent = Math.ceil((10*i * 100) / total);
+
+      }      
+      // formData.append("file", item.file as any);
+      // formData.append("filePath", "xschedulerjob");
+      debugger;
+      var pathArr=me.pfUtil.splitPath(item.file.name);
+      var d = new Date();
+      var ds=d.getFullYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes()+d.getMinutes();
+      var fileName="xschedulerjob/"+pathArr[1]+ds+pathArr[2];
+      subscriber.next(fileName);
+    });
+    observable
       .subscribe(
-        (event: HttpEvent<{}>) => {
+        (event: string) => {
           //debugger;
           // this.uploading = false;
           // this.fileList = [];
           //debugger;
           this.msg.success("上传镜像成功.");
-          var uri = (event as HttpResponse<string>).body||"";
+          var uri = event;
           // //
           // // if(me.baseForm.value.fetch==null){
           // //   me.baseForm.value.fetch=[];
@@ -1867,7 +1965,7 @@ export class JobDigraphComponent implements OnInit {
     r.fetch = me.validFetch;
     return me.procedureForm.value;
   }
-  showHistoryUri(dom:any): void {
+  showHistoryUri(): void {
     var me = this;
     me.getHistoryData();
     // this.reference

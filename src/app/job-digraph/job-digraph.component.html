@@ -4,10 +4,10 @@
   integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
   crossorigin="anonymous"
 /> -->
-<div class="form-page">
+<div class="form-page" style="display:flex;flex-flow:column;height:100%">
     <div class="page-header">
       <div>
-        <div class="back">
+        <div class="back" style="float:left">
           <a (click)="back()"
             ><i nz-icon nzType="left" nzTheme="outline"></i>返回</a
           >
@@ -18,7 +18,7 @@
         }}</span>
       </div>
     </div>
-    <div class="page-form">
+    <div class="page-form" style="height:100%">
       <!-- <button  nz-button [nzSize]="size" nzType="default" (click)="addTask()" >新增任务</button> -->
       <!-- <nz-affix [nzTarget]="target" id="affix-container-target">
           <nz-space [nzSize]="8">
@@ -79,10 +79,12 @@
             >
               新增步骤
             </button> -->
+
+            <!--
+              [nzSize]="size"-->
             <button
               *nzSpaceItem
               nz-button
-              [nzSize]="size"
               nzType="default"
               (click)="showEditJobInfoPopups()"
             >
@@ -181,7 +183,7 @@
               display: flex;
               flex-flow: row;
               height: 98%;
-              width: 95%;
+              width: 80%;
               position: relative;
             "
             pfDrop
@@ -249,15 +251,8 @@
                   <label *nzSpaceItem>新增步骤:</label>
                   <p *nzSpaceItem>(拖放)</p>
                   <ul *nzSpaceItem>
-                    <li>
-                      <!-- 方法2 这种方式的mouseup是在document上的，似乎会被阻止，不好用 -->
-                      <!-- <img src="assets/img/xSchedulerJob/java.jpg" pfDrag001 /> -->
-  
-                      <!-- 方法2 这种方式的mouseup是在document上的，似乎会被阻止，不好用 -->
-                      <!-- <img
-                src="assets/img/xSchedulerJob/java.jpg"
-                (mousedown)="onProcedureMoveMouseDown($event)" 
-              /> -->
+                    <!-- <li>
+    
   
                       <img
                         src="assets/img/xSchedulerJob/java.png"
@@ -265,41 +260,11 @@
                         procedureType="java"
                       />
   
-                      <!-- <pf-svg-btn pfDrag procedureType="spark"
-                        ><svg
-                          class="icon"
-                          style="
-                            vertical-align: middle;
-                            fill: currentColor;
-                            overflow: hidden;
-                          "
-                          viewBox="0 0 1024 1024"
-                          version="1.1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          p-id="6858"
-                        >
-                          <path
-                            d="M64 352H0V0h1024v352h-64V64H64v288zM1024 1024H0v-224h64v160h896v-160h64v224z"
-                            fill="#2a7ee8"
-                            p-id="6859"
-                          ></path>
-                          <path
-                            d="M32 128h960v64H32zM480 736h-64v-210.88l-32-32-32 32V736H288v-237.12l96-96 96 96V736z"
-                            fill="#2a7ee8"
-                            p-id="6860"
-                          ></path>
-                          <path
-                            d="M320 576h128v64h-128zM992 736h-64v-210.88l-32-32-32 32V736h-64v-237.12l96-96 96 96V736z"
-                            fill="#2a7ee8"
-                            p-id="6861"
-                          ></path>
-                          <path
-                            d="M832 576h128v64h-128zM173.12 736H82.88L32 685.12V608h64v50.88l13.12 13.12h37.76l13.12-13.12V416h64v269.12L173.12 736zM640 749.12l-96-96V416h64v210.88l32 32 32-32V416h64v237.12l-96 96z"
-                            fill="#2a7ee8"
-                            p-id="6862"
-                          ></path>
-                        </svg>
-                      </pf-svg-btn> -->
+                    </li> -->
+                    <li>
+                      <pf-svg-btn pfDrag procedureType="java">
+                        <svg class="icon" style="vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1043 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4765"><path d="M981.75 226.5H47c-18 0-32.625-14.625-32.625-32.625 0-18 14.625-32.625 32.625-32.625h934.625c18 0 32.625 14.625 32.625 32.625 0 18-14.625 32.625-32.5 32.625z" fill="#000031" p-id="4766"></path><path d="M999.125 0H44.375C19.875 0 0 19.5 0 43.625v938c0 24.125 19.875 42.375 44.375 42.375h954.625c24.5 0 44.375-18.25 44.375-42.375V43.625C1043.5 19.5 1023.625 0 999.125 0z m-17.625 921.75c0 36.875-8.25 43.5-44.5 43.875H106.5c-38.875 0-44.5-15-44.5-43.875V105c0-28.125 6.875-43.875 44.5-43.875h830.625c37.5 0 44.5 10.375 44.5 43.625v817z m0 0" fill="#000031" p-id="4767"></path><path d="M227.625 600.625v9c0.5 41.875 23.625 62.625 56.5 62.625 33.375 0 59.125-19.125 59.125-64.125V342.625h79.625v270.125c0 92.875-63.125 129.75-138.75 129.75-77.25 0-136.375-40.875-136.375-128.25v-13.625h79.875zM620.25 342.625h89.375L862 733.75h-83.875l-31.75-84.375H580.375L547.5 733.875h-83.75l156.5-391.25z m-12.625 236.25h112l-54.5-145.375h-1l-56.5 145.375z" fill="#000031" p-id="4768"></path></svg>
+                      </pf-svg-btn>
                     </li>
                     <!-- <li>
                       <img
@@ -434,7 +399,7 @@
               [update$]="update$"
               (legendLabelClick)="onLegendLabelClick($event)"
               (select)="onNodeClick($event)"
-              autoCenter="true"
+              [autoCenter]="true"
               [draggingEnabled]="
                 PaintType.line != currentPaintType &&
                 PaintType.delete != currentPaintType
@@ -1045,7 +1010,7 @@
                           #fetchHistoryTable2
                           nzSize="middle"
                           [nzData]="fetchList"
-                          nzPageSize="5"
+                          [nzPageSize]="5"
                           (nzCurrentPageDataChange)="
                             onCurrentPageDataChange($event)
                           "
@@ -1449,7 +1414,7 @@
     >
       <ng-container *nzModalContent>
         <!-- <nz-spin nzSimple [hidden]="false"></nz-spin> -->
-        <nz-table #validFetchTable [nzData]="validFetch" nzPageSize="5">
+        <nz-table #validFetchTable [nzData]="validFetch" [nzPageSize]="5">
           <thead>
             <tr>
               <th nzWidth="500px">路径(双击添加到cmd)</th>
@@ -1481,7 +1446,7 @@
                   nz-popconfirm
                   nzPopconfirmTitle="确定删除?"
                   nzPopconfirmPlacement="topLeft"
-                  (nzOnConfirm)="deleteFetch()"
+                  (nzOnConfirm)="deleteFetch(data.uri)"
                 >
                   删除
                 </a>
@@ -1590,13 +1555,13 @@
       nzTitle="历史镜像"
       [nzWidth]="800"
       (nzOnCancel)="isHistoryPopupsVisible = false"
-      (nzOnOk)="selectFetchHistory($event)"
+      (nzOnOk)="selectFetchHistory()"
     >
       <ng-container *nzModalContent>
         <nz-table
           #fetchHistoryTable
           [nzData]="fetchHistoryGridData"
-          nzPageSize="5"
+          [nzPageSize]="5"
           (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
         >
           <thead>
@@ -1969,7 +1934,7 @@
         <button
           nz-button
           nzType="primary"
-          (click)="saveENV($event)"
+          (click)="saveENV()"
           [disabled]="!environmentForm.valid"
         >
           确定

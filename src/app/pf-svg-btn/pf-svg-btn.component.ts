@@ -25,7 +25,7 @@ export class PfSvgBtnComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}
-  onClick(event) {
+  onClick(event:any) {
     var me = this;
     if (me.isChecked) {
       me.currentColor = me.normalColor;

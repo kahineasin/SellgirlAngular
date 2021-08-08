@@ -1,4 +1,5 @@
 .job-left-toolbar ul li {
+  list-style: none;
     padding-bottom: 10px;
   }
   .job-left-toolbar ul li img {

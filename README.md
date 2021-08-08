@@ -25,3 +25,32 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## node版本
+node 10.20.1
+npm  6.0.0
+ng   11.2.13   //自建的项目引用ant之后，项目内的ng版本是11.2.14(这才是完美支持？）
+ng-zorro-antd   11.4.1
+
+## 安装
+
+## 安装 crypto-js
+
+npm install crypto-js@3.3.0 #大包
+npm install --save @types/crypto-js #ts 版本包
+
+## 安装有向图插件
+
+npm install @swimlane/ngx-graph --save
+相关:https://swimlane.github.io/ngx-graph/
+
+## Cron 表达式插件
+cnpm install @sbzen/ng-cron --save
+https://bzenkosergey.github.io/ng-cron/angular/#/
+https://github.com/BzenkoSergey/ng-cron
+https://bzenkosergey.github.io/ng-cron/angular/#/doc/localization
+
+## 严格模式
+    "strict": true,//
+    "noImplicitReturns": true,//
+    "noFallthroughCasesInSwitch": true,
