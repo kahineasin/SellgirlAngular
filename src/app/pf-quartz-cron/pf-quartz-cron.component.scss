@@ -1,0 +1,23 @@
+//@import "./bootstrap.min.css";
+//@import "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css";
+//@import url(https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css);
+//@import url(bootstrap.min.css);
+//@import url(./bootstrap_deep.css);
+
+// :host(.active) {
+//     border-width: 3px;
+//   }
+// ::ng-deep .nav-link {子元素生效
+//   color: red;
+// }
+
+// .ng-star-inserted {子元素竟然有效,父无效
+//   color: red;
+// }
+// :host-context(.nav-link) {//不生效
+//   color: red;
+// }
+
+// .nav-link {
+//   color: red;
+// }

@@ -1,0 +1,47 @@
+<div
+  style="
+    position: absolute;
+    z-index: 999;
+    left: 0px;
+    top: 0px;
+    width: 0px;
+    height: 0px;
+    display: none;
+  "
+>
+  <!-- <svg>
+              <line
+                [x1]="lineX1"
+                [y1]="lineY1"
+                [x2]="lineX2"
+                [y2]="lineY2"
+                stroke="#40A9FF"
+                stroke-width="2"
+                marker-end="url(#arrow)"
+              />
+              <line
+                x1="0"
+                y1="0"
+                x2="200"
+                y2="50"
+                stroke="red"
+                stroke-width="2"
+                marker-end="url(#arrow)"
+              />
+            </svg> -->
+  <svg
+    style="left: 0px; top: 0px; z-index: 999"
+    [style.width]="svgWidth + 'px'"
+    [style.height]="svgHeight + 'px'"
+  >
+    <line
+      [attr.x1]="lineX1"
+      [attr.y1]="lineY1"
+      [attr.x2]="lineX2"
+      [attr.y2]="lineY2"
+      stroke="red"
+      stroke-width="2"
+      marker-end="url(#arrow)"
+    ></line>
+  </svg>
+</div>

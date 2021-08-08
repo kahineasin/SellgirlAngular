@@ -1,1 +1,2032 @@
-<p>job-digraph works!</p>
+<!-- <link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+  crossorigin="anonymous"
+/> -->
+<div class="form-page">
+    <div class="page-header">
+      <div>
+        <div class="back">
+          <a (click)="back()"
+            ><i nz-icon nzType="left" nzTheme="outline"></i>返回</a
+          >
+        </div>
+        编辑作业和流程:&nbsp;{{ isAdd() ? "新增" : jobForm.value.JobName }}
+        <span style="color: red">{{
+          isAdd() ? "" : "[最后更新 " + jobForm.value.UpdateTime + "]"
+        }}</span>
+      </div>
+    </div>
+    <div class="page-form">
+      <!-- <button  nz-button [nzSize]="size" nzType="default" (click)="addTask()" >新增任务</button> -->
+      <!-- <nz-affix [nzTarget]="target" id="affix-container-target">
+          <nz-space [nzSize]="8">
+            <button *nzSpaceItem nz-button [nzSize]="size" nzType="default" (click)="addTask()" >新增任务</button>
+          </nz-space>
+      </nz-affix>    -->
+      <!-- <nz-modal nzVisible="true" nzTitle="任务信息"  [nzWidth]="800">
+        <nz-space [nzSize]="8">
+          <button *nzSpaceItem nz-button [nzSize]="size" nzType="default" (click)="addTask()" >新增任务</button>
+        </nz-space>
+      </nz-modal> -->
+  
+      <!-- <div style="position: absolute">
+        <nz-space [nzSize]="8" nzDirection="vertical">
+          <button
+            *nzSpaceItem
+            nz-button
+            [nzSize]="size"
+            nzType="default"
+            (click)="addProcedure()"
+          >
+            新增步骤
+          </button>
+          <button *nzSpaceItem nz-button [nzSize]="size" nzType="default" (click)="addTask()" >连线</button> 以后做
+          <button
+            *nzSpaceItem
+            nz-button
+            [nzSize]="size"
+            nzType="default"
+            (click)="showEditJobInfoPopups()"
+          >
+            编辑作业参数
+          </button>
+        </nz-space>
+      </div> -->
+  
+      <div
+        class="job-container"
+        style="display: flex; flex-flow: column; height: 93%; width: 98%"
+      >
+        <div
+          class="job-top-toolbar"
+          style="
+            border: 1px solid rgb(245, 245, 245);
+            background-color: rgb(245, 245, 245);
+            padding: 10px;
+          "
+        >
+          <nz-space [nzSize]="8" nzDirection="horizontal">
+            <div *nzSpaceItem style="width: 80px">&nbsp;</div>
+            <label *nzSpaceItem>工具栏:</label>
+            <!-- <button
+              *nzSpaceItem
+              nz-button
+              [nzSize]="size"
+              nzType="default"
+              (click)="addProcedure()"
+            >
+              新增步骤
+            </button> -->
+            <button
+              *nzSpaceItem
+              nz-button
+              [nzSize]="size"
+              nzType="default"
+              (click)="showEditJobInfoPopups()"
+            >
+              编辑作业参数
+            </button>
+            <label *nzSpaceItem>绘图:</label>
+            <!-- <i nz-icon style="color: hotpink" *nzSpaceItem>
+              <svg>
+                <path
+                  d="M923 283.6c-13.4-31.1-32.6-58.9-56.9-82.8-24.3-23.8-52.5-42.4-84-55.5-32.5-13.5-66.9-20.3-102.4-20.3-49.3 0-97.4 13.5-139.2 39-10 6.1-19.5 12.8-28.5 20.1-9-7.3-18.5-14-28.5-20.1-41.8-25.5-89.9-39-139.2-39-35.5 0-69.9 6.8-102.4 20.3-31.4 13-59.7 31.7-84 55.5-24.4 23.9-43.5 51.7-56.9 82.8-13.9 32.3-21 66.6-21 101.9 0 33.3 6.8 68 20.3 103.3 11.3 29.5 27.5 60.1 48.2 91 32.8 48.9 77.9 99.9 133.9 151.6 92.8 85.7 184.7 144.9 188.6 147.3l23.7 15.2c10.5 6.7 24 6.7 34.5 0l23.7-15.2c3.9-2.5 95.7-61.6 188.6-147.3 56-51.7 101.1-102.7 133.9-151.6 20.7-30.9 37-61.5 48.2-91 13.5-35.3 20.3-70 20.3-103.3 0.1-35.3-7-69.6-20.9-101.9z"
+                />
+              </svg>
+            </i>
+            <i nz-icon [nzType]="'star'" *nzSpaceItem></i>
+            <i nz-icon [nzType]="'star'" [nzTheme]="'fill'" *nzSpaceItem></i>
+            <i
+              nz-icon
+              [nzType]="'star'"
+              [nzTheme]="'fill'"
+              *nzSpaceItem
+              style="color: red"
+            ></i>
+            <i
+              *nzSpaceItem
+              nz-icon
+              nzType="rise"
+              nzTheme="outline"
+              [nzTwotoneColor]="'#dddddd'"
+              style="color: red"
+            ></i>
+            <pf-svg-btn *nzSpaceItem>
+              <svg>
+                <path
+                  d="M923 283.6c-13.4-31.1-32.6-58.9-56.9-82.8-24.3-23.8-52.5-42.4-84-55.5-32.5-13.5-66.9-20.3-102.4-20.3-49.3 0-97.4 13.5-139.2 39-10 6.1-19.5 12.8-28.5 20.1-9-7.3-18.5-14-28.5-20.1-41.8-25.5-89.9-39-139.2-39-35.5 0-69.9 6.8-102.4 20.3-31.4 13-59.7 31.7-84 55.5-24.4 23.9-43.5 51.7-56.9 82.8-13.9 32.3-21 66.6-21 101.9 0 33.3 6.8 68 20.3 103.3 11.3 29.5 27.5 60.1 48.2 91 32.8 48.9 77.9 99.9 133.9 151.6 92.8 85.7 184.7 144.9 188.6 147.3l23.7 15.2c10.5 6.7 24 6.7 34.5 0l23.7-15.2c3.9-2.5 95.7-61.6 188.6-147.3 56-51.7 101.1-102.7 133.9-151.6 20.7-30.9 37-61.5 48.2-91 13.5-35.3 20.3-70 20.3-103.3 0.1-35.3-7-69.6-20.9-101.9z"
+                />
+              </svg>
+            </pf-svg-btn>
+            <nz-button-group *nzSpaceItem>
+              <button nz-button [nzSize]="size" nzType="default">
+                <i nz-icon nzType="rise" nzTheme="outline"></i>
+              </button>
+              <button nz-button [nzSize]="size" nzType="default">
+                <i
+                  nz-icon
+                  nzType="rise"
+                  nzTheme="outline"
+                  [nzTwotoneColor]="'#eb2f96'"
+                ></i>
+              </button>
+              <button nz-button [nzSize]="size" nzType="default">删线</button>
+            </nz-button-group>
+            <nz-radio-group [(ngModel)]="size" *nzSpaceItem >
+              <label nz-radio-button nzValue="large">Large</label>
+              <label nz-radio-button nzValue="default">Default</label>
+              <label nz-radio-button nzValue="small">Small</label>
+            </nz-radio-group> -->
+            <nz-radio-group [(ngModel)]="currentPaintType" *nzSpaceItem>
+              <i
+                nz-radio-button
+                nz-icon
+                nzType="drag"
+                nzTheme="outline"
+                [nzValue]="PaintType.none"
+                nz-tooltip
+                nzTooltipTitle="正常选择状态"
+              ></i>
+              <i
+                nz-radio-button
+                nz-icon
+                nzType="rise"
+                nzTheme="outline"
+                [nzValue]="PaintType.line"
+                nz-tooltip
+                nzTooltipTitle="连线"
+              ></i>
+              <i
+                nz-radio-button
+                nz-icon
+                nzType="delete"
+                nzTheme="outline"
+                [nzValue]="PaintType.delete"
+                nz-tooltip
+                nzTooltipTitle="删除节点或线"
+              ></i>
+            </nz-radio-group>
+          </nz-space>
+        </div>
+  
+        <div
+          class="job-middle"
+          style="overflow: auto; width: 100%; height: 100%; padding: 0px"
+        >
+          <div
+            class="job-middle-container"
+            style="
+              display: flex;
+              flex-flow: row;
+              height: 98%;
+              width: 95%;
+              position: relative;
+            "
+            pfDrop
+            (pfDropEnd)="onProcedureMoveDrop($event)"
+          >
+            <pf-click-arrow
+              [startMove$]="startMove$"
+              (moveEnd)="onArrowMoveEnd($event)"
+            ></pf-click-arrow>
+            <!-- <svg draggable="true" style="width: 100%; height: 100%">
+              <line
+                x1="0"
+                y1="0"
+                x2="200"
+                y2="50"
+                stroke="blue"
+                stroke-width="2"
+                marker-end="url(#arrow)"
+              ></line>
+            </svg> -->
+            <div style="position: absolute">
+              <!-- <svg>
+                <line
+                  [x1]="lineX1"
+                  [y1]="lineY1"
+                  [x2]="lineX2"
+                  [y2]="lineY2"
+                  stroke="#40A9FF"
+                  stroke-width="2"
+                  marker-end="url(#arrow)"
+                />
+                <line
+                  x1="0"
+                  y1="0"
+                  x2="200"
+                  y2="50"
+                  stroke="red"
+                  stroke-width="2"
+                  marker-end="url(#arrow)"
+                />
+              </svg> -->
+              <!-- <svg style="left: 0px; top: 0px; z-index: 999">
+                <line
+                  [attr.x2]="lineX2"
+                  x1="0"
+                  y1="0"
+                  y2="50"
+                  stroke="blue"
+                  stroke-width="4"
+                  marker-end="url(#arrow)"
+                ></line>
+              </svg> -->
+            </div>
+            <div
+              class="job-left-toolbar"
+              style="
+                border: 1px solid rgb(245, 245, 245);
+                background-color: rgb(245, 245, 245);
+                padding: 10px;
+              "
+            >
+              <nz-affix [nzOffsetTop]="10" [nzOffsetBottom]="10">
+                <nz-space [nzSize]="8" nzDirection="vertical">
+                  <!-- <div *nzSpaceItem style="height: 50px">&nbsp;</div> -->
+                  <label *nzSpaceItem>新增步骤:</label>
+                  <p *nzSpaceItem>(拖放)</p>
+                  <ul *nzSpaceItem>
+                    <li>
+                      <!-- 方法2 这种方式的mouseup是在document上的，似乎会被阻止，不好用 -->
+                      <!-- <img src="assets/img/xSchedulerJob/java.jpg" pfDrag001 /> -->
+  
+                      <!-- 方法2 这种方式的mouseup是在document上的，似乎会被阻止，不好用 -->
+                      <!-- <img
+                src="assets/img/xSchedulerJob/java.jpg"
+                (mousedown)="onProcedureMoveMouseDown($event)" 
+              /> -->
+  
+                      <img
+                        src="assets/img/xSchedulerJob/java.png"
+                        pfDrag
+                        procedureType="java"
+                      />
+  
+                      <!-- <pf-svg-btn pfDrag procedureType="spark"
+                        ><svg
+                          class="icon"
+                          style="
+                            vertical-align: middle;
+                            fill: currentColor;
+                            overflow: hidden;
+                          "
+                          viewBox="0 0 1024 1024"
+                          version="1.1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          p-id="6858"
+                        >
+                          <path
+                            d="M64 352H0V0h1024v352h-64V64H64v288zM1024 1024H0v-224h64v160h896v-160h64v224z"
+                            fill="#2a7ee8"
+                            p-id="6859"
+                          ></path>
+                          <path
+                            d="M32 128h960v64H32zM480 736h-64v-210.88l-32-32-32 32V736H288v-237.12l96-96 96 96V736z"
+                            fill="#2a7ee8"
+                            p-id="6860"
+                          ></path>
+                          <path
+                            d="M320 576h128v64h-128zM992 736h-64v-210.88l-32-32-32 32V736h-64v-237.12l96-96 96 96V736z"
+                            fill="#2a7ee8"
+                            p-id="6861"
+                          ></path>
+                          <path
+                            d="M832 576h128v64h-128zM173.12 736H82.88L32 685.12V608h64v50.88l13.12 13.12h37.76l13.12-13.12V416h64v269.12L173.12 736zM640 749.12l-96-96V416h64v210.88l32 32 32-32V416h64v237.12l-96 96z"
+                            fill="#2a7ee8"
+                            p-id="6862"
+                          ></path>
+                        </svg>
+                      </pf-svg-btn> -->
+                    </li>
+                    <!-- <li>
+                      <img
+                        src="assets/img/xSchedulerJob/spark.png"
+                        pfDrag
+                        procedureType="spark"
+                      />
+                    </li> -->
+                    <li>
+                      <!-- <div pfDrag procedureType="spark">
+                        <svg
+                          class="icon"
+                          style="
+                            vertical-align: middle;
+                            fill: currentColor;
+                            overflow: hidden;
+                          "
+                          viewBox="0 0 1024 1024"
+                          version="1.1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          p-id="5063"
+                        >
+                          <path
+                            d="M512 512m-512 0a512 512 0 1 0 1024 0 512 512 0 1 0-1024 0Z"
+                            fill="#FFD8BF"
+                            p-id="5064"
+                          ></path>
+                          <path
+                            d="M239.616 554.837333c18.688-72.96 88.618667-68.096 88.618667-68.096 63.146667 2.005333 75.904 55.210667 71.936 83.413334-4.266667 15.488-5.162667 31.018667-31.36 59.733333-57.642667 45.397333-107.946667 8.746667-107.946667 8.746667l-6.528 59.818666h-34.56s7.125333-92.842667 19.84-143.616z m-51.2-125.013333c33.365333 0 49.450667 23.850667 53.12 30.208l0.853333 1.536-32.768 26.88s-7.765333-18.133333-26.538666-21.76c-18.773333-3.626667-22.357333 15.701333-22.357334 15.701333 0 18.133333 33.109333 44.117333 33.109334 44.117334 33.066667 32.64 27.392 55.637333 27.392 55.637333 0 27.477333-19.072 46.805333-19.072 46.805333s-10.112 25.088-60.501334 25.088C91.306667 654.08 85.333333 609.706667 85.333333 609.706667l39.04-21.504c0 22.997333 24.149333 29.909333 24.149334 29.909333 8.96 0 17.877333-2.389333 27.733333-10.24 9.813333-7.893333 1.749333-29.610667 1.749333-29.610667-7.125333-7.594667-43.178667-45.653333-48.853333-53.504-5.674667-7.850667-9.557333-21.76-9.557333-21.76 0-4.266667-1.493333-28.117333 13.141333-45.653333 14.592-17.493333 33.664-27.477333 55.722667-27.477333z m327.765333 56.832l0.938667 0.042667c6.442667 0.341333 44.202667 4.48 63.061333 55.253333 1.578667 15.701333 0 27.776 0 32.213333 0 4.437333-11.093333 74.154667-11.093333 74.154667h-32.853333l7.765333-67.114667s4.181333-59.818667-40.533333-59.818666c-44.672 0-52.437333 48.341333-52.437334 48.341333v1.578667c0 7.466667 1.834667 39.594667 30.592 45.994666 32.597333 7.253333 48.896-17.365333 48.896-17.365333l-7.168 43.093333s-44.501333 28.245333-89.386666-12.458666c0 0-18.688-16.896-18.688-55.210667v-1.237333c0-6.570667 1.92-37.546667 33.365333-64.426667 35.370667-30.208 67.541333-23.04 67.541333-23.04z m160.554667 4.693333l-4.181333 33.877334h-22.826667s-9.557333 2.005333-12.330667 11.264l-15.274666 111.402666h-34.005334l12.928-110.805333s-0.810667-16.085333 15.488-32.64c0 0 11.52-12.672 24.064-13.056h36.138667z m64-57.002666l-10.453333 95.488 63.189333-70.4 6.570667 38.4-44.117334 48.64 72.106667 101.418666h-44.373333l-58.154667-84.48-11.904 84.48h-38.144l24.448-184.234666 40.832-29.312z m-418.474667 88.234666c-22.826667 0-51.669333 24.789333-51.669333 50.090667s20.48 44.202667 43.349333 44.202667c22.826667 0 50.858667-24.234667 50.858667-49.536 0-25.301333-19.669333-44.757333-42.538667-44.757334z"
+                            fill="#000000"
+                            fill-opacity=".85"
+                            p-id="5065"
+                          ></path>
+                          <path
+                            d="M809.557333 467.626667l57.514667 16.256-34.304-68.266667 52.053333-64.426667-77.952 18.858667-38.229333-63.872-15.36 79.658667-77.653333 26.752 57.173333 24.96-38.826667 26.453333-46.08-19.754667s-25.258667-11.562667-25.258666-31.658666c0-20.053333 25.856-27.050667 25.856-27.050667l76.8-24.106667 12.8-75.434666S744.192 256 764.672 256s28.885333 23.893333 39.338667 39.722667l21.248 36.096 76.288-20.266667s62.634667-13.397333 25.301333 40.533333l-54.186667 64.085334 32.085334 63.232s24.917333 51.498667-33.706667 44.586666l-55.381333-17.834666-6.058667-38.528z"
+                            fill="#E16A1A"
+                            p-id="5066"
+                          ></path>
+                        </svg>
+                      </div> -->
+                      <pf-svg-btn pfDrag procedureType="spark">
+                        <svg
+                          class="icon"
+                          style="
+                            vertical-align: middle;
+                            fill: currentColor;
+                            overflow: hidden;
+                          "
+                          viewBox="0 0 1024 1024"
+                          version="1.1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          p-id="5063"
+                        >
+                          <path
+                            d="M512 512m-512 0a512 512 0 1 0 1024 0 512 512 0 1 0-1024 0Z"
+                            fill="#FFD8BF"
+                            p-id="5064"
+                          ></path>
+                          <path
+                            d="M239.616 554.837333c18.688-72.96 88.618667-68.096 88.618667-68.096 63.146667 2.005333 75.904 55.210667 71.936 83.413334-4.266667 15.488-5.162667 31.018667-31.36 59.733333-57.642667 45.397333-107.946667 8.746667-107.946667 8.746667l-6.528 59.818666h-34.56s7.125333-92.842667 19.84-143.616z m-51.2-125.013333c33.365333 0 49.450667 23.850667 53.12 30.208l0.853333 1.536-32.768 26.88s-7.765333-18.133333-26.538666-21.76c-18.773333-3.626667-22.357333 15.701333-22.357334 15.701333 0 18.133333 33.109333 44.117333 33.109334 44.117334 33.066667 32.64 27.392 55.637333 27.392 55.637333 0 27.477333-19.072 46.805333-19.072 46.805333s-10.112 25.088-60.501334 25.088C91.306667 654.08 85.333333 609.706667 85.333333 609.706667l39.04-21.504c0 22.997333 24.149333 29.909333 24.149334 29.909333 8.96 0 17.877333-2.389333 27.733333-10.24 9.813333-7.893333 1.749333-29.610667 1.749333-29.610667-7.125333-7.594667-43.178667-45.653333-48.853333-53.504-5.674667-7.850667-9.557333-21.76-9.557333-21.76 0-4.266667-1.493333-28.117333 13.141333-45.653333 14.592-17.493333 33.664-27.477333 55.722667-27.477333z m327.765333 56.832l0.938667 0.042667c6.442667 0.341333 44.202667 4.48 63.061333 55.253333 1.578667 15.701333 0 27.776 0 32.213333 0 4.437333-11.093333 74.154667-11.093333 74.154667h-32.853333l7.765333-67.114667s4.181333-59.818667-40.533333-59.818666c-44.672 0-52.437333 48.341333-52.437334 48.341333v1.578667c0 7.466667 1.834667 39.594667 30.592 45.994666 32.597333 7.253333 48.896-17.365333 48.896-17.365333l-7.168 43.093333s-44.501333 28.245333-89.386666-12.458666c0 0-18.688-16.896-18.688-55.210667v-1.237333c0-6.570667 1.92-37.546667 33.365333-64.426667 35.370667-30.208 67.541333-23.04 67.541333-23.04z m160.554667 4.693333l-4.181333 33.877334h-22.826667s-9.557333 2.005333-12.330667 11.264l-15.274666 111.402666h-34.005334l12.928-110.805333s-0.810667-16.085333 15.488-32.64c0 0 11.52-12.672 24.064-13.056h36.138667z m64-57.002666l-10.453333 95.488 63.189333-70.4 6.570667 38.4-44.117334 48.64 72.106667 101.418666h-44.373333l-58.154667-84.48-11.904 84.48h-38.144l24.448-184.234666 40.832-29.312z m-418.474667 88.234666c-22.826667 0-51.669333 24.789333-51.669333 50.090667s20.48 44.202667 43.349333 44.202667c22.826667 0 50.858667-24.234667 50.858667-49.536 0-25.301333-19.669333-44.757333-42.538667-44.757334z"
+                            fill="#000000"
+                            fill-opacity=".85"
+                            p-id="5065"
+                          ></path>
+                          <path
+                            d="M809.557333 467.626667l57.514667 16.256-34.304-68.266667 52.053333-64.426667-77.952 18.858667-38.229333-63.872-15.36 79.658667-77.653333 26.752 57.173333 24.96-38.826667 26.453333-46.08-19.754667s-25.258667-11.562667-25.258666-31.658666c0-20.053333 25.856-27.050667 25.856-27.050667l76.8-24.106667 12.8-75.434666S744.192 256 764.672 256s28.885333 23.893333 39.338667 39.722667l21.248 36.096 76.288-20.266667s62.634667-13.397333 25.301333 40.533333l-54.186667 64.085334 32.085334 63.232s24.917333 51.498667-33.706667 44.586666l-55.381333-17.834666-6.058667-38.528z"
+                            fill="#E16A1A"
+                            p-id="5066"
+                          ></path>
+                        </svg>
+                      </pf-svg-btn>
+                    </li>
+                    <!-- <li>
+                      <div pfDrag [dragType]="DragType.arrow">testDragArrow</div>
+                    </li> -->
+                  </ul>
+  
+                  <!-- <button
+            *nzSpaceItem
+            nz-button
+            [nzSize]="size"
+            nzType="primary"
+            nzShape="round"
+            cdkDrag  ant组件使用拖放时会很卡
+          >
+            java程序
+          </button> -->
+  
+                  <!-- <button
+            *nzSpaceItem
+            nz-button
+            [nzSize]="size"
+            nzType="default"
+            (click)="addProcedure()"
+          >
+            新增步骤
+          </button>
+          <button
+            *nzSpaceItem
+            nz-button
+            [nzSize]="size"
+            nzType="default"
+            (click)="showEditJobInfoPopups()"
+          >
+            编辑作业参数
+          </button> -->
+                </nz-space>
+              </nz-affix>
+            </div>
+            <!-- <div
+              *ngIf="currentPaintType == PaintType.line"
+              style="
+                width: 100%;
+                height: 100%;
+                background-color: skyblue;
+                position: absolute;
+              "
+              pfDrag
+              [dragType]="DragType.arrow"
+            ></div>
+            <div style="width: 100px; height: 100px; background-color: blue">
+              testDropaaaaaaaaaaaaaaaaaaaaaa
+            </div> -->
+  
+            <ngx-graph
+              *ngIf="digraphVisible"
+              class="chart-container"
+              [legend]="false"
+              [links]="digraphLinkData"
+              [nodes]="digraphNodeData"
+              layout="dagreCluster"
+              [update$]="update$"
+              (legendLabelClick)="onLegendLabelClick($event)"
+              (select)="onNodeClick($event)"
+              autoCenter="true"
+              [draggingEnabled]="
+                PaintType.line != currentPaintType &&
+                PaintType.delete != currentPaintType
+              "
+              [panningEnabled]="
+                PaintType.line != currentPaintType &&
+                PaintType.delete != currentPaintType
+              "
+            >
+              <ng-template #defsTemplate>
+                <svg:marker
+                  id="arrow"
+                  viewBox="0 -5 10 10"
+                  refX="8"
+                  refY="0"
+                  markerWidth="4"
+                  markerHeight="4"
+                  orient="auto"
+                >
+                  <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                </svg:marker>
+              </ng-template>
+  
+              <ng-template #clusterTemplate let-cluster>
+                <svg:g class="node cluster">
+                  <svg:rect
+                    rx="5"
+                    ry="5"
+                    [attr.width]="cluster.dimension.width"
+                    [attr.height]="cluster.dimension.height"
+                    [attr.fill]="cluster.data.color"
+                  />
+                </svg:g>
+              </ng-template>
+  
+              <ng-template #nodeTemplate let-node>
+                <svg:g class="node">
+                  <svg:rect
+                    [attr.width]="node.dimension.width"
+                    [attr.height]="node.dimension.height"
+                    [attr.fill]="node.data.color"
+                  />
+                  <svg:text
+                    alignment-baseline="central"
+                    [attr.x]="10"
+                    [attr.y]="node.dimension.height / 2"
+                  >
+                    {{ node.label }}
+                  </svg:text>
+                </svg:g>
+              </ng-template>
+  
+              <ng-template #linkTemplate let-link>
+                <svg:g class="edge" (click)="onLinkClick($event)">
+                  <svg:path
+                    class="line"
+                    stroke-width="3"
+                    marker-end="url(#arrow)"
+                  ></svg:path>
+                  <svg:text class="edge-label" text-anchor="middle">
+                    <textPath
+                      class="text-path"
+                      [attr.href]="'#' + link.id"
+                      [style.dominant-baseline]="link.dominantBaseline"
+                      startOffset="50%"
+                    >
+                      {{ link.label }}
+                    </textPath>
+                  </svg:text>
+                </svg:g>
+              </ng-template>
+            </ngx-graph>
+          </div>
+        </div>
+        <!-- <div class="job-dag-contect" style="overflow: auto; height: 100%"> -->
+        <!-- </div> -->
+      </div>
+  
+      <!-- 
+      <div
+        style="
+          display: flex;
+          flex-flow: row;
+          height: 95%;
+          width: 98%;
+          position: relative;
+        "
+        pfDrop
+        (pfDropEnd)="onProcedureMoveDrop($event)"
+      >
+        <img
+          *ngIf="isDragging"
+          src="assets/img/xSchedulerJob/java.jpg"
+          style="position: absolute"
+          [style.left]="draggingX"
+          [style.top]="draggingY"
+        />
+      </div> -->
+  
+      <!-- <div style="position: absolute;left:100px">      
+        <nz-space [nzSize]="8">
+          <button *nzSpaceItem nz-button [nzSize]="size" nzType="default" (click)="addTask()" >新增任务</button>
+          <button *nzSpaceItem nz-button [nzSize]="size" nzType="default" (click)="addTask()" >新增任务</button>
+        </nz-space>
+      </div> -->
+      <!-- <nz-layout>
+          <nz-layout>
+            <nz-sider [nzWidth]="100" [nzTheme]="light"> 
+              <nz-content>           
+                <ul><li>
+                  <button nz-button [nzSize]="size" nzType="default" (click)="addTask()" >新增任务</button>
+                </li></ul>
+              </nz-content>
+            </nz-sider>
+            <nz-content>
+              
+            <ngx-graph
+            class="chart-container"
+            [showMiniMap]="true"
+            [(links)]="digraphLinkData"
+            [(nodes)]="digraphNodeData"
+          >
+          </ngx-graph>    
+  
+            </nz-content>
+          </nz-layout>
+        </nz-layout> -->
+      <!-- <ngx-graph
+            class="chart-container"
+            [showMiniMap]="true"
+            [(links)]="digraphLinkData"
+            [(nodes)]="digraphNodeData"
+          >
+          </ngx-graph>  -->
+    </div>
+    <div class="page-bottom">
+      <button nz-button nzType="primary" type="button" (click)="confirm()">
+        提交保存
+      </button>
+      <button nz-button nzType="default" type="button" (click)="back()">
+        返 回
+      </button>
+    </div>
+    <ng-template #invalidTab>
+      <span [style.color]="invalidColor">未设置</span>
+    </ng-template>
+    <nz-modal
+      [(nzVisible)]="isVisible"
+      [nzTitle]="
+        (isProcedureAdd() ? '新增步骤' : '编辑步骤') +
+        procedureForm.value.procedureName
+      "
+      [nzWidth]="800"
+      (nzOnCancel)="handleCancel()"
+      [nzMaskClosable]="!isFetchPopupsUploading"
+    >
+      <ng-container *nzModalContent>
+        <nz-tabset>
+          <nz-tab nzTitle="1.步骤参数">
+            <form nz-form [formGroup]="procedureForm">
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="procedureName" [nzSpan]="4"
+                  >步骤名称</nz-form-label
+                >
+                <nz-form-control
+                  [nzSpan]="8"
+                  nzValidateStatus
+                  nzHasFeedback
+                  [nzErrorTip]="userErrorTpl"
+                >
+                  <input
+                    nz-input
+                    formControlName="procedureName"
+                    placeholder="如:node001"
+                    [readonly]="!procedureForm.value.isAdd"
+                  />
+                  <ng-template #userErrorTpl let-control>
+                    <ng-container *ngIf="control.hasError('duplicated')">
+                      节点名不能重复
+                    </ng-container>
+                  </ng-template>
+                </nz-form-control>
+              </nz-form-item>
+              <!-- <nz-form-item>
+                <nz-form-label nzFor="from" [nzSpan]="4">上一步</nz-form-label>
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <nz-select
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceHolder="上一步"
+                    nzMode="multiple"
+                    formControlName="from"
+                  >
+                    <template
+                      *ngFor="
+                        let item of digraphNodeData;
+                        index as index;
+                        first as first;
+                        last as last;
+                        odd as odd;
+                        even as even
+                      "
+                    >
+                      <nz-option
+                        *ngIf="
+                          procedureForm.value.isAdd ||
+                          digraphIdPrev + procedureForm.value.procedureId !=
+                            item.id
+                        "
+                        [nzLabel]="item.label"
+                        [nzValue]="item.id.replace(digraphIdPrev, '')"
+                      ></nz-option>
+                    </template>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="to" [nzSpan]="4">下一步</nz-form-label>
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <nz-select
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceHolder="下一步"
+                    nzMode="multiple"
+                    formControlName="to"
+                  >
+                    <template
+                      *ngFor="
+                        let item of digraphNodeData;
+                        index as index;
+                        first as first;
+                        last as last;
+                        odd as odd;
+                        even as even
+                      "
+                    >
+                      <nz-option
+                        *ngIf="
+                          procedureForm.value.isAdd ||
+                          digraphIdPrev + procedureForm.value.procedureId !=
+                            item.id
+                        "
+                        [nzLabel]="item.label"
+                        [nzValue]="item.id.replace(digraphIdPrev, '')"
+                      ></nz-option>
+                    </template>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item> -->
+              <nz-form-item>
+                <nz-form-label nzFor="envShort" [nzSpan]="4"
+                  >环境变量</nz-form-label
+                >
+                <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="12">
+                      <input
+                        nz-input
+                        formControlName="envShort"
+                        placeholder="点右边选择,可空"
+                        rows="4"
+                        readonly
+                      />
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                      <button nz-button (click)="showEditENVPopups($event)">
+                        编辑环境变量
+                      </button>
+                    </div>
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
+              <!-- <nz-form-item>
+                <nz-form-label nzRequired nzFor="containerImage" [nzSpan]="4"
+                  >容器镜像</nz-form-label
+                >
+      
+                <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="24">
+                      <input
+                        nz-input
+                        formControlName="containerImage"
+                        placeholder="通过下面选择"
+                        required
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="12">
+                      <nz-select
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="1.选择镜像"
+                        formControlName="containerImageName"
+                        (ngModelChange)="containerImageChange($event)"
+                      >
+                        <template
+                          *ngFor="
+                            let item of containerImage;
+                            index as index;
+                            first as first;
+                            last as last;
+                            odd as odd;
+                            even as even
+                          "
+                        >
+                          <nz-option [nzLabel]="item" [nzValue]="item"></nz-option>
+                        </template>
+                      </nz-select>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                      <nz-select
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="2.选择版本"
+                        formControlName="containerImageVersion"
+                        (ngModelChange)="containerImageVersionChange($event)"
+                      >
+                        <template
+                          *ngFor="
+                            let item of containerImageVersion;
+                            index as index;
+                            first as first;
+                            last as last;
+                            odd as odd;
+                            even as even
+                          "
+                        >
+                          <nz-option [nzLabel]="item" [nzValue]="item"></nz-option>
+                        </template>
+                      </nz-select>
+                    </div>
+                  </div>
+                </nz-form-control>
+              </nz-form-item> -->
+              <!-- <nz-form-item>
+                <nz-form-label nzRequired nzFor="cmd" [nzSpan]="4"
+                  >cmd</nz-form-label
+                >
+                <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+                  <textarea
+                    rows="4"
+                    nz-input
+                    formControlName="cmd"
+                    placeholder="执行指令如:java -jar $MESOS_SANDBOX/xxx.jar  $MESOS_SANDBOX表示上传镜像的目录"
+                  ></textarea>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="fetch" [nzSpan]="4"
+                  >运行文件</nz-form-label
+                >
+                <nz-form-control [nzSpan]="12" nzValidateStatus nzHasFeedback>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="12">
+                      <input
+                        nz-input
+                        formControlName="fetchShort"
+                        placeholder="通过右边选择"
+                        required
+                        readonly
+                      /><br />
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                      <button nz-button (click)="editFetchList($event)">
+                        编辑文件
+                      </button>
+                    </div>
+                  </div>
+                </nz-form-control>
+              </nz-form-item> -->
+              <nz-form-item>
+                <nz-form-label nzFor="maxLaunchDelay" [nzSpan]="4"
+                  >最长执行时间</nz-form-label
+                >
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <nz-input-number
+                    formControlName="maxLaunchDelay"
+                    placeholder="最长执行时间"
+                    nzDisabled="true"
+                  ></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="retry" [nzSpan]="4">重试次数</nz-form-label>
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <nz-input-number
+                    formControlName="retry"
+                    placeholder="重试次数"
+                  ></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="retryInterval" [nzSpan]="4"
+                  >重试间隔(秒)</nz-form-label
+                >
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <nz-input-number
+                    [nzMin]="60"
+                    formControlName="retryInterval"
+                    placeholder="重试间隔(秒)"
+                  ></nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="description" [nzSpan]="4"
+                  >描述</nz-form-label
+                >
+                <nz-form-control [nzSpan]="12" nzValidateStatus nzHasFeedback>
+                  <!-- <input
+                    nz-input
+                    formControlName="description"
+                    placeholder="描述"
+                  /> -->
+                  <textarea
+                    nz-input
+                    formControlName="description"
+                    placeholder="描述"
+                  ></textarea>
+                </nz-form-control>
+              </nz-form-item></form
+          ></nz-tab>
+          <nz-tab [nzTitle]="imageTitleTemplate">
+            <ng-template #imageTitleTemplate>
+              <div>
+                {{ "2.设置容器 " }}
+                <span
+                  *ngIf="isImageTabValid(); else invalidTab"
+                  [style.color]="validColor"
+                  >ok</span
+                >
+                <!-- <ng-template #invalidTab>
+                  <span [style.color]="invalidColor">未设置</span>
+                </ng-template> -->
+              </div>
+            </ng-template>
+            <form nz-form [formGroup]="procedureForm">
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="containerImage" [nzSpan]="4"
+                  >容器镜像</nz-form-label
+                >
+  
+                <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="24">
+                      <input
+                        nz-input
+                        formControlName="containerImage"
+                        placeholder="通过下面选择"
+                        required
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="12">
+                      <nz-select
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="1.选择镜像"
+                        formControlName="containerImageName"
+                        (ngModelChange)="containerImageChange($event)"
+                      >
+                        <template
+                          *ngFor="
+                            let item of containerImage;
+                            index as index;
+                            first as first;
+                            last as last;
+                            odd as odd;
+                            even as even
+                          "
+                        >
+                          <nz-option
+                            [nzLabel]="item"
+                            [nzValue]="item"
+                          ></nz-option>
+                        </template>
+                      </nz-select>
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                      <nz-select
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="2.选择版本"
+                        formControlName="containerImageVersion"
+                        (ngModelChange)="containerImageVersionChange($event)"
+                      >
+                        <template
+                          *ngFor="
+                            let item of containerImageVersion;
+                            index as index;
+                            first as first;
+                            last as last;
+                            odd as odd;
+                            even as even
+                          "
+                        >
+                          <nz-option
+                            [nzLabel]="item"
+                            [nzValue]="item"
+                          ></nz-option>
+                        </template>
+                      </nz-select>
+                    </div>
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
+            </form>
+          </nz-tab>
+          <nz-tab [nzTitle]="cmdTitleTemplate">
+            <ng-template #cmdTitleTemplate>
+              <div>
+                {{ "3.执行命令 " }}
+                <span
+                  *ngIf="isCmdTabValid(); else invalidTab"
+                  [style.color]="validColor"
+                  >ok</span
+                >
+                <!-- <ng-template #cmdInvalidTab>
+                  <span [style.color]="invalidColor">未设置</span>
+                </ng-template> -->
+              </div>
+            </ng-template>
+            <form nz-form [formGroup]="procedureForm">
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="cmd" [nzSpan]="4"
+                  >cmd</nz-form-label
+                >
+                <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+                  <textarea
+                    rows="4"
+                    nz-input
+                    formControlName="cmd"
+                    placeholder="执行指令如:java -jar $MESOS_SANDBOX/xxx.jar  $MESOS_SANDBOX表示上传镜像的目录"
+                  ></textarea>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="fetch" [nzSpan]="4"
+                  >运行文件</nz-form-label
+                >
+                <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="8">
+                      <!--方式1 多选下拉-->
+                      <!-- <nz-select
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="运行文件"
+                        nzMode="multiple"
+                        formControlName="fetch"
+                        (ngModelChange)="onHistoryUriChange($event)"
+                      >
+                        <template
+                          *ngFor="
+                            let item of fetchHistoryGridData;
+                            index as index;
+                            first as first;
+                            last as last;
+                            odd as odd;
+                            even as even
+                          "
+                        >
+                          <nz-option
+                            [nzLabel]="getFileNameByFetchDownloadUri(item.Url)"
+                            [nzValue]="item.Url"
+                          ></nz-option>
+                        </template>
+                      </nz-select> -->
+  
+                      <!-- <nz-select
+                        nzShowSearch
+                        nzAllowClear
+                        nzPlaceHolder="运行文件"
+                        nzMode="multiple"
+                        formControlName="fetch"
+                        (ngModelChange)="onHistoryUriChange($event)"
+                      >
+                        <nz-table #historyTable [nzData]="fetchHistoryGridData">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let data of historyTable.data">
+                              <td>{{ data.Url }}</td>
+                            </tr>
+                          </tbody>
+                        </nz-table>
+                      </nz-select> -->
+  
+                      <!--方式3 下拉表格-->
+                      <a
+                        nz-dropdown
+                        nzTrigger="click"
+                        [nzDropdownMenu]="menu"
+                        style="line-height: 32px"
+                      >
+                        单击选择({{ procedureForm.value.fetchShort }})
+                        <i nz-icon nzType="down"></i>
+                      </a>
+                      <nz-dropdown-menu #menu="nzDropdownMenu">
+                        <nz-table
+                          #fetchHistoryTable2
+                          nzSize="middle"
+                          [nzData]="fetchList"
+                          nzPageSize="5"
+                          (nzCurrentPageDataChange)="
+                            onCurrentPageDataChange($event)
+                          "
+                          style="background-color: white"
+                        >
+                          <thead>
+                            <tr>
+                              <th
+                                [nzChecked]="isHistoryAllChecked"
+                                [nzIndeterminate]="fetchHistoryIndeterminate"
+                                (nzCheckedChange)="onAllChecked($event)"
+                              ></th>
+                              <!-- <th>文件路径origin</th> -->
+                              <th>文件路径</th>
+                              <th>提取</th>
+                              <th>可执行</th>
+                              <th>缓存</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let data of fetchHistoryTable2.data">
+                              <td
+                                [nzChecked]="fetchHistoryCheckedId.has(data.uri)"
+                                (nzCheckedChange)="
+                                  onItemChecked(data.uri, $event)
+                                "
+                              ></td>
+                              <!-- <td>
+                                {{ data.uri }}
+                              </td> -->
+                              <td>
+                                {{ getFileNameByFetchDownloadUri(data.uri) }}
+                              </td>
+                              <td>
+                                <label
+                                  nz-checkbox
+                                  [nzDisabled]="
+                                    !fetchHistoryCheckedId.has(data.uri)
+                                  "
+                                  [(ngModel)]="data.extract"
+                                  [ngModelOptions]="{ standalone: true }"
+                                ></label>
+                              </td>
+                              <td>
+                                <label
+                                  nz-checkbox
+                                  [nzDisabled]="
+                                    !fetchHistoryCheckedId.has(data.uri)
+                                  "
+                                  [(ngModel)]="data.executable"
+                                  [ngModelOptions]="{ standalone: true }"
+                                ></label>
+                              </td>
+                              <td>
+                                <label
+                                  nz-checkbox
+                                  [nzDisabled]="
+                                    !fetchHistoryCheckedId.has(data.uri)
+                                  "
+                                  [(ngModel)]="data.cache"
+                                  [ngModelOptions]="{ standalone: true }"
+                                ></label>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </nz-table>
+                      </nz-dropdown-menu>
+                    </div>
+                    <div nz-col [nzSpan]="6">
+                      <nz-upload
+                        style="display: inline-block; margin-left: 8px"
+                        [nzAction]="config.getUploadBaseUrl() + '/upload'"
+                        [nzCustomRequest]="handleUpload"
+                        [nzShowUploadList]="false"
+                      >
+                        <button nz-button nzType="primary">
+                          <i nz-icon nzType="upload"></i>上传文件
+                        </button>
+                      </nz-upload>
+                    </div>
+                    <div
+                      *ngIf="
+                        isFetchPopupsUploading || uploadStatus == 'exception'
+                      "
+                      nz-col
+                      [nzSpan]="10"
+                    >
+                      <!-- <div
+                        style="display: flex; flex-flow: row"
+                      >
+                        <label>{{ uploadStatusText }}:</label>
+                        <nz-progress
+                          [nzPercent]="uploadedPercent"
+                          [nzStatus]="uploadStatus"
+                        ></nz-progress>
+                      </div> -->
+                      <nz-progress
+                        [nzPercent]="uploadedPercent"
+                        [nzStatus]="uploadStatus"
+                      ></nz-progress>
+                    </div>
+                  </div>
+  
+                  <!-- <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="12">
+                      <input
+                        nz-input
+                        formControlName="fetchShort"
+                        placeholder="通过右边选择"
+                        required
+                        readonly
+                      /><br />
+                    </div>
+                    <div nz-col [nzSpan]="12">
+                      <button nz-button (click)="editFetchList($event)">
+                        编辑文件
+                      </button>
+                    </div>
+                  </div> -->
+                </nz-form-control>
+              </nz-form-item>
+            </form></nz-tab
+          >
+        </nz-tabset>
+        <!-- <form nz-form [formGroup]="procedureForm">
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="procedureName" [nzSpan]="4"
+              >步骤名称</nz-form-label
+            >
+            <nz-form-control
+              [nzSpan]="8"
+              nzValidateStatus
+              nzHasFeedback
+              [nzErrorTip]="userErrorTpl"
+            >
+              <input
+                nz-input
+                formControlName="procedureName"
+                placeholder="如:node001"
+                [readonly]="!procedureForm.value.isAdd"
+              />
+              <ng-template #userErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('duplicated')">
+                  节点名不能重复
+                </ng-container>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="from" [nzSpan]="4">上一步</nz-form-label>
+            <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+              <nz-select
+                nzShowSearch
+                nzAllowClear
+                nzPlaceHolder="上一步"
+                nzMode="multiple"
+                formControlName="from"
+              >
+                <template
+                  *ngFor="
+                    let item of digraphNodeData;
+                    index as index;
+                    first as first;
+                    last as last;
+                    odd as odd;
+                    even as even
+                  "
+                >
+                  <nz-option
+                    *ngIf="
+                      procedureForm.value.isAdd ||
+                      digraphIdPrev + procedureForm.value.procedureId != item.id
+                    "
+                    [nzLabel]="item.label"
+                    [nzValue]="item.id.replace(digraphIdPrev, '')"
+                  ></nz-option>
+                </template>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="to" [nzSpan]="4">下一步</nz-form-label>
+            <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+              <nz-select
+                nzShowSearch
+                nzAllowClear
+                nzPlaceHolder="下一步"
+                nzMode="multiple"
+                formControlName="to"
+              >
+                <template
+                  *ngFor="
+                    let item of digraphNodeData;
+                    index as index;
+                    first as first;
+                    last as last;
+                    odd as odd;
+                    even as even
+                  "
+                >
+                  <nz-option
+                    *ngIf="
+                      procedureForm.value.isAdd ||
+                      digraphIdPrev + procedureForm.value.procedureId != item.id
+                    "
+                    [nzLabel]="item.label"
+                    [nzValue]="item.id.replace(digraphIdPrev, '')"
+                  ></nz-option>
+                </template>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="envShort" [nzSpan]="4">环境变量</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+              <div nz-row [nzGutter]="8">
+                <div nz-col [nzSpan]="12">
+                  <input
+                    nz-input
+                    formControlName="envShort"
+                    placeholder="点右边选择,可空"
+                    rows="4"
+                    readonly
+                  />
+                </div>
+                <div nz-col [nzSpan]="12">
+                  <button nz-button (click)="showEditENVPopups($event)">
+                    编辑环境变量
+                  </button>
+                </div>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="containerImage" [nzSpan]="4"
+              >容器镜像</nz-form-label
+            >
+  
+            <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+              <div nz-row [nzGutter]="8">
+                <div nz-col [nzSpan]="24">
+                  <input
+                    nz-input
+                    formControlName="containerImage"
+                    placeholder="通过下面选择"
+                    required
+                    readonly
+                  />
+                </div>
+              </div>
+              <div nz-row [nzGutter]="8">
+                <div nz-col [nzSpan]="12">
+                  <nz-select
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceHolder="1.选择镜像"
+                    formControlName="containerImageName"
+                    (ngModelChange)="containerImageChange($event)"
+                  >
+                    <template
+                      *ngFor="
+                        let item of containerImage;
+                        index as index;
+                        first as first;
+                        last as last;
+                        odd as odd;
+                        even as even
+                      "
+                    >
+                      <nz-option [nzLabel]="item" [nzValue]="item"></nz-option>
+                    </template>
+                  </nz-select>
+                </div>
+                <div nz-col [nzSpan]="12">
+                  <nz-select
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceHolder="2.选择版本"
+                    formControlName="containerImageVersion"
+                    (ngModelChange)="containerImageVersionChange($event)"
+                  >
+                    <template
+                      *ngFor="
+                        let item of containerImageVersion;
+                        index as index;
+                        first as first;
+                        last as last;
+                        odd as odd;
+                        even as even
+                      "
+                    >
+                      <nz-option [nzLabel]="item" [nzValue]="item"></nz-option>
+                    </template>
+                  </nz-select>
+                </div>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="cmd" [nzSpan]="4">cmd</nz-form-label>
+            <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+              <textarea
+                rows="4"
+                nz-input
+                formControlName="cmd"
+                placeholder="执行指令如:java -jar $MESOS_SANDBOX/xxx.jar  $MESOS_SANDBOX表示上传镜像的目录"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired nzFor="fetch" [nzSpan]="4"
+              >运行文件</nz-form-label
+            >
+            <nz-form-control [nzSpan]="12" nzValidateStatus nzHasFeedback>
+              <div nz-row [nzGutter]="8">
+                <div nz-col [nzSpan]="12">
+                  <input
+                    nz-input
+                    formControlName="fetchShort"
+                    placeholder="通过右边选择"
+                    required
+                    readonly
+                  /><br />
+                </div>
+                <div nz-col [nzSpan]="12">
+                  <button nz-button (click)="editFetchList($event)">
+                    编辑文件
+                  </button>
+                </div>
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="maxLaunchDelay" [nzSpan]="4"
+              >最长执行时间</nz-form-label
+            >
+            <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+              <nz-input-number
+                formControlName="maxLaunchDelay"
+                placeholder="最长执行时间"
+                nzDisabled="true"
+              ></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="retry" [nzSpan]="4">重试次数</nz-form-label>
+            <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+              <nz-input-number
+                formControlName="retry"
+                placeholder="重试次数"
+              ></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="retryInterval" [nzSpan]="4"
+              >重试间隔(秒)</nz-form-label
+            >
+            <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+              <nz-input-number
+                [nzMin]="60"
+                formControlName="retryInterval"
+                placeholder="重试间隔(秒)"
+              ></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzFor="description" [nzSpan]="4">描述</nz-form-label>
+            <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+              <input nz-input formControlName="description" placeholder="描述" />
+            </nz-form-control>
+          </nz-form-item>
+        </form> -->
+      </ng-container>
+      <div *nzModalFooter>
+        <button nz-button nzType="default" (click)="handleCancel()">取消</button>
+        <button
+          nz-button
+          nzType="primary"
+          (click)="saveProcedure()"
+          [nzLoading]="isConfirmLoading"
+          [disabled]="!procedureForm.valid || isFetchPopupsUploading"
+        >
+          保存
+        </button>
+        <!-- <button
+          nz-button
+          nzType="primary"
+          (click)="deleteProcedure()"
+          [nzLoading]="isConfirmLoading"
+          [disabled]="isProcedureAdd()"
+        >
+          删除步骤
+        </button> -->
+      </div>
+    </nz-modal>
+    <nz-modal
+      [(nzVisible)]="isFetchPopupsVisible"
+      nzTitle="文件列表"
+      [nzWidth]="900"
+      (nzOnCancel)="isFetchPopupsVisible = false"
+    >
+      <ng-container *nzModalContent>
+        <!-- <nz-spin nzSimple [hidden]="false"></nz-spin> -->
+        <nz-table #validFetchTable [nzData]="validFetch" nzPageSize="5">
+          <thead>
+            <tr>
+              <th nzWidth="500px">路径(双击添加到cmd)</th>
+              <th>提取</th>
+              <th>可执行</th>
+              <th>缓存</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let data of validFetchTable.data; index as index"
+              class="editable-row"
+            >
+              <td>
+                <a (dblclick)="selectUriToCmd(data.uri)">{{ data.uri }}</a>
+  
+                <!-- <div class="editable-cell" (dblclick)="selectUriToCmd(data.uri)">
+                  {{ data.uri }}
+                </div> -->
+              </td>
+              <td>{{ data.extract }}</td>
+              <td>{{ data.executable }}</td>
+              <td>{{ data.cache }}</td>
+              <td>
+                <!-- <a>Action 一 {{ data.name }}</a>
+                <nz-divider nzType="vertical"></nz-divider> -->
+                <a
+                  nz-popconfirm
+                  nzPopconfirmTitle="确定删除?"
+                  nzPopconfirmPlacement="topLeft"
+                  (nzOnConfirm)="deleteFetch()"
+                >
+                  删除
+                </a>
+                <!-- <a
+                  nz-popconfirm
+                  nzPopconfirmTitle="Sure to delete?"
+                  (nzOnConfirm)="deleteFetch(data.id)"
+                  >Delete</a
+                > -->
+                <!-- <button
+                  nz-button
+                  nz-popconfirm
+                  nzPopconfirmTitle="确定删除?"
+                  (nzOnConfirm)="deleteFetch(index)"
+                  (nzOnCancel)="cancel()"
+                  nzPopconfirmPlacement="topLeft"
+                >
+                  Delete
+                </button> -->
+  
+                <nz-divider nzType="vertical"></nz-divider>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </ng-container>
+      <div *nzModalFooter>
+        <button nz-button nzType="default" (click)="isFetchPopupsVisible = false">
+          关闭
+        </button>
+  
+        <!-- <nz-upload style="display: inline-block;margin-left: 8px;"
+          nzAction="http://uat-dcos.perfect99.com:29201/upload"
+          [nzHeaders]="{ authorization: 'authorization-text' }"
+          [nzData]="getUploadBody"
+          (nzChange)="handleUploaded($event)"
+        >
+          <button nz-button  nzType="primary" ><i nz-icon nzType="upload"></i>上传镜像</button>
+        </nz-upload> -->
+  
+        <!--此方法测试通过-->
+        <nz-upload
+          style="display: inline-block; margin-left: 8px"
+          [nzAction]="config.getUploadBaseUrl() + '/upload'"
+          [nzCustomRequest]="handleUpload"
+          [nzShowUploadList]="false"
+        >
+          <button nz-button nzType="primary">
+            <i nz-icon nzType="upload"></i>上传镜像
+          </button>
+        </nz-upload>
+  
+        <button
+          style="margin-left: 8px"
+          nz-button
+          nzType="primary"
+          (click)="showHistoryUri()"
+          [disabled]="procedureForm.value.isAdd"
+        >
+          选择历史镜像
+        </button>
+  
+        <!-- <div nz-row [nzGutter]="8">
+            <div nz-col [nzSpan]="8">
+              <button nz-button nzType="default" (click)="isFetchPopupsVisible=false">取消</button>
+            </div>
+            <div nz-col [nzSpan]="8">
+              <nz-upload 
+              nzAction="http://uat-dcos.perfect99.com:29201/upload"
+              [nzHeaders]="{ authorization: 'authorization-text' }"
+              (nzChange)="handleUploaded($event)"
+              [nzData]="getUploadBody()"
+            >
+              <button nz-button><i nz-icon nzType="upload"></i>上传镜像</button>
+            </nz-upload>
+            </div>
+            <div nz-col [nzSpan]="8">
+              <button nz-button  (click)="handleSelectHistoryUri()" [disabled]="procedureForm.value.isAdd">选择历史镜像</button>
+            </div>
+          </div> -->
+      </div>
+    </nz-modal>
+    <!-- <nz-modal
+      [(nzVisible)]="isFetchPopupsUploading"
+      nzTitle="上传中请稍候..."
+      nzMaskClosable="false"
+    >
+      <ng-container *nzModalContent>
+        <nz-progress
+          [nzPercent]="uploadedPercent"
+          [nzStatus]="uploadStatus"
+        ></nz-progress>
+      </ng-container>
+      <div *nzModalFooter>
+        <button
+          nz-button
+          nzType="default"
+          (click)="isFetchPopupsUploading = false"
+        >
+          关闭
+        </button>
+      </div>
+    </nz-modal> -->
+    <nz-modal
+      [(nzVisible)]="isHistoryPopupsVisible"
+      nzTitle="历史镜像"
+      [nzWidth]="800"
+      (nzOnCancel)="isHistoryPopupsVisible = false"
+      (nzOnOk)="selectFetchHistory($event)"
+    >
+      <ng-container *nzModalContent>
+        <nz-table
+          #fetchHistoryTable
+          [nzData]="fetchHistoryGridData"
+          nzPageSize="5"
+          (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+        >
+          <thead>
+            <tr>
+              <th
+                [nzChecked]="isHistoryAllChecked"
+                [nzIndeterminate]="fetchHistoryIndeterminate"
+                (nzCheckedChange)="onAllChecked($event)"
+              ></th>
+              <th>文件路径</th>
+              <!-- <th>Age</th>
+              <th>Address</th>
+              <th>Action</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of fetchHistoryTable.data">
+              <td
+                [nzChecked]="fetchHistoryCheckedId.has(data.FileId)"
+                (nzCheckedChange)="onItemChecked(data.FileId, $event)"
+              ></td>
+              <td>{{ data.Url }}</td>
+              <!-- <td>{{ data.age }}</td>
+              <td>{{ data.address }}</td>
+              <td>
+                <a>Action 一 {{ data.name }}</a>
+                <nz-divider nzType="vertical"></nz-divider>
+                <a>Delete</a>
+              </td> -->
+            </tr>
+          </tbody>
+        </nz-table>
+      </ng-container>
+    </nz-modal>
+    <nz-modal
+      [(nzVisible)]="isJobInfoPopupsVisible"
+      nzTitle="作业参数"
+      [nzWidth]="800"
+      (nzOnCancel)="isJobInfoPopupsVisible = false"
+      (nzOnOk)="saveJobInfo()"
+    >
+      <ng-container *nzModalContent>
+        <form nz-form [formGroup]="jobForm">
+          <nz-tabset>
+            <nz-tab [nzTitle]="jobTitleTemplate">
+              <ng-template #jobTitleTemplate>
+                <div>
+                  {{ "1.作业参数 " }}
+                </div>
+              </ng-template>
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="JobId" [nzSpan]="3"
+                  >ID</nz-form-label
+                >
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <input
+                    nz-input
+                    formControlName="JobId"
+                    placeholder="ID"
+                    required
+                    readonly
+                  />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzRequired nzFor="JobName" [nzSpan]="3"
+                  >名称</nz-form-label
+                >
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <input
+                    nz-input
+                    formControlName="JobName"
+                    placeholder="名称"
+                    required
+                  />
+                </nz-form-control>
+              </nz-form-item>
+              <!-- <nz-form-item>
+                <nz-form-label nzRequired nzFor="CRON" [nzSpan]="3"
+                  >定时表达式</nz-form-label
+                >
+                <nz-form-control [nzSpan]="16" nzValidateStatus nzHasFeedback>
+                  <div nz-row [nzGutter]="8">
+                    <div nz-col [nzSpan]="20">
+                      <input
+                        nz-input
+                        formControlName="CRON"
+                        placeholder="CRON表达式,格式如:0 06 10 * * ? 可以自编辑或者点右边按钮"
+                        required
+                      />
+                    </div>
+                    <div nz-col [nzSpan]="4">
+                      <button nz-button (click)="showEditCRONPopups($event)">
+                        编辑CRON
+                      </button>
+                    </div>
+                  </div>
+                </nz-form-control>
+              </nz-form-item> -->
+              <nz-form-item>
+                <nz-form-label nzFor="TimeZone" [nzSpan]="3">时区</nz-form-label>
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <input
+                    nz-input
+                    formControlName="TimeZone"
+                    placeholder="时区"
+                    required
+                    readonly
+                  />
+                </nz-form-control>
+              </nz-form-item>
+              <!-- <nz-form-item>
+                    <nz-form-label nzRequired nzFor="Configure" [nzSpan]="3">作业配置</nz-form-label>
+                    <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                        <input nz-input formControlName="Configure" placeholder="作业配置"  required />
+                        <button nz-button nzType="primary" (click)="jobConfig();">设置</button>
+                    </nz-form-control>
+                </nz-form-item> -->
+              <nz-form-item>
+                <nz-form-label nzFor="Dependencies" [nzSpan]="3"
+                  >作业依赖</nz-form-label
+                >
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <!-- <input
+                    nz-input
+                    formControlName="Dependencies"
+                    placeholder="作业依赖"
+                  /> -->
+                  <nz-select
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceHolder="作业依赖"
+                    nzMode="multiple"
+                    formControlName="Dependencies"
+                  >
+                    <template
+                      *ngFor="
+                        let item of dependenciesData;
+                        index as index;
+                        first as first;
+                        last as last;
+                        odd as odd;
+                        even as even
+                      "
+                    >
+                      <nz-option
+                        *ngIf="isAdd() || jobForm.value.JobId != item.key"
+                        [nzLabel]="item.value"
+                        [nzValue]="item.key"
+                      ></nz-option>
+                    </template>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="Description" [nzSpan]="3"
+                  >作业描述</nz-form-label
+                >
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <input
+                    nz-input
+                    formControlName="Description"
+                    placeholder="作业描述"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzFor="Time" [nzSpan]="3">创建时间</nz-form-label>
+                <nz-form-control [nzSpan]="8" nzValidateStatus nzHasFeedback>
+                  <input
+                    nz-input
+                    formControlName="Time"
+                    placeholder="创建时间"
+                    required
+                    readonly
+                  />
+                </nz-form-control>
+              </nz-form-item>
+            </nz-tab>
+            <nz-tab [nzTitle]="cronTitleTemplate">
+              <ng-template #cronTitleTemplate>
+                <div>
+                  {{ "2.定时表达式 " }}
+                  <span
+                    *ngIf="isCronTabValid(); else invalidTab"
+                    [style.color]="validColor"
+                    >ok</span
+                  >
+                </div>
+              </ng-template>
+              <input
+                class="form-control"
+                readonly
+                name="cron"
+                [(ngModel)]="cronData"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <pf-quartz-cron
+                [(ngModel)]="cronData"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="onCronChange($event)"
+              ></pf-quartz-cron>
+            </nz-tab>
+            <!-- <nz-tab [nzTitle]="cron2TitleTemplate">
+              <ng-template #cron2TitleTemplate>
+                <div>
+                  {{ "3.定时表达式 " }}
+                  <span
+                    *ngIf="isCronTabValid(); else invalidTab"
+                    [style.color]="validColor"
+                    >ok</span
+                  >
+                </div>
+              </ng-template>
+              <quartz-cron
+                [(ngModel)]="cronData"
+                [ngModelOptions]="{ standalone: true }"
+              ></quartz-cron>
+            </nz-tab> -->
+          </nz-tabset>
+        </form>
+      </ng-container>
+      <div *nzModalFooter>
+        <button
+          nz-button
+          nzType="default"
+          (click)="isJobInfoPopupsVisible = false"
+        >
+          取消
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          (click)="saveJobInfo()"
+          [disabled]="!jobForm.valid || !isCronTabValid()"
+          [nzLoading]="isJobInfoConfirmLoading"
+        >
+          确定
+        </button>
+      </div>
+    </nz-modal>
+  
+    <nz-modal
+      [(nzVisible)]="isENVPopupsVisible"
+      nzTitle="步骤-环境变量"
+      [nzWidth]="800"
+      (nzOnCancel)="isENVPopupsVisible = false"
+    >
+      <ng-container *nzModalContent>
+        <form nz-form [formGroup]="environmentForm">
+          <nz-form-item
+            *ngFor="let control of environmentListOfControl; let i = index"
+          >
+            <nz-form-label
+              [nzXs]="24"
+              [nzSm]="4"
+              *ngIf="i == 0"
+              [nzFor]="control.key"
+              >键/值
+            </nz-form-label>
+            <nz-form-control
+              [nzOffset]="i == 0 ? 0 : 4"
+              nzHasFeedback
+              [nzErrorTip]="envErrorTpl"
+              class="env-kv-input"
+              [nzSpan]="8"
+            >
+              <!-- <ng-template  #envErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">
+                  请输入参数
+                </ng-container>
+                <ng-container *ngIf="control.hasError('duplicated')">
+                  参数重复
+                </ng-container>
+              </ng-template>
+              <nz-space [nzSize]="8">
+                <input *nzSpaceItem
+                  class="passenger-input"
+                  nz-input
+                  placeholder="键"
+                  [attr.id]="control.id"
+                  (ngModelChange)="passengerChange('env')"
+                  [formControlName]="control.key"
+                  nzRequired
+                />             
+                <label *nzSpaceItem style="padding-left: 10px; padding-right: 10px">:</label>
+                <input *nzSpaceItem
+                  class="passenger-input"
+                  nz-input
+                  (ngModelChange)="passengerChange('env')"
+                  placeholder="值"
+                  [attr.id]="control.value"
+                  [formControlName]="control.value"
+                />
+                <i *nzSpaceItem
+                  nz-icon
+                  nzType="minus-circle-o"
+                  class="dynamic-delete-button"
+                  (click)="removeField(control, 'environment', $event)"
+                ></i>
+              </nz-space> -->
+  
+              <input
+                class="passenger-input"
+                nz-input
+                placeholder="键"
+                [attr.id]="control.id"
+                (ngModelChange)="passengerChange('env')"
+                [formControlName]="control.key"
+                nzRequired
+              />
+              <ng-template #envErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">
+                  请输入参数
+                </ng-container>
+                <ng-container *ngIf="control.hasError('duplicated')">
+                  参数重复
+                </ng-container>
+              </ng-template>
+            </nz-form-control>
+  
+            <label nz-col [nzSpan]="1">:</label>
+  
+            <nz-form-control
+              nzHasFeedback
+              nzErrorTip="请输入参数"
+              class="env-kv-input"
+              [nzSpan]="8"
+            >
+              <input
+                class="passenger-input"
+                nz-input
+                (ngModelChange)="passengerChange('env')"
+                placeholder="值"
+                [attr.id]="control.value"
+                [formControlName]="control.value"
+              />
+            </nz-form-control>
+            <i
+              nz-icon
+              nzType="minus-circle-o"
+              class="dynamic-delete-button"
+              (click)="removeField(control, 'environment', $event)"
+              nz-col
+              [nzSpan]="1"
+            ></i>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control
+              [nzXs]="{ span: 24, offset: 0 }"
+              [nzSm]="{ span: 20, offset: 4 }"
+            >
+              <button
+                nz-button
+                nzType="dashed"
+                class="add-button"
+                (click)="addField('environment', $event)"
+              >
+                <i nz-icon nzType="plus"></i>
+                添加环境变量
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+      <div *nzModalFooter>
+        <button nz-button nzType="default" (click)="isENVPopupsVisible = false">
+          取消
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          (click)="saveENV($event)"
+          [disabled]="!environmentForm.valid"
+        >
+          确定
+        </button>
+      </div>
+    </nz-modal>
+  
+    <nz-modal
+      [(nzVisible)]="isCRONPopupsVisible"
+      nzTitle="CRON表达式"
+      [nzWidth]="800"
+      (nzOnCancel)="isCRONPopupsVisible = false"
+    >
+      <ng-container *nzModalContent>
+        <!-- <cron-jobs
+          [(ngModel)]="cronData"
+          class="job-cron-field"
+          [config]="{ bootstrap: true }"
+        ></cron-jobs> -->
+  
+        <!-- <pf-cron-field-xx></pf-cron-field-xx> -->
+        <!-- <pf-cron-field></pf-cron-field> -->
+        <!-- <pf-cron-field2></pf-cron-field2> -->
+        <!-- <app-pf-cron-field></app-pf-cron-field> -->
+        <!-- <app-child-view></app-child-view> -->
+        <!-- <com-com01></com-com01> -->
+  
+        <!-- <nz-select1 [(value)]="defaultValue" [isOpen]="false">
+          <div nzOption1 *ngFor="let m of menus" [value]="m.value">
+            <p>{{ m.label }}</p>
+          </div>
+        </nz-select1> -->
+  
+        <!-- <cron-jobs [(ngModel)]="freq" [ngModelOptions]="{standalone: true}" [config]="cronConfig"></cron-jobs> -->
+        <!-- <pf-cron-jobs
+          [(ngModel)]="cronData"
+          [ngModelOptions]="{ standalone: true }"
+          [config]="cronConfig"
+        ></pf-cron-jobs> -->
+        <input class="form-control" readonly name="cron" [(ngModel)]="cronData" />
+  
+        <!-- <quartz-cron [(ngModel)]="cronData"></quartz-cron> -->
+        <pf-quartz-cron [(ngModel)]="cronData"></pf-quartz-cron>
+      </ng-container>
+      <div *nzModalFooter>
+        <button nz-button nzType="default" (click)="isCRONPopupsVisible = false">
+          取消
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          (click)="saveCRON($event)"
+          [disabled]="cronData == ''"
+        >
+          确定
+        </button>
+      </div>
+    </nz-modal>
+  </div>
+  

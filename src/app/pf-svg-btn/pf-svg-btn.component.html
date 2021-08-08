@@ -1,0 +1,14 @@
+<!-- <p>pf-svg-btn works!</p> -->
+<!-- <i
+  nz-icon
+  [nzType]="'star'"
+  [nzTheme]="'fill'"
+  [style.color]="currentColor"
+  (click)="onClick($event)"
+>
+  <ng-content></ng-content>
+</i> -->
+
+<!--当直接使用svg的draggable时，会有各种问题，如drop事件偶而不触发，之类。封装组件之后发现此问题有改善，原因未明(后来发现，当svg的父级是block块就会有此问题...父级只有用inline时才不影响拖放（可能是因为block把drop的元素挡住了的问题,svg的drag元素有些特殊，drag的是svg,但dragMove的时候却是path）)-->
+<!--现时有一个小问题，当配合用pfDrag时，由于外层是inline,所以高度是lineheight,不能和svg的高度一致，导致计算鼠标中间点时有偏差-->
+<ng-content></ng-content>
