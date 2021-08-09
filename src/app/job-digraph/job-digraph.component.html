@@ -6,11 +6,12 @@
 /> -->
 <div class="form-page" style="display:flex;flex-flow:column;height:100%">
     <div class="page-header">
-      <div>
+      <div style="text-align: center;">
         <div class="back" style="float:left">
           <a (click)="back()"
             ><i nz-icon nzType="left" nzTheme="outline"></i>返回</a
           >
+          <span>&nbsp;&nbsp;</span>
         </div>
         编辑作业和流程:&nbsp;{{ isAdd() ? "新增" : jobForm.value.JobName }}
         <span style="color: red">{{
@@ -539,6 +540,7 @@
       <button nz-button nzType="primary" type="button" (click)="confirm()">
         提交保存
       </button>
+      <span>&nbsp;&nbsp;</span>
       <button nz-button nzType="default" type="button" (click)="back()">
         返 回
       </button>
@@ -1796,7 +1798,7 @@
           nz-button
           nzType="primary"
           (click)="saveJobInfo()"
-          [disabled]="!jobForm.valid || !isCronTabValid()"
+          [disabled]="isJobValid()"
           [nzLoading]="isJobInfoConfirmLoading"
         >
           确定

@@ -54,3 +54,6 @@ https://bzenkosergey.github.io/ng-cron/angular/#/doc/localization
     "strict": true,//
     "noImplicitReturns": true,//
     "noFallthroughCasesInSwitch": true,
+
+## 打包
+ng build --prod

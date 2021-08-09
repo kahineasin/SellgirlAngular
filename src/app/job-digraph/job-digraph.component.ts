@@ -45,6 +45,7 @@ import { filter } from "rxjs/operators";
 // import { PfCronJobsConfig } from "../pf_ngx_cron_job/lib/contracts/contracts";
 import {
   FetchUri,
+  JobFile,
   LinkModel,
   PaintType,
   //NodeModel,
@@ -61,12 +62,12 @@ import { ConfigService } from '../service/app-config.service';
 import { ComputesReferenceService } from '../service/computes-reference.service';
 import { UserProviderService } from '../service/user-provider.service';
 
-interface JobFile {
-  FileId: string;
-  Id: string;
-  Url: string;
-  Name: string;
-}
+// interface JobFile {
+//   FileId: string;
+//   Id: string;
+//   Url: string;
+//   Name: string;
+// }
 
 interface JobModel {
   JobId: string;
@@ -426,10 +427,14 @@ export class JobDigraphComponent implements OnInit {
     private pfUtil: PfUtil
   ) {
     var me=this;
-    var userInfo=me.userProvider.getUserInfo();
-    if(userInfo!=null){
-      me.userId=userInfo.UserId;
-    }
+    me.userProvider.initUserInfo()
+    .subscribe(b=>{
+
+      var userInfo=me.userProvider.getUserInfo();
+      if(userInfo!=null){
+        me.userId=userInfo.UserId;
+      }
+    });
     
     me.cusListener = new Observable((observer: Observer<string>) => {
       me.cusListenerer = observer;
@@ -613,18 +618,20 @@ export class JobDigraphComponent implements OnInit {
     if (!this.isAdd()) {
       this.action = "Update";
       this.reference
-        .request(
-          "POST",
-          "XSchedulerJob/GetItemInfo",
-          this.userProvider.getToken(),
-          [new KeyValuePair("jobId", jobId)],
-          false
-        )
+        // .request(
+        //   "POST",
+        //   "XSchedulerJob/GetItemInfo",
+        //   this.userProvider.getToken(),
+        //   [new KeyValuePair("jobId", jobId)],
+        //   false
+        // )
+        .getJob(jobId)
         .subscribe((response) => {
-          if (response.Success == "True" && response.Result != null) {
-            let itemInfo = JSON.parse(
-              this.reference.base64Decode(response.Result)
-            );
+          //if (response.Success == "True" && response.Result != null) {
+            // let itemInfo = JSON.parse(
+            //   this.reference.base64Decode(response.Result)
+            // );
+            let itemInfo =response;
 
             //console.log(itemInfo);
             //this.baseForm.setValue(itemInfo);
@@ -758,7 +765,7 @@ export class JobDigraphComponent implements OnInit {
             // }, 1000);
             // me.updateDigraphByProcedureManager();
             // me.update$.next(true); //这里组件还未初始化,所以不用update
-          }
+          //}
         });
     } else {
       //me.jobId = Guid.create().toString();
@@ -1754,7 +1761,9 @@ export class JobDigraphComponent implements OnInit {
     // });
     // this.uploading = true;
     // You can use any AJAX library you like
-    let baseFormObj: any = me.procedureForm.value;
+
+    // let baseFormObj: any = me.procedureForm.value;
+    let baseFormObj: ProcedureModel = me.getCurrentProcedure();
     // observer.next({
     //   filePath:"xschedulerjob",
     //   funcName: baseFormObj.procedureName??baseFormObj.procedureId,
@@ -1870,22 +1879,35 @@ export class JobDigraphComponent implements OnInit {
     //   );
     
     //本地模拟
-    const observable = new Observable<string>((subscriber) => {
-      var total=100;
-      for(var i=0;i<10;i++){
-          me.uploadedPercent = Math.ceil((10*i * 100) / total);
+    // const observable = new Observable<string>((subscriber) => {
+    //   var total=100;
+    //   for(var i=0;i<10;i++){
+    //       me.uploadedPercent = Math.ceil((10*i * 100) / total);
 
-      }      
-      // formData.append("file", item.file as any);
-      // formData.append("filePath", "xschedulerjob");
-      debugger;
-      var pathArr=me.pfUtil.splitPath(item.file.name);
-      var d = new Date();
-      var ds=d.getFullYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes()+d.getMinutes();
-      var fileName="xschedulerjob/"+pathArr[1]+ds+pathArr[2];
-      subscriber.next(fileName);
-    });
-    observable
+    //   }      
+    //   // formData.append("file", item.file as any);
+    //   // formData.append("filePath", "xschedulerjob");
+    //   //debugger;
+    //   var pathArr=me.pfUtil.splitPath(item.file.name);
+    //   var d = new Date();
+    //   var ds=d.getFullYear()+d.getMonth()+d.getDate()+d.getHours()+d.getMinutes()+d.getMinutes();
+    //   var fileName="xschedulerjob/"+pathArr[1]+ds+pathArr[2];
+    //   var file:JobFile={
+    //     FileId:"",
+    //     Id:baseFormObj.procedureId,
+    //     Name:baseFormObj.procedureName || baseFormObj.procedureId,
+    //     Url:fileName
+    //   };
+    //   me.reference.saveFile(file);
+    //   subscriber.next(fileName);
+    // });
+    
+    var total=100;
+    for(var i=0;i<10;i++){
+        me.uploadedPercent = Math.ceil((10*i * 100) / total);
+
+    }      
+    me.reference.saveFile(baseFormObj.procedureId,"xschedulerjob",baseFormObj.procedureName || baseFormObj.procedureId,item.file)
       .subscribe(
         (event: string) => {
           //debugger;
@@ -1968,34 +1990,6 @@ export class JobDigraphComponent implements OnInit {
   showHistoryUri(): void {
     var me = this;
     me.getHistoryData();
-    // this.reference
-    //   .request(
-    //     "POST",
-    //     "DcosService/GetFileList",
-    //     this.userProvider.getToken(),
-    //     //"",
-    //     //[{ key: "id", value: "1403141437104" }], //id改为me.baseForm.procedureId--benjamin todo
-    //     [{ key: "id", value: me.getCurrentProcedure().procedureId }], //id改为me.baseForm.procedureId--benjamin todo
-    //     false
-    //   )
-    //   .subscribe((response) => {
-    //     if (response.Success == "True") {
-    //       var data = JSON.parse(this.reference.base64Decode(response.Result));
-    //       //me.containerImage=[];
-    //       me.fetchHistoryGridData = data;
-    //       for (var i = 0; i < me.fetchHistoryGridData.length; i++) {
-    //         me.fetchHistoryGridData[i].Url = me.getFetchDownloadUri(
-    //           me.fetchHistoryGridData[i].Url
-    //         );
-    //       }
-    //       // me.listOfData.splice(0,me.listOfData.length);
-    //       // for(var i=0;i<data.length;i++){
-    //       //   me.listOfData.push(data[i]);
-    //       // }
-    //       console.log(me.fetchHistoryGridData);
-    //     }
-    //   });
-
     me.isHistoryPopupsVisible = true;
   }
   /**@deprecated */
@@ -2032,20 +2026,24 @@ export class JobDigraphComponent implements OnInit {
   getFetchList() {
     var me = this;
     this.reference
-      .request(
-        "POST",
-        "DcosService/GetFileList",
-        this.userProvider.getToken(),
-        //"",
-        //[{ key: "id", value: "1403141437104" }], //id改为me.baseForm.procedureId--benjamin todo
-        [{ key: "id", value: me.getCurrentProcedure().procedureId }], //id改为me.baseForm.procedureId--benjamin todo
-        false
-      )
+      // .request(
+      //   "POST",
+      //   "DcosService/GetFileList",
+      //   this.userProvider.getToken(),
+      //   //"",
+      //   //[{ key: "id", value: "1403141437104" }], //id改为me.baseForm.procedureId--benjamin todo
+      //   [{ key: "id", value: me.getCurrentProcedure().procedureId }], //id改为me.baseForm.procedureId--benjamin todo
+      //   false
+      // )
+      .getFileList(me.getCurrentProcedure().procedureId)
       .subscribe((response) => {
-        if (response.Success == "True") {
-          var data: JobFile[] = JSON.parse(
-            this.reference.base64Decode(response.Result)
-          );
+        //if (response.Success == "True") {
+          // var data: JobFile[] = JSON.parse(
+          //   this.reference.base64Decode(response.Result)
+          // );
+          var data: JobFile[] = response;
+
+
           //me.containerImage=[];
           //me.fetchHistoryGridData = data;
           // for (var i = 0; i < me.fetchHistoryGridData.length; i++) {
@@ -2081,7 +2079,7 @@ export class JobDigraphComponent implements OnInit {
           //   me.listOfData.push(data[i]);
           // }
           console.log(me.fetchHistoryGridData);
-        }
+        //}
       });
   }
   //fetchHistoryGrid
@@ -2366,8 +2364,11 @@ export class JobDigraphComponent implements OnInit {
         
         me.msg.success("保存成功");
         if (me.isAdd()) {
+          // this.router.navigate([
+          //   "computes/xSchedulerJob-edit/" + me.jobForm.value.JobId,
+          // ]);
           this.router.navigate([
-            "computes/xSchedulerJob-edit/" + me.jobForm.value.JobId,
+            "job-edit/" + me.jobForm.value.JobId,
           ]);
         } else {
           me.jobForm.patchValue({ UpdateTime: updateTime });
@@ -2914,6 +2915,10 @@ export class JobDigraphComponent implements OnInit {
     // me.procedureForm.value.fetch == null || me.procedureForm.value.fetch == ""
     //   ? me.validColor
     //   : me.invalidColor;
+  }
+  isJobValid(){
+    var me=this;
+    return !me.jobForm.valid || !me.isCronTabValid();
   }
   // // 监听document移动事件事件
   // @HostListener("document:mousemove", ["$event"]) onMousemove(event) {

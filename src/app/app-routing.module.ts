@@ -10,6 +10,10 @@ const routes: Routes = [
     path: "job-add",
     component: JobDigraphComponent,
   },
+  {
+    path: "job-edit/:jobId",
+    component: JobDigraphComponent,
+  },
 ];
 
 @NgModule({

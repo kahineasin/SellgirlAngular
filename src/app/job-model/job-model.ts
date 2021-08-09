@@ -53,3 +53,10 @@ export enum PaintType {
 export class TestImport {
   constructor(public key: string, public value: any) {}
 }
+
+export interface JobFile {
+  FileId: string;
+  Id: string;
+  Url: string;
+  Name: string;
+}

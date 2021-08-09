@@ -122,28 +122,49 @@ export class UserProviderService {
   }
 
   public initUserInfo(): Observable<boolean> {
+    // const observable = new Observable<boolean>((subscriber) => {
+    //   this.reference
+    //     .request(
+    //       "POST",
+    //       "SystemUser/GetItemInfo2",
+    //       this.token,
+    //       [{ key: "userIdentification", value: "" }],
+    //       false
+    //     )
+    //     .subscribe((response:any) => {
+    //       if (response == null || response.Success === "False") {
+    //         subscriber.next(false);
+    //       } else {
+    //         this.userInfo = JSON.parse(
+    //           this.reference.base64Decode(response.Result)
+    //         );
+    //         if (localStorage) {
+    //           localStorage.setItem("$userInfo", JSON.stringify(this.userInfo));
+    //         }
+    //         subscriber.next(true);
+    //       }
+    //     });
+    // });
+    var me=this;
     const observable = new Observable<boolean>((subscriber) => {
-      this.reference
-        .request(
-          "POST",
-          "SystemUser/GetItemInfo2",
-          this.token,
-          [{ key: "userIdentification", value: "" }],
-          false
-        )
-        .subscribe((response:any) => {
-          if (response == null || response.Success === "False") {
-            subscriber.next(false);
-          } else {
-            this.userInfo = JSON.parse(
-              this.reference.base64Decode(response.Result)
-            );
-            if (localStorage) {
-              localStorage.setItem("$userInfo", JSON.stringify(this.userInfo));
-            }
-            subscriber.next(true);
-          }
-        });
+      me.userInfo = {
+        
+  Enabled: true,
+  LastLoginIP: "",
+  LastLoginTime: new Date(),
+  Password: "string",
+  RealName: "string",
+  RelationId: "string",
+  RoleId: "string",
+  RoleName: "string",
+  Time: new Date(),
+  UserId: "1712002",
+  UserNo: "1712002",
+      };
+      if (localStorage) {
+        localStorage.setItem("$userInfo", JSON.stringify(this.userInfo));
+      }
+      subscriber.next(true);
     });
 
     return observable;
@@ -184,24 +205,24 @@ export class UserProviderService {
   }
 
   public proving(): void {
-    this.reference
-      .request(
-        "POST",
-        "Test/Alive",
-        this.token,
-        [{ key: "msg", value: "proving" }],
-        false
-      )
-      .subscribe((response:any) => {
-        if (
-          !(
-            response != null &&
-            response.Success === "True" &&
-            response.Message === "proving"
-          )
-        ) {
-          this.router.navigate(["login"]);
-        }
-      });
+    // this.reference
+    //   .request(
+    //     "POST",
+    //     "Test/Alive",
+    //     this.token,
+    //     [{ key: "msg", value: "proving" }],
+    //     false
+    //   )
+    //   .subscribe((response:any) => {
+    //     if (
+    //       !(
+    //         response != null &&
+    //         response.Success === "True" &&
+    //         response.Message === "proving"
+    //       )
+    //     ) {
+    //       this.router.navigate(["login"]);
+    //     }
+    //   });
   }
 }
