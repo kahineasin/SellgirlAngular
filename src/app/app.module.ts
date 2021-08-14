@@ -66,6 +66,7 @@ import { IconDefinition } from '@ant-design/icons-angular';
 // 引入你需要的图标，比如你需要 fill 主题的 AccountBook Alert 和 outline 主题的 Alert，推荐 ✔️
 import { MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline,
   AccountBookFill, AlertFill, AlertOutline,DragOutline,RiseOutline,DeleteOutline } from '@ant-design/icons-angular/icons';
+import { PfSvgIconModule } from './pf-svg-icon';
 const icons: IconDefinition[] = [ MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline,
   AccountBookFill, AlertOutline, AlertFill,DragOutline,RiseOutline,DeleteOutline ];
 //import { XSchedulerTaskDetailComponent } from "../../components/x-scheduler-task-detail/x-scheduler-task-detail.component";
@@ -129,6 +130,7 @@ registerLocaleData(zh);
     PfClickArrowModule,
     NzDropDownModule,
     NzIconModule,
+    PfSvgIconModule,
     NzIconModule.forRoot(icons)
   ],
   providers: [{ provide: NZ_I18N, useValue: zh_CN }],

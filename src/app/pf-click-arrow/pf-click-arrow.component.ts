@@ -29,7 +29,10 @@ export class PfClickArrowComponent implements OnInit {
   svgWidth: number = 0;
   svgHeight: number = 0;
   public isDragging: boolean = false;
-  isCursorMoving: boolean = false;
+  isCursorMoving: boolean = false;  
+  startDom: any = null;
+  startRect: any = null;
+  relativeDom: any = null;
 
   //以下参数参考https://blog.csdn.net/weixin_34112181/article/details/88748838
   public disX:number=0; // 记录鼠标点击事件的位置 X
@@ -65,7 +68,8 @@ export class PfClickArrowComponent implements OnInit {
 
       //console.info("x " + event.clientX + " y " + event.clientY);
       var escapeMouse = -5; //箭头的角可能会超出
-      var relativeDom = PfDropDirective.findUpRelativeDom(me.el.nativeElement);
+      // var relativeDom = PfDropDirective.findUpRelativeDom(me.el.nativeElement);
+      var relativeDom = me.relativeDom;
       var relativeRect =
         relativeDom == null ? null : relativeDom.getBoundingClientRect();
 
@@ -77,6 +81,33 @@ export class PfClickArrowComponent implements OnInit {
         me.isCursorMoving = true;
         me.lineX1 = x2;
         me.lineY1 = y2;
+      } else {
+        //修复起始点在startDom的边缘
+        // var fixX = 0;
+        // var fixY = 0;
+        debugger;
+        var startLeft =
+          me.startRect.left - (relativeRect != null ? relativeRect.left : 0);
+        var startRight = startLeft + me.startRect.width;
+        if (x2 < startLeft) {
+          me.lineX1 = startLeft;
+        } else if (x2 > startRight) {
+          me.lineX1 = startRight;
+        } else {
+          me.lineX1 = (startLeft + startRight) / 2;
+        }
+        var startTop =
+          me.startRect.top - (relativeRect != null ? relativeRect.top : 0);
+        var startBottom = startTop + me.startRect.height;
+        if (y2 < startTop) {
+          me.lineY1 = startTop;
+        } else if (y2 > startBottom) {
+          me.lineY1 = startBottom;
+        } else {
+          me.lineY1 = (startTop + startBottom) / 2;
+        }
+        // var startRect =
+        //   relativeDom == null ? null : relativeDom.getBoundingClientRect();
       }
       var cursorWidth = Math.max(me.lineX1, x2) - escapeMouse;
       var cursorHeight = Math.max(me.lineY1, y2) - escapeMouse;
@@ -174,7 +205,7 @@ export class PfClickArrowComponent implements OnInit {
   //   // this.disY = event.clientY;
   //   me.isDragging = true;
   // }
-  startMove(srcDom:any):void {
+  startMove(startDom:any):void {
     //benjamin todo
     var me = this;
     //debugger;
@@ -187,8 +218,10 @@ export class PfClickArrowComponent implements OnInit {
     // this.disY = event.clientY;
     me.isDragging = true;
     me.isCursorMoving = false;
+    me.startDom = startDom;
+    me.startRect = startDom.getBoundingClientRect();
+    me.relativeDom = PfDropDirective.findUpRelativeDom(me.el.nativeElement);
   }
-
   endMove() {
     // 只用当元素移动过了，离开函数体才会触发。
     var me = this;

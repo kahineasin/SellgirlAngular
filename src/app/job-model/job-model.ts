@@ -24,6 +24,7 @@ export interface ProcedureModel {
   frameworkId?: string;
   containerId?: string;
   taskId?: string;
+  type: string; //如 APP_JAVA APP_SPARK
 }
 
 /*
@@ -59,4 +60,8 @@ export interface JobFile {
   Id: string;
   Url: string;
   Name: string;
+}
+export class ProcedureType {
+  public static APP_JAVA = "APP_JAVA";
+  public static APP_SPARK = "APP_SPARK";
 }

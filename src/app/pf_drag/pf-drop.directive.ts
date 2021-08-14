@@ -221,23 +221,31 @@ export class PfDropDirective implements OnInit {
         (PfDragDirective.currentDraggingModel.cursorDom == null)
     );
     //debugger;
-    //if (event.target == PfDragDirective.currentDraggingModel.cursorDom) {//当pfDrag是div->svg->path的元素时，target竟然是path...
-    if (
-      PfDropDirective.isChildDomOf(
-        event.target,
-        PfDragDirective.currentDraggingModel.cursorDom
-      )
-    ) {
-      //有时dop的target会是<rect class="panning-rect" width="158200" height="27700" transform="translate(-79100,-13850)"></rect>，原因不明
-      var m = new PfDropModel();
-      m.x2 = event.x;
-      m.y2 = event.y;
-      m.dragDom = PfDragDirective.currentDraggingModel.cursorDom;
-      this.pfDropEnd.emit(m);
-    } else {
-      console.info("drop.target is not pfDrag");
-    }
-    //event.originalEvent.dataTransfer.setData("Text", event.target.innerHTML);
+    
+    	    //有时dop的target会是<rect class="panning-rect" width="158200" height="27700" transform="translate(-79100,-13850)"></rect>，原因不明
+          var m = new PfDropModel();
+          m.x2 = event.x;
+          m.y2 = event.y;
+          m.dragDom = PfDragDirective.currentDraggingModel.cursorDom;
+          this.pfDropEnd.emit(m);
+
+    // //if (event.target == PfDragDirective.currentDraggingModel.cursorDom) {//当pfDrag是div->svg->path的元素时，target竟然是path...
+    // if (
+    //   PfDropDirective.isChildDomOf(
+    //     event.target,
+    //     PfDragDirective.currentDraggingModel.cursorDom
+    //   )
+    // ) {
+    //   //有时dop的target会是<rect class="panning-rect" width="158200" height="27700" transform="translate(-79100,-13850)"></rect>，原因不明
+    //   var m = new PfDropModel();
+    //   m.x2 = event.x;
+    //   m.y2 = event.y;
+    //   m.dragDom = PfDragDirective.currentDraggingModel.cursorDom;
+    //   this.pfDropEnd.emit(m);
+    // } else {
+    //   console.info("drop.target is not pfDrag");
+    // }
+    // //event.originalEvent.dataTransfer.setData("Text", event.target.innerHTML);
   }
   // @HostListener("dragstart", ["$event"]) onDragStart(event) {
   //   console.info("dragstart");

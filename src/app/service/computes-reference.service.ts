@@ -29,6 +29,11 @@ export interface TaskModel {
 @Injectable({ providedIn: "root" })
 export class ComputesReferenceService extends ReferenceService {
   //userId="";
+  public normalColor: string = "#000000";
+  public finishedColor: string = "#1890ff";
+  public errorColor: string = "red";
+  public validColor = "#1890ff";
+  public invalidColor = "red";
   constructor(
      protected appConfig: ConfigService,
     protected http: HttpClient,
@@ -236,5 +241,14 @@ export class ComputesReferenceService extends ReferenceService {
         });
     
         return observable;
+      }
+      public isSvgIcon(procedureType: string): boolean {
+        return ["APP_JAVA"].indexOf(procedureType) < 0;
+      }
+      public getProcedureIconImage(procedureType: string): boolean {
+        var img = {
+          APP_JAVA: "assets/img/job-digraph/java.png",
+        };
+        return img[procedureType];
       }
 }

@@ -1,6 +1,7 @@
 //import { Component, OnInit } from '@angular/core';
 import {
   Component,
+  ElementRef,
   EventEmitter,
   HostListener,
   OnInit,
@@ -50,6 +51,7 @@ import {
   PaintType,
   //NodeModel,
   ProcedureModel,
+  ProcedureType,
 } from "../job-model/job-model";
 //import { deprecate } from "util";
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -137,6 +139,7 @@ export class JobDigraphComponent implements OnInit {
   newNodeX: number=0; //当拖动新增时，打开新增弹窗时保存的临时节点位置
   newNodeY: number=0;
   newNodeId: number = 1;
+  isProcedureFormLoading = false;
 
   //上传弹窗
   isFetchPopupsVisible = false;
@@ -387,6 +390,7 @@ export class JobDigraphComponent implements OnInit {
     retryInterval: [300],
     description: [""], //,
     //Time: [format(new Date(), 'yyyy-MM-dd HH:mm:ss'), Validators.required]
+    type: [""],
   });
   public jobForm = this.fb.group({
     //isAdd:[true],
@@ -424,9 +428,13 @@ export class JobDigraphComponent implements OnInit {
     private msg: NzMessageService, //,private modal: NzModalService
     private http: HttpClient,
     private modalService: NzModalService,
-    private pfUtil: PfUtil
+    private pfUtil: PfUtil,
+    public el: ElementRef
   ) {
     var me=this;
+    me.validColor = reference.validColor;
+    me.invalidColor = reference.invalidColor;
+
     me.userProvider.initUserInfo()
     .subscribe(b=>{
 
@@ -568,7 +576,7 @@ export class JobDigraphComponent implements OnInit {
     var me = this;
     //me.getCurrentProcedure().procedureId
     me.digraphNodeData = me.procedureManager.getNodes().map((a) => {
-      return { id: me.digraphIdPrev + a.procedureId, label: a.procedureName };
+      return { id: me.digraphIdPrev + a.procedureId, label: a.procedureName,  data: { procedureType: a.type } };
     });
     me.digraphLinkData = me.procedureManager.getLinks().map((a) => {
       return {
@@ -673,6 +681,7 @@ export class JobDigraphComponent implements OnInit {
                 retry: configI.retry,
                 retryInterval: configI.retryInterval,
                 description: configI.description,
+                type: configI.type,
               };
               me.procedureManager.addProcedure(tmpJobConfig);
 
@@ -871,6 +880,9 @@ export class JobDigraphComponent implements OnInit {
     //alert(1);
     //this.selectedCity = this.cityData[value][0];
     me.containerImageVersion.splice(0, me.containerImageVersion.length); //这里要改成远程获得版本号--benjamin todo
+    me.procedureForm.patchValue({
+      type: me.containerImage.find((a) => a.Name == value).Type,
+    });
     // me.containerImageVersion = ["3.0.1", "2.0.1", "1.0.1"];
     // if (me.containerImageVersion.length > 0) {
     //   me.baseForm.patchValue({
@@ -1338,7 +1350,9 @@ export class JobDigraphComponent implements OnInit {
         // me.update$.next(true);
       } else {
         me.arrowStartNode = event;
-        me.startMove$.next(event.position);
+        // me.startMove$.next(event.position);
+        const dom = me.el.nativeElement.ownerDocument.getElementById(event.id);
+        me.startMove$.next(dom);
       }
 
       // me.getIsDragging$.subscribe({
@@ -1640,8 +1654,21 @@ export class JobDigraphComponent implements OnInit {
     me.procedureForm.patchValue({ fetch: me.validFetch });
     me.updateUploadShort();
   }
-  selectUriToCmd(uri: string): void {
-    //debugger;
+  addPathToCmd(uri: string) {
+    const me = this;
+    me.doAddUriToCmd(uri, "path");
+  }
+  addUriToCmd(uri: string) {
+    const me = this;
+    me.doAddUriToCmd(uri, "uri");
+  }
+  /**
+   *
+   * @param uri 格式如http://uat-dcos.perfect99.com:29201/download/xschedulerjob/testinsert_20210811085718.jar
+   * @param urlType uri/path
+   */
+  doAddUriToCmd(uri: string, urlType: string): void {
+    // debugger;
     var me = this;
     var s = me.getCurrentProcedure().cmd;
     if (s == null || s == undefined) {
@@ -1663,8 +1690,10 @@ export class JobDigraphComponent implements OnInit {
     // var path = decodeURIComponent(uri.substr(i + 1 + 9));
     // var pathArr = me.pfUtil.splitPath(path);
     var pathArr = me.getFilePathByFetchDownloadUri(uri);
+    let isDone: boolean = false;
     if ("" == s) {
-      if (".jar" == pathArr[2]) {
+      // if (".jar" == pathArr[2]) {
+        if (ProcedureType.APP_JAVA == me.getCurrentProcedure().type) {
         // s +=
         //   "chmod +x & java -jar " + "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
         s +=
@@ -1675,11 +1704,59 @@ export class JobDigraphComponent implements OnInit {
           "$MESOS_SANDBOX/" +
           pathArr[1] +
           pathArr[2];
+          isDone = true;
+        } else if (ProcedureType.APP_SPARK == me.getCurrentProcedure().type) {
+          // s +=
+          //   "chmod +x & java -jar " + "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+          s +=
+            "./bin/spark-submit \
+            --class XxxClassName \
+            --master mesos://uat-cloud.perfect99.com:11001 \
+            --deploy-mode cluster \
+            --supervise \
+            --conf spark.master.rest.enabled=true \
+            --executor-memory 1G \
+            --total-executor-cores 10 \
+            --conf spark.driver.extraClassPath=/mnt/mesos/sandbox/*.jar \
+            " +
+            uri;
+          // 有\n在spark下运行似乎有问题
+          // s +=
+          //   "./bin/spark-submit \n\
+          //     --class com.perfect99.pfTransferTask.PfTransferTaskApp \n\
+          //     --master mesos://uat-cloud.perfect99.com:11001 \n\
+          //     --deploy-mode cluster \n\
+          //     --supervise \n\
+          //     --conf spark.master.rest.enabled=true \n\
+          //     --executor-memory 1G \n\
+          //     --total-executor-cores 10 \n\
+          //     --conf spark.driver.extraClassPath=/mnt/mesos/sandbox/*.jar \n\
+          //     " +
+          //   uri;
+          isDone = true;
+        }
+        // else {
+        //   s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+        // }
+      }
+      // else if (s.indexOf(pathArr[1] + pathArr[2]) < 0) {
+      //   if ("uri" == urlType) {
+      //     debugger;
+      //     s += me.getFetchDownloadUri(uri);
+      //   } else {
+      //     s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+      //   }
+      //   //s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+      // }
+      if (!isDone) {
+        if ("uri" == urlType) {
+          //debugger;
+          s += uri;
       } else {
         s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
       }
-    } else if (s.indexOf(pathArr[1] + pathArr[2]) < 0) {
-      s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+    // } else if (s.indexOf(pathArr[1] + pathArr[2]) < 0) {
+    //   s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
     }
 
     me.isFetchPopupsVisible = false;
@@ -1915,7 +1992,10 @@ export class JobDigraphComponent implements OnInit {
           // this.fileList = [];
           //debugger;
           this.msg.success("上传镜像成功.");
-          var uri = event;
+          //var uri = event;
+          var path = event;
+          const uri = me.getFetchDownloadUri(path);
+
           // //
           // // if(me.baseForm.value.fetch==null){
           // //   me.baseForm.value.fetch=[];
@@ -1943,7 +2023,7 @@ export class JobDigraphComponent implements OnInit {
           me.validFetch = [
             ...me.validFetch,
             {
-              uri: me.getFetchDownloadUri(uri),
+              uri: uri,
               extract: true,
               executable: true,
               cache: false,
@@ -1954,11 +2034,12 @@ export class JobDigraphComponent implements OnInit {
           //新版fetch用下拉
           var fetch = [
             ...(baseFormObj.fetch || []),
-            me.getFetchDownloadUri(uri),
+            uri,
           ];
           //me.getHistoryData();
           me.getFetchList();
-          me.selectUriToCmd(uri);
+          // debugger;
+          me.addPathToCmd(uri);
           me.procedureForm.patchValue({ fetch: fetch });
 
           me.updateUploadShort();
@@ -2116,7 +2197,8 @@ export class JobDigraphComponent implements OnInit {
     this.refreshCheckedStatus();
     if (checked) {
       me.validFetch.push(me.getNewFetch(id));
-      me.selectUriToCmd(id);
+      // me.selectUriToCmd(id);
+      me.addPathToCmd(id);
     } else {
       me.validFetch = me.validFetch.filter((a) => a.uri != id);
     }
@@ -2234,6 +2316,7 @@ export class JobDigraphComponent implements OnInit {
         retryInterval: me.jobConfigData[i].retryInterval,
         from: me.jobConfigData[i].from,
         to: me.jobConfigData[i].to,
+        type: me.jobConfigData[i].type,
         scheduler: {
           user: "root",
           cpus: "1.0",
@@ -2677,33 +2760,33 @@ export class JobDigraphComponent implements OnInit {
     me.jobForm.patchValue({ CRON: me.cronData });
     me.isCRONPopupsVisible = false;
   }
-  drop(event: CdkDragDrop<string[]>) {
-    var me = this;
-    me.newNodeX = event.distance.x;
-    me.newNodeY = event.distance.y;
-    var newNode: Node = {
-      id: me.newNodeId.toString(),
-      label: "new" + me.newNodeId.toString(),
-      position: { x: event.distance.x, y: event.distance.y },
-    };
-    console.info("-----------x y-----------");
-    console.info(me.newNodeX);
-    console.info(me.newNodeY);
-    console.info("-----------currentIndex -----------");
-    console.info(event.currentIndex);
-    console.info(event.previousIndex);
+  // drop(event: CdkDragDrop<string[]>) {
+  //   var me = this;
+  //   me.newNodeX = event.distance.x;
+  //   me.newNodeY = event.distance.y;
+  //   var newNode: Node = {
+  //     id: me.newNodeId.toString(),
+  //     label: "new" + me.newNodeId.toString(),
+  //     position: { x: event.distance.x, y: event.distance.y },
+  //   };
+  //   console.info("-----------x y-----------");
+  //   console.info(me.newNodeX);
+  //   console.info(me.newNodeY);
+  //   console.info("-----------currentIndex -----------");
+  //   console.info(event.currentIndex);
+  //   console.info(event.previousIndex);
 
-    console.info("-----------newNode-----------");
-    console.info(newNode);
-    //debugger;
-    me.digraphNodeData.push(newNode);
-    me.newNodeId++;
-    //event.distance;
-    me.update$.next(true);
-    //console.info(event);
-    //debugger;
-    //moveItemInArray(this.customers, event.previousIndex, event.currentIndex);
-  }
+  //   console.info("-----------newNode-----------");
+  //   console.info(newNode);
+  //   //debugger;
+  //   me.digraphNodeData.push(newNode);
+  //   me.newNodeId++;
+  //   //event.distance;
+  //   me.update$.next(true);
+  //   //console.info(event);
+  //   //debugger;
+  //   //moveItemInArray(this.customers, event.previousIndex, event.currentIndex);
+  // }
 
   //方法2 这种方式的mouseup是在document上的，似乎会被阻止，不好用
   // onProcedureMoveMouseDown(event: any) {
@@ -2747,8 +2830,25 @@ export class JobDigraphComponent implements OnInit {
   //   }
   // }
 
-  setProcedureImage(imageName: string) {
+  setProcedureImage(procedureType: string) {
     var me = this;
+    const observable = new Observable<boolean>((subscriber) => {
+      var imageName = "";
+      //   me.setProcedureImage("jdk8-jre", "APP_JAVA");
+      //   break;
+      // case "APP_SPARK":
+      //   me.setProcedureImage("spark-client", "APP_SPARK");
+      switch (procedureType) {
+        case ProcedureType.APP_JAVA:
+          imageName = "jdk8-jre";
+          break;
+        case ProcedureType.APP_SPARK:
+          imageName = "spark-client";
+          break;
+        default:
+          imageName = "jdk8-jre";
+          break;
+      }
     //下拉框
     this.reference
       // .request(
@@ -2816,18 +2916,26 @@ export class JobDigraphComponent implements OnInit {
                     containerImage:
                       //"https://uat-registry.perfect99.com/" +
                       me.imageBaseUrl + "/" + image + ":" + versionData[0],
+                      type: procedureType,
                   });
+                  subscriber.next(true);
+                }else{
+                  
+                subscriber.next(false);
                 }
               //}
             });
 
         //}
       });
+    });
+    return observable;
   }
   //方法3，自封装
   // onProcedureMoveDrop(event: DragEvent) {
   onProcedureMoveDrop(event: PfDropModel) {
     var me = this;
+    me.isProcedureFormLoading = true;
     //debugger;
     console.info("onProcedureMoveDrop");
 
@@ -2844,17 +2952,19 @@ export class JobDigraphComponent implements OnInit {
     }
     var procedureType = dragDom.attributes["procedureType"].value;
 
-    switch (procedureType) {
-      case "java":
-        me.setProcedureImage("jdk8-jre");
-        break;
-      case "spark":
-        me.setProcedureImage("spark-client");
-        break;
-      default:
-        break;
-    }
-
+    // switch (procedureType) {
+    //   case "java":
+    //     me.setProcedureImage("jdk8-jre");
+    //     break;
+    //   case "spark":
+    //     me.setProcedureImage("spark-client");
+    //     break;
+    //   default:
+    //     break;
+    // }
+    me.setProcedureImage(procedureType).subscribe((a) => {
+      me.isProcedureFormLoading = false;
+    });
     // return;
     // var newNode: Node = {
     //   id: me.newNodeId.toString(),
@@ -2928,4 +3038,12 @@ export class JobDigraphComponent implements OnInit {
   //     // this.el.nativeElement.style.top = this.totalOffsetY + event.clientY - this.disY + 'px';
   //   }
   // }
+  isSvgIcon(procedureType: string): boolean {
+    var me = this;
+    return me.reference.isSvgIcon(procedureType);
+  }
+  getProcedureIconImage(procedureType: string): boolean {
+    var me = this;
+    return me.reference.getProcedureIconImage(procedureType);
+  }
 }

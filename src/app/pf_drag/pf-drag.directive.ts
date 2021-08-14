@@ -11,7 +11,10 @@ import {
 } from "@angular/core";
 import { PfDropDirective } from "./pf-drop.directive";
 
-export enum DragType {
+export enum DragType {	  /**
+  * 后来发现html5拖动时本身就是有跟随图标的，只是当win7使用了桌面“经典模式”后，跟随图标会不显示
+  */
+ html5,
   /**
    * 复制源dom(默认方式)
    */
@@ -116,10 +119,11 @@ export class PfDragDirective implements OnInit {
     // me.cursorDom.style.top = "0px";
     // me.cursorDom.style.left = "0px";
     // dom.parentElement.appendChild(me.cursorDom);
-
+    PfDragDirective.currentDraggingModel = new PfDraggingModel();
+    PfDragDirective.currentDraggingModel.dragType = me.dragType;
     if (DragType.copySrc == me.dragType) {
       //debugger;
-      PfDragDirective.currentDraggingModel = new PfDraggingModel();
+      //PfDragDirective.currentDraggingModel = new PfDraggingModel();
       PfDragDirective.currentDraggingModel.cursorDom = dom.cloneNode(true);
       var domRect = dom.getBoundingClientRect();
       var cursorRect =
@@ -142,30 +146,17 @@ export class PfDragDirective implements OnInit {
       dom.parentElement.appendChild(
         PfDragDirective.currentDraggingModel.cursorDom
       );
-    } else if (DragType.arrow == me.dragType) {
-      PfDragDirective.currentDraggingModel = new PfDraggingModel();
-      PfDragDirective.currentDraggingModel.dragType = DragType.arrow;
+    } else if (DragType.html5 == me.dragType) {
+      //debugger;
+      //PfDragDirective.currentDraggingModel = new PfDraggingModel();
+      PfDragDirective.currentDraggingModel.cursorDom = dom;
+    }else if (DragType.arrow == me.dragType) {
+      //PfDragDirective.currentDraggingModel = new PfDraggingModel();
+      //PfDragDirective.currentDraggingModel.dragType = DragType.arrow;
       PfDragDirective.currentDraggingModel.x1 = event.x;
       PfDragDirective.currentDraggingModel.y1 = event.y;
 
-      // PfDragDirective.currentDraggingModel.cursorDom =
-      //   dom.ownerDocument.createElement("div");
-      // PfDragDirective.currentDraggingModel.cursorDom.style.position =
-      //   "absolute";
-      // PfDragDirective.currentDraggingModel.cursorDom.innerHTML =
-      //   '<p style="color:red">arrowTestP</p>';
-
-      //这样箭头不会出来（发现需要在外层加个absolute的div才行，原因未明)
-      // PfDragDirective.currentDraggingModel.cursorDom =
-      //   dom.ownerDocument.createElement("svg");
-      // PfDragDirective.currentDraggingModel.cursorDom.style.position =
-      //   "absolute";
-      // PfDragDirective.currentDraggingModel.cursorDom.setAttribute(
-      //   "draggable",
-      //   "true"
-      // );
-      // PfDragDirective.currentDraggingModel.cursorDom.innerHTML =
-      //   '<line x1="0" y1="0" x2="200" y2="50" stroke="#40A9FF" stroke-width="2" marker-end="url(#arrow)" />';
+    
 
       //方法1
       //不能用div蒙版，否则会挡住，不能触发绑定了pfDrop的元素的drop事件(后来发现drop事件还是生效的)
@@ -275,6 +266,9 @@ export class PfDragDirective implements OnInit {
       PfDragDirective.currentDraggingModel.cursorDom.parentElement.removeChild(
         PfDragDirective.currentDraggingModel.cursorDom
       );
+      PfDragDirective.currentDraggingModel.cursorDom = null;
+      PfDragDirective.currentDraggingModel = null;
+    } else if (DragType.html5 == me.dragType) {
       PfDragDirective.currentDraggingModel.cursorDom = null;
       PfDragDirective.currentDraggingModel = null;
     } else if (DragType.arrow == me.dragType) {
