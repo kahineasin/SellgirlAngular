@@ -139,6 +139,41 @@ getLocalStorage  (key:any):any {
       num
     );
   }
+  /**
+   * 结果如
+   *               -90
+   *          -135     -45
+   *         180          0
+   *           135      45
+   *                90
+   * @param start 
+   * @param end 
+   * @returns 
+   */
+   public static getAngle(start, end) :number{
+    //  //这样的角度范围是+90~-90,不完整
+    //   var diff_x = end.x - start.x,
+    //       diff_y = end.y - start.y;
+    //   //返回角度,不是弧度
+    //   return 360 * Math.atan(diff_y / diff_x) / (2 * Math.PI);
+      
+		var diff_x:number = end.x - start.x;
+		var diff_y:number = end.y - start.y;
+		var angle :number= 360 * Math.atan(diff_y / diff_x) / 6.283185307179586;//(2 * Math.PI)
+		if (diff_x < 0 && diff_y > 0) {
+			angle += 180;
+			// return (360.0D * Math.atan(Double.valueOf(diff_y).doubleValue() / diff_x) /
+			// 6.283185307179586D)+180;
+		}else
+		if (diff_x < 0 && diff_y < 0) {
+			angle -= 180;
+			// return (360.0D * Math.atan(Double.valueOf(diff_y).doubleValue() / diff_x) /
+			// 6.283185307179586D)-180;
+		}else if (diff_x < 0 && diff_y == 0) {
+			angle += 180;
+		}
+		return angle;
+  }
 }
 
 interface ProcedureLink<T extends IPfObject> {

@@ -8,6 +8,7 @@ import {
   Output,
 } from "@angular/core";
 import { Observable, Observer } from "rxjs";
+import { PfUtil } from "../common/pfUtil";
 import { PfDropDirective } from "../pf_drag/pf-drop.directive";
 
 /**
@@ -85,27 +86,63 @@ export class PfClickArrowComponent implements OnInit {
         //修复起始点在startDom的边缘
         // var fixX = 0;
         // var fixY = 0;
-        debugger;
+        //debugger;
         var startLeft =
           me.startRect.left - (relativeRect != null ? relativeRect.left : 0);
         var startRight = startLeft + me.startRect.width;
-        if (x2 < startLeft) {
-          me.lineX1 = startLeft;
-        } else if (x2 > startRight) {
-          me.lineX1 = startRight;
-        } else {
-          me.lineX1 = (startLeft + startRight) / 2;
-        }
         var startTop =
           me.startRect.top - (relativeRect != null ? relativeRect.top : 0);
         var startBottom = startTop + me.startRect.height;
-        if (y2 < startTop) {
-          me.lineY1 = startTop;
-        } else if (y2 > startBottom) {
+
+        //方法1.这种方法的边线中点范围太小,不好
+        // if (x2 < startLeft) {
+        //   me.lineX1 = startLeft;
+        // } else if (x2 > startRight) {
+        //   me.lineX1 = startRight;
+        // } else {
+        //   me.lineX1 = (startLeft + startRight) / 2;
+        // }
+        // if (y2 < startTop) {
+        //   me.lineY1 = startTop;
+        // } else if (y2 > startBottom) {
+        //   me.lineY1 = startBottom;
+        // } else {
+        //   me.lineY1 = (startTop + startBottom) / 2;
+        // }
+
+        //方法2.改用三角函数
+        var angle=PfUtil.getAngle({x:(startLeft+startRight)/2,y:(startTop+startBottom)/2},{x:x2,y:y2});//
+        console.info(angle);
+        if(x2>startLeft&&x2<startRight&&y2>startTop&&y2<startBottom){//鼠标在节点内部   
+          me.lineX1 =  (startLeft + startRight) / 2;
+          me.lineY1 =(startTop + startBottom) / 2;
+        }else 
+        if(angle>=-22.5&&angle<22.5){
+          me.lineX1 = startRight;
+          me.lineY1 = (startTop + startBottom) / 2;
+        }else if(angle>=22.5&&angle<67.5){
+          me.lineX1 = startRight;
           me.lineY1 = startBottom;
-        } else {
+        }else if(angle>=67.5&&angle<112.5){
+          me.lineX1 = (startLeft + startRight) / 2;
+          me.lineY1 =startBottom;
+        }else if(angle>=112.5&&angle<157.5){
+          me.lineX1 = startLeft;
+          me.lineY1 =startBottom;
+        }else if(angle>=-67.5&&angle<-22.5){
+          me.lineX1 = startRight;
+          me.lineY1 = startTop;
+        }else if(angle>=-112.5&&angle<-67.5){
+          me.lineX1 = (startLeft + startRight) / 2;
+          me.lineY1 = startTop;
+        }else if(angle>=-157.5&&angle<112.5){
+          me.lineX1 = startLeft;
+          me.lineY1 =startTop;
+        }else {
+          me.lineX1 = startLeft;
           me.lineY1 = (startTop + startBottom) / 2;
         }
+
         // var startRect =
         //   relativeDom == null ? null : relativeDom.getBoundingClientRect();
       }
