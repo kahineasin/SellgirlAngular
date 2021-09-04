@@ -64,4 +64,18 @@ export interface JobFile {
 export class ProcedureType {
   public static APP_JAVA = "APP_JAVA";
   public static APP_SPARK = "APP_SPARK";
+  public static APP_DATAX = "APP_DATAX";
+  
+}
+
+export interface RegistryImage {
+  Name: string;
+  Type: string; //如APP_JAVA
+}
+export interface ImageDocker {
+  dockerName: string;
+  tag: string;
+  eTag?: string;
+  size?: string;
+  time?: string;
 }

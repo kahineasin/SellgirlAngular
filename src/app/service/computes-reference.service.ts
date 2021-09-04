@@ -7,7 +7,7 @@ import { ReferenceService } from './app-reference.service';
 import { ConfigService } from './app-config.service';
 import { UserProviderService } from './user-provider.service';
 import { KeyValuePair } from '../common/pfModel';
-import { JobFile } from "../job-model/job-model";
+import { ImageDocker, JobFile, RegistryImage } from "../job-model/job-model";
 // import { UserProviderService } from "../../../../core/services/user-provider.service";
 // import { KeyValuePair } from "../../../../core/common/pfModel";
 
@@ -142,11 +142,14 @@ export class ComputesReferenceService extends ReferenceService {
   }
   
   public getImageList(
-  ): Observable<string[]> {
+    name: string,
+    type: string
+  ): Observable<RegistryImage[]> {
     var me = this;
-    const observable = new Observable<string[]>((subscriber) => {
-      var data: string[] = ["jdk8-jre","spark-client"];
-      subscriber.next(data);
+    const observable = new Observable<RegistryImage[]>((subscriber) => {
+      var data: RegistryImage[] =[{Name:"jdk8-jre",Type: "APP_JAVA"},
+      {Name:"spark-client",Type: "APP_SPARK"}];
+      subscriber.next(data.filter(a=>(name==""||name==a.Name)&&(type==""||type==a.Type)));
     });
 
     return observable;
@@ -161,6 +164,35 @@ export class ComputesReferenceService extends ReferenceService {
 
         subscriber.next(item.value);
       }
+    });
+
+    return observable;
+  }
+  
+  public getImageDockerList(
+    containerImageName: string
+  ): Observable<ImageDocker[]> {
+    var me = this;
+    // return me.httpResult<ImageDocker[]>(
+    //   "POST",
+    //   "DcosRegistryImage/GetDockerList",
+    //   this.userProvider.getToken(),
+    //   null,
+    //   [{ key: "dockerName", value: containerImageName }]
+    // );
+    const observable = new Observable<ImageDocker[]>((subscriber) => {
+      // var data: KeyValuePair[] = [new KeyValuePair("jdk8-jre",["1.8","1.9"]),new KeyValuePair("spark-client",["3.2","3.3"])];
+      // var item=data.find(a=>a.key==image);
+      // if(item!=null){
+
+      //   subscriber.next(item.value);
+      // }
+      
+      var data: ImageDocker[] =[{dockerName:"jdk8-jre",tag: "1.8"},
+      {dockerName:"jdk8-jre",tag: "1.9"},
+      {dockerName:"spark-client",tag: "3.2"},
+      {dockerName:"spark-client",tag: "3.3"},];
+      subscriber.next(data.filter(a=>(containerImageName==""||containerImageName==a.dockerName)));
     });
 
     return observable;

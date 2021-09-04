@@ -52,6 +52,7 @@ import {
   //NodeModel,
   ProcedureModel,
   ProcedureType,
+  RegistryImage,
 } from "../job-model/job-model";
 //import { deprecate } from "util";
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -283,7 +284,7 @@ export class JobDigraphComponent implements OnInit {
   );
 
   jobConfigData: ProcedureModel[] = [];
-  containerImage:any[] = [];
+  containerImage:RegistryImage[] = [];
   containerImageVersion:any[] = [];
   isConfirmLoading = false;
   isJobInfoConfirmLoading = false;
@@ -791,7 +792,7 @@ export class JobDigraphComponent implements OnInit {
       //   "",
       //   false
       // )
-      .getImageList()
+      .getImageList("","")
       .subscribe((response) => {
         // if (response.Success == "True") {
         //   var data = JSON.parse(this.reference.base64Decode(response.Result));
@@ -1662,107 +1663,125 @@ export class JobDigraphComponent implements OnInit {
     const me = this;
     me.doAddUriToCmd(uri, "uri");
   }
-  /**
+  // /**
+  //  *
+  //  * @param uri 格式如http://uat-dcos.perfect99.com:29201/download/xschedulerjob/testinsert_20210811085718.jar
+  //  * @param urlType uri/path
+  //  */
+  // doAddUriToCmd(uri: string, urlType: string): void {
+  //   // debugger;
+  //   var me = this;
+  //   var s = me.getCurrentProcedure().cmd;
+  //   if (s == null || s == undefined) {
+  //     s = "";
+  //   }
+  //   if (s.length > 0 && s[s.length] != " ") {
+  //     s += " ";
+  //   }
+
+  //   var pathArr = me.getFilePathByFetchDownloadUri(uri);
+  //   let isDone: boolean = false;
+  //   if ("" == s) {
+  //     // if (".jar" == pathArr[2]) {
+  //       if (ProcedureType.APP_JAVA == me.getCurrentProcedure().type) {
+  //       // s +=
+  //       //   "chmod +x & java -jar " + "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+  //       s +=
+  //         "chmod +x $MESOS_SANDBOX/" +
+  //         pathArr[1] +
+  //         pathArr[2] +
+  //         " & java -jar " +
+  //         "$MESOS_SANDBOX/" +
+  //         pathArr[1] +
+  //         pathArr[2];
+  //         isDone = true;
+  //       } else if (ProcedureType.APP_SPARK == me.getCurrentProcedure().type) {
+  //         // s +=
+  //         //   "chmod +x & java -jar " + "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+  //         s +=
+  //           "./bin/spark-submit \
+  //           --class XxxClassName \
+  //           --master mesos://uat-cloud.perfect99.com:11001 \
+  //           --deploy-mode cluster \
+  //           --supervise \
+  //           --conf spark.master.rest.enabled=true \
+  //           --executor-memory 1G \
+  //           --total-executor-cores 10 \
+  //           --conf spark.driver.extraClassPath=/mnt/mesos/sandbox/*.jar \
+  //           " +
+  //           uri;
+  //         isDone = true;
+  //       }
+  //     }
+  //     if (!isDone) {
+  //       if ("uri" == urlType) {
+  //         //debugger;
+  //         s += uri;
+  //     } else {
+  //       s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+  //     }
+  //   // } else if (s.indexOf(pathArr[1] + pathArr[2]) < 0) {
+  //   //   s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+  //   }
+
+  //   me.isFetchPopupsVisible = false;
+  //   me.procedureForm.patchValue({ cmd: s });
+  //   me.msg.info("已添加:" + pathArr[1] + pathArr[2]);
+  // }
+
+    /**
    *
    * @param uri 格式如http://uat-dcos.perfect99.com:29201/download/xschedulerjob/testinsert_20210811085718.jar
    * @param urlType uri/path
    */
-  doAddUriToCmd(uri: string, urlType: string): void {
-    // debugger;
-    var me = this;
-    var s = me.getCurrentProcedure().cmd;
-    if (s == null || s == undefined) {
-      s = "";
-    }
-    if (s.length > 0 && s[s.length] != " ") {
-      s += " ";
-    }
-    //s += "$MESOS_SANDBOX/" + uri;
-
-    // var i = uri.indexOf("?filePath=");
-    //s += "$MESOS_SANDBOX/" + decodeURIComponent(uri.substr(i + 1 + 9));
-
-    // var i = uri.lastIndexOf("%2F");
-    // var decodeUri = decodeURIComponent(uri.substr(i + 3));
-    // s += "$MESOS_SANDBOX/" + decodeUri;
-
-    // var i = uri.indexOf("?filePath=");
-    // var path = decodeURIComponent(uri.substr(i + 1 + 9));
-    // var pathArr = me.pfUtil.splitPath(path);
-    var pathArr = me.getFilePathByFetchDownloadUri(uri);
-    let isDone: boolean = false;
-    if ("" == s) {
-      // if (".jar" == pathArr[2]) {
-        if (ProcedureType.APP_JAVA == me.getCurrentProcedure().type) {
-        // s +=
-        //   "chmod +x & java -jar " + "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
-        s +=
-          "chmod +x $MESOS_SANDBOX/" +
-          pathArr[1] +
-          pathArr[2] +
-          " & java -jar " +
-          "$MESOS_SANDBOX/" +
-          pathArr[1] +
-          pathArr[2];
+     doAddUriToCmd(uri: string, urlType: string): void {
+      // debugger;
+      const me = this;
+      let s = me.getCurrentProcedure().cmd;
+      if (s == null || s === undefined) {
+        s = "";
+      }
+      if (s.length > 0 && s[s.length] !== " ") {
+        s += " ";
+      }
+      const pathArr = me.getFilePathByFetchDownloadUri(uri);
+      const sandboxPath = "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+      let isDone = false;
+      if ("" === s) {
+        if (ProcedureType.APP_JAVA === me.getCurrentProcedure().type) {
+          s += "chmod +x " + sandboxPath + " & java -jar " + sandboxPath;
           isDone = true;
-        } else if (ProcedureType.APP_SPARK == me.getCurrentProcedure().type) {
-          // s +=
-          //   "chmod +x & java -jar " + "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+        } else if (ProcedureType.APP_SPARK === me.getCurrentProcedure().type) {
           s +=
-            "./bin/spark-submit \
-            --class XxxClassName \
-            --master mesos://uat-cloud.perfect99.com:11001 \
-            --deploy-mode cluster \
-            --supervise \
-            --conf spark.master.rest.enabled=true \
-            --executor-memory 1G \
-            --total-executor-cores 10 \
-            --conf spark.driver.extraClassPath=/mnt/mesos/sandbox/*.jar \
+            "./bin/x-spark-submit \\\n\
+            --class XxxClassFullName \\\n\
+            --master mesos://uat-cloud.perfect99.com:11001 \\\n\
+            --deploy-mode cluster \\\n\
+            --supervise \\\n\
+            --conf spark.master.rest.enabled=true \\\n\
+            --executor-memory 1G \\\n\
+            --total-executor-cores 10 \\\n\
+            --conf spark.driver.extraClassPath=/mnt/mesos/sandbox/*.jar \\\n\
             " +
             uri;
-          // 有\n在spark下运行似乎有问题
-          // s +=
-          //   "./bin/spark-submit \n\
-          //     --class com.perfect99.pfTransferTask.PfTransferTaskApp \n\
-          //     --master mesos://uat-cloud.perfect99.com:11001 \n\
-          //     --deploy-mode cluster \n\
-          //     --supervise \n\
-          //     --conf spark.master.rest.enabled=true \n\
-          //     --executor-memory 1G \n\
-          //     --total-executor-cores 10 \n\
-          //     --conf spark.driver.extraClassPath=/mnt/mesos/sandbox/*.jar \n\
-          //     " +
-          //   uri;
+          isDone = true;
+        } else if (ProcedureType.APP_DATAX === me.getCurrentProcedure().type) {
+          s += "/usr/local/datax/bin/datax.py  \n\
+            " + sandboxPath;
           isDone = true;
         }
-        // else {
-        //   s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
-        // }
       }
-      // else if (s.indexOf(pathArr[1] + pathArr[2]) < 0) {
-      //   if ("uri" == urlType) {
-      //     debugger;
-      //     s += me.getFetchDownloadUri(uri);
-      //   } else {
-      //     s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
-      //   }
-      //   //s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
-      // }
       if (!isDone) {
-        if ("uri" == urlType) {
-          //debugger;
+        if ("uri" === urlType) {
           s += uri;
-      } else {
-        s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+        } else {
+          s += sandboxPath;
+        }
       }
-    // } else if (s.indexOf(pathArr[1] + pathArr[2]) < 0) {
-    //   s += "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
+      me.isFetchPopupsVisible = false;
+      me.procedureForm.patchValue({ cmd: s });
+      me.msg.info("已添加:" + pathArr[1] + pathArr[2]);
     }
-
-    me.isFetchPopupsVisible = false;
-    me.procedureForm.patchValue({ cmd: s });
-    me.msg.info("已添加:" + pathArr[1] + pathArr[2]);
-  }
   getFetchDownloadUri(uri: string): string {
     var me = this;
     //旧版本的下载url是这种形式：http://localhost:29201/download?filePath=testPath001%2Ftest001国_20210702172118.jar
@@ -2833,165 +2852,95 @@ export class JobDigraphComponent implements OnInit {
   setProcedureImage(procedureType: string) {
     var me = this;
     const observable = new Observable<boolean>((subscriber) => {
-      var imageName = "";
-      //   me.setProcedureImage("jdk8-jre", "APP_JAVA");
-      //   break;
-      // case "APP_SPARK":
-      //   me.setProcedureImage("spark-client", "APP_SPARK");
-      switch (procedureType) {
-        case ProcedureType.APP_JAVA:
-          imageName = "jdk8-jre";
-          break;
-        case ProcedureType.APP_SPARK:
-          imageName = "spark-client";
-          break;
-        default:
-          imageName = "jdk8-jre";
-          break;
-      }
+
     //下拉框
     this.reference
-      // .request(
-      //   "GET",
-      //   "DcosRegistryImage/GetItems",
-      //   this.userProvider.getToken(),
-      //   null,
-      //   false
-      // )
-      // .httpRequest(
-      //   "GET",
-      //   //"DcosRegistryImage/GetItemInfo",
-      //   "DcosRegistryImage/GetItems",
-      //   this.userProvider.getToken(),
-      //   // [new KeyValuePair("imageName", imageName)],
-      //   null,
-      //   null
-      // )
-      .getImageList()
+      .getImageList("",procedureType)
       .subscribe((response) => {
-        //if (response.Success == "True") {
-          // //var data = JSON.parse(this.reference.base64Decode(response.Result));
-          // var data: any[] = JSON.parse(
-          //   this.reference.base64Decode(response.Result)
-          // );
-          var data: any[]=response;
-          //debugger;
-          var image = data.find((a) => a == imageName);
-          //me.containerImage=[];
-          //me.containerImage = data;//不要动态改select组件的内容，因为联动会产生各种问题
-          //me.containerImage = [image];
-          this.reference
-            // .httpRequest(
-            //   "POST",
-            //   "DcosRegistryImage/GetImageVersions",
-            //   this.userProvider.getToken(),
-            //   null,
-            //   [
-            //     {
-            //       key: "image",
-            //       //value: me.procedureForm.value.containerImageName,
-            //       //value: data[0],
-            //       value: image,
-            //     },
-            //   ]
-            // )
-            .getImageVersionList(image)
-            .subscribe((response) => {
-              //if (response.Success == "True") {
-                // var versionData: any[] = JSON.parse(
-                //   this.reference.base64Decode(response.Result)
-                // );
-                var versionData: any[] = response;
-                // me.containerImageVersion = JSON.parse(
-                //   this.reference.base64Decode(response.Result)
-                // );
-                if (versionData.length > 0) {
-                  // me.procedureForm.patchValue({
-                  //   containerImageName: image,
-                  //   containerImageVersion: me.containerImageVersion[0],
-                  // });
-                  // me.updateContainerImage();
 
+          var data=response;
+          //debugger;
+          const image: RegistryImage | null = data.length > 0 ? data[0] : null;
+          // this.reference
+          //   .getImageVersionList(image)
+          //   .subscribe((response) => {
+          //       var versionData: any[] = response;
+          //       if (versionData.length > 0) {
+          //         me.procedureForm.patchValue({
+          //           containerImage:
+          //             //"https://uat-registry.perfect99.com/" +
+          //             me.imageBaseUrl + "/" + image + ":" + versionData[0],
+          //             type: procedureType,
+          //         });
+          //         subscriber.next(true);
+          //       }else{
+                  
+          //       subscriber.next(false);
+          //       }
+          //   });
+          if (image != null) {
+            this.reference
+              .getImageDockerList(image.Name)
+              .subscribe((response2) => {
+                const versionData: any[] = response2.map((a) => a.tag);
+                if (versionData.length > 0) {
                   me.procedureForm.patchValue({
                     containerImage:
-                      //"https://uat-registry.perfect99.com/" +
-                      me.imageBaseUrl + "/" + image + ":" + versionData[0],
-                      type: procedureType,
+                      me.imageBaseUrl + "/" + image.Name + ":" + versionData[0],
+                    type: procedureType,
                   });
                   subscriber.next(true);
-                }else{
-                  
-                subscriber.next(false);
+                } else {
+                  subscriber.next(false);
                 }
-              //}
-            });
-
-        //}
+              });
+          } else {
+            subscriber.next(false);
+          }
       });
     });
     return observable;
   }
   //方法3，自封装
-  // onProcedureMoveDrop(event: DragEvent) {
   onProcedureMoveDrop(event: PfDropModel) {
     var me = this;
     me.isProcedureFormLoading = true;
-    //debugger;
     console.info("onProcedureMoveDrop");
 
     me.newNodeX = event.x2;
     me.newNodeY = event.y2;
 
     me.addProcedure();
-    // var dragDom: any = event.target;
     var dragDom: any = event.dragDom;
     console.info(dragDom.attributes["procedureType"]);
-    //debugger;
+
     if (dragDom.attributes["procedureType"] == undefined) {
       return;
     }
     var procedureType = dragDom.attributes["procedureType"].value;
 
-    // switch (procedureType) {
-    //   case "java":
-    //     me.setProcedureImage("jdk8-jre");
-    //     break;
-    //   case "spark":
-    //     me.setProcedureImage("spark-client");
-    //     break;
-    //   default:
-    //     break;
-    // }
-    me.setProcedureImage(procedureType).subscribe((a) => {
+
+    // me.setProcedureImage(procedureType).subscribe((a) => {
+    //   me.isProcedureFormLoading = false;
+    // });
+    if ("APP_DEFAULT" !== procedureType) {
+      me.setProcedureImage(procedureType).subscribe(
+        (a) => {
+          me.isProcedureFormLoading = false;
+        },
+        (error) => {
+          me.procedureForm.patchValue({
+            type: procedureType,
+          });
+          me.isProcedureFormLoading = false;
+        }
+      );
+    } else {
+      me.procedureForm.patchValue({
+        type: procedureType,
+      });
       me.isProcedureFormLoading = false;
-    });
-    // return;
-    // var newNode: Node = {
-    //   id: me.newNodeId.toString(),
-    //   label: "new" + me.newNodeId.toString(),
-    //   position: { x: event.x, y: event.y },
-    // };
-    // console.info("-----------x y-----------");
-    // console.info(me.newNodeX);
-    // console.info(me.newNodeY);
-    // // console.info("-----------currentIndex -----------");
-    // // console.info(event.currentIndex);
-    // // console.info(event.previousIndex);
-
-    // console.info("-----------newNode-----------");
-    // console.info(newNode);
-
-    // //debugger;
-    // me.digraphNodeData.push(newNode);
-    // me.newNodeId++;
-    // //event.distance;
-    // me.update$.next(true);
-    // newNode.position.x = event.x;
-    // newNode.position.y = event.y;
-    // me.update$.next(false);
-    // //console.info(event);
-    // //debugger;
-    // //moveItemInArray(this.customers, event.previousIndex, event.currentIndex);
+    }
   }
 
   isCmdTabValid(): boolean {
