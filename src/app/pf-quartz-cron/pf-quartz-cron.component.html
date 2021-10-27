@@ -12,7 +12,7 @@
   *ngIf="visible"
   [ngModel]="cronData"
   (ngModelChange)="change($event)"
- 
+  [localization]="localization"
   (changed)="onChanged($event)"
 ></quartz-cron>
 
