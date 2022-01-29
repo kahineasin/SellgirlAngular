@@ -10,7 +10,8 @@ import * as AGGREGATION from '../../../../lib/query/aggregation';
 import { AggregationDimension } from '../../Dimension';
 
 import type { Aggregation as AggregationObject } from '../../../../model/Query';
-import type StructuredQueryClass from '../StructuredQueryClass';
+//import type StructuredQueryClass from '../StructuredQueryClass';
+import { IStructuredQuery } from '../../../../model/IStructuredQuery';
 import type Dimension from '../../Dimension';
 import type { AggregationOperator } from '../../../../model/Metadata';
 import type { MetricId } from '../../../../model/Metric';
@@ -24,7 +25,7 @@ export default class Aggregation extends MBQLClause {
    * Replaces the aggregation in the parent query and returns the new StructuredQuery
    * or replaces itself in the parent query if no {aggregation} argument is provided.
    */
-  replace(aggregation?: AggregationObject | Aggregation): StructuredQueryClass {
+  replace(aggregation?: AggregationObject | Aggregation): IStructuredQuery {
     if (aggregation != null) {
       return this._query.updateAggregation(this._index, aggregation as any);
     } else {
@@ -35,14 +36,14 @@ export default class Aggregation extends MBQLClause {
   /**
    * Adds itself to the parent query and returns the new StructuredQuery
    */
-  add(): StructuredQueryClass {
+  add(): IStructuredQuery {
     return this._query.aggregate(this as any);
   }
 
   /**
    * Removes the aggregation in the parent query and returns the new StructuredQuery
    */
-  remove(): StructuredQueryClass {
+  remove(): IStructuredQuery {
     return this._query.removeAggregation(this._index);
   }
 
@@ -274,7 +275,7 @@ export default class Aggregation extends MBQLClause {
       [this._index],
       new FieldClass(),
       this._query.metadata(),
-      this._query
+      this._query as any
     );
   }
 }

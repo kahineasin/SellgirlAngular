@@ -3,7 +3,8 @@
 import { MBQLObjectClause } from './MBQLClause';
 import { t } from '../../../../lib/pf_ttag';
 
-import StructuredQueryClass from '../StructuredQueryClass';
+//import StructuredQueryClass from '../StructuredQueryClass';
+import { IStructuredQuery } from '../../../../model/IStructuredQuery';
 // import Dimension, { JoinedDimension } from "metabase-lib/lib/Dimension";
 // import DimensionOptions from "metabase-lib/lib/DimensionOptions";
 import Dimension, { JoinedDimension } from '../../Dimension';
@@ -62,7 +63,7 @@ export default class Join extends MBQLObjectClause {
   /**
    * Replaces the aggregation in the parent query and returns the new StructuredQuery
    */
-  replace(join: Join | JoinObject): StructuredQueryClass {
+  replace(join: Join | JoinObject): IStructuredQuery {
     return this._query.updateJoin(this._index, join);
   }
 
@@ -95,7 +96,7 @@ export default class Join extends MBQLObjectClause {
     // $FlowFixMe
     return this['source-query'];
   }
-  setJoinSourceQuery(query: StructuredQueryClass) {
+  setJoinSourceQuery(query: IStructuredQuery) {
     return this.set({
       ...this,
       'source-table': undefined,
@@ -303,13 +304,24 @@ export default class Join extends MBQLObjectClause {
   joinedQuery() {
     const sourceTable = this.joinSourceTableId();
     const sourceQuery = this.joinSourceQuery();
+    // return sourceTable
+    //   ? new StructuredQueryClass(this.query().question(), {
+    //       type: 'query',
+    //       query: { 'source-table': sourceTable },
+    //     } as any)
+    //   : sourceQuery
+    //   ? new StructuredQueryClass(this.query().question(), {
+    //       type: 'query',
+    //       query: sourceQuery,
+    //     } as any)
+    //   : null;
     return sourceTable
-      ? new StructuredQueryClass(this.query().question(), {
+      ? this._query.init(this.query().question(), {
           type: 'query',
           query: { 'source-table': sourceTable },
         } as any)
       : sourceQuery
-      ? new StructuredQueryClass(this.query().question(), {
+      ? this._query.init(this.query().question(), {
           type: 'query',
           query: sourceQuery,
         } as any)
@@ -383,7 +395,7 @@ export default class Join extends MBQLObjectClause {
   /**
    * Removes the aggregation in the parent query and returns the new StructuredQuery
    */
-  remove(): StructuredQueryClass {
+  remove(): IStructuredQuery {
     return this._query.removeJoin(this._index);
   }
 

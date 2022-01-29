@@ -1,11 +1,11 @@
-import type StructuredQueryClass from '../StructuredQueryClass';
+//import type StructuredQueryClass from '../StructuredQueryClass';
+import { IStructuredQuery } from '../../../../model/IStructuredQuery';
 
 export default class MBQLArrayClause extends Array<any> {
   _index: number;
-  _query: StructuredQueryClass;
+  _query: IStructuredQuery;
 
-  constructor(mbql: Array<any>, index?: number, query?: any) {
-    // StructuredQueryClass) {
+  constructor(mbql: Array<any>, index?: number, query?: IStructuredQuery) {
     super(...mbql);
     //super(mbql.length);
 
@@ -30,7 +30,7 @@ export default class MBQLArrayClause extends Array<any> {
     return this.constructor(mbql, this._index, this._query);
   }
 
-  replace(replacement: Array<any>): any {
+  replace(replacement: Array<any>): IStructuredQuery {
     // StructuredQueryClass {
     throw new Error('Abstract method `replace` not implemented');
   }
@@ -77,9 +77,9 @@ export default class MBQLArrayClause extends Array<any> {
 
 export class MBQLObjectClause {
   _index: number;
-  _query: any; // StructuredQueryClass;
+  _query: IStructuredQuery; // StructuredQueryClass;
 
-  constructor(mbql: Object, index?: number, query?: any) {
+  constructor(mbql: Object, index?: number, query?: IStructuredQuery) {
     // StructuredQueryClass) {
     Object.assign(this, mbql);
     _private(this, '_index', index);
@@ -90,7 +90,7 @@ export class MBQLObjectClause {
     return this.constructor(mbql, this._index, this._query);
   }
 
-  replace(replacement: any): any {
+  replace(replacement: any): IStructuredQuery {
     // StructuredQueryClass {
     throw new Error('Abstract method `replace` not implemented');
   }
@@ -98,12 +98,12 @@ export class MBQLObjectClause {
   /**
    * returns the parent query object
    */
-  query(): any {
+  query(): IStructuredQuery {
     // StructuredQueryClass {
     return this._query;
   }
 
-  setQuery(query: any) {
+  setQuery(query: IStructuredQuery) {
     // StructuredQueryClass) {
     return this.constructor(this, this._index, query);
   }

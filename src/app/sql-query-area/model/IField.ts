@@ -15,4 +15,5 @@ export interface IField {
   displayName();
   icon(): any;
   isCoordinate(): boolean;
+  //removeJoin(index): any;
 }

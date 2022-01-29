@@ -58,6 +58,7 @@ import FieldClass from '../metadata/FieldClass';
 import { TYPE } from '../../../lib/types';
 
 import { fieldRefForColumn } from '../../../lib/dataset';
+import { IStructuredQuery } from '../../../model/IStructuredQuery';
 
 type DimensionFilter = (dimension: Dimension) => boolean;
 type FieldFilter = (filter: FieldClass) => boolean;
@@ -74,7 +75,10 @@ export const STRUCTURED_QUERY_TEMPLATE = {
 /**
  * A wrapper around an MBQL (`query` type @type {DatasetQuery}) object
  */
-export default class StructuredQueryClass extends AtomicQuery {
+export default class StructuredQueryClass
+  extends AtomicQuery
+  implements IStructuredQuery
+{
   static isDatasetQueryType(datasetQuery: DatasetQuery) {
     return datasetQuery && datasetQuery.type === STRUCTURED_QUERY_TEMPLATE.type;
   }
@@ -95,6 +99,12 @@ export default class StructuredQueryClass extends AtomicQuery {
     this._structuredDatasetQuery = datasetQuery as StructuredDatasetQuery;
   }
 
+  init(question: any, datasetQuery: any): IStructuredQuery {
+    return new StructuredQueryClass(
+      question, //
+      datasetQuery
+    );
+  }
   /* Query superclass methods */
 
   /**
