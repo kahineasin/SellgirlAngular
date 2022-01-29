@@ -1,3 +1,5 @@
+import Dimension from "../metabase-lib/lib/Dimension";
+
 export interface IStructuredQuery {
   //----------------------src\app\sql-query-area\metabase-lib\lib\queries\Query.ts 里面实现的方法
   question(): any;
@@ -10,7 +12,7 @@ export interface IStructuredQuery {
   metadata(): any;
 
   table(): any;
-  parseFieldReference(fieldRef): any;
+  parseFieldReference(fieldRef):Dimension;// any;
   dimensions(): any;
   joins(): any;
   database(): any;

@@ -1,5 +1,5 @@
-// import { CstParser } from "chevrotain";//这个在^10.0.0版本里的参数变了，console项目用的是^9.1.0版本
-import { EmbeddedActionsParser as CstParser } from 'chevrotain'; //试试这样行不行--benjamin todo
+ import { CstParser } from "chevrotain";//这个在^10.0.0版本里的参数变了，console项目用的是^9.1.0版本
+//import { EmbeddedActionsParser as CstParser } from 'chevrotain'; //10.0.0版本试试这样行不行(试过不行,输入Max([ 时,suggest字段为空,似乎是因为dimensionExpression解析不出来 )--benjamin todo
 
 import {
   lexer,

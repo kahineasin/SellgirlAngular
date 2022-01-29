@@ -495,6 +495,7 @@ export class DatamodelQueryEditComponent implements OnInit {
           (this.query.query as StructuredDatasetQuery).query
         )
         .subscribe((response) => {
+          //debugger;
           me.question = response;
         });
     } else {
@@ -504,6 +505,7 @@ export class DatamodelQueryEditComponent implements OnInit {
           (this.query.query as StructuredDatasetQuery).query
         )
         .subscribe((response) => {
+          //debugger;
           me.question = new PfQuestion(
             me.sqlQueryUtil.QuestionUIModelToType(me.query),
             response

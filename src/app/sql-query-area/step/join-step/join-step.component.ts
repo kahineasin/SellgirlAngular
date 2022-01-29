@@ -333,7 +333,7 @@ export class JoinStepComponent implements OnInit {
     let cnt = 2;
     while (
       me.query.joins.findIndex((a) => a.alias === aliasName) > -1 ||
-      me.leftTable.TableName === aliasName
+      ((!me.pfUtil.isNull(me.leftTable))&&me.leftTable.TableName === aliasName)
     ) {
       aliasName = table.TableName + '_' + cnt.toString();
       cnt++;

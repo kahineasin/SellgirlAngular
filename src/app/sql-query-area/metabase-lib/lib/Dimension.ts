@@ -143,9 +143,9 @@ export default class Dimension {
    * Returns true if these two dimensions are identical to one another.
    */
   static isEqual(
-    fieldClass: IField,
     a: Dimension | ConcreteField,
-    b: Dimension
+    b: Dimension,
+    fieldClass: IField,
   ): boolean {
     const dimensionA: Dimension =
       a instanceof Dimension

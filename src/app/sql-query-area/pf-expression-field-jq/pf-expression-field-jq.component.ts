@@ -1152,17 +1152,14 @@ export class PfExpressionFieldJqComponent implements OnInit {
     //   ...this._getParserOptions(),
     // });
     const tree = processSource(options);
-    // debugger;
-    // console.info(expression);
-    // console.info(compileError);
-    // console.info(syntaxTree);
-    console.info(
-      '---------------------------sourceToSyntaxTree--------------------------'
-    );
-    console.info(selectionEnd);
-    console.info(hasSelection);
-    console.info(targetOffset);
-    console.info(tree);
+
+    // console.info(
+    //   '---------------------------sourceToSyntaxTree--------------------------'
+    // );
+    // console.info(selectionEnd);
+    // console.info(hasSelection);
+    // console.info(targetOffset);
+    // console.info(tree);
     if (!me.pfUtil.isAnyNull(tree.suggestions)) {
       me.suggestions = tree.suggestions;
     }

@@ -73,8 +73,8 @@ npm i --save lodash.memoize
 
 ### chevrotain
 
-表达式解析
-npm install chevrotain --save
+表达式解析^9.1.0
+npm install chevrotain@9.1.0 --save
 
 ### regexp.escape
 

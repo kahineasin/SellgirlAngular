@@ -169,6 +169,10 @@ export function suggest({
         parentRule === 'metricExpression' &&
         isExpressionType(expectedType, 'aggregation');
 
+        // if(parentRule === "dimensionExpression"){
+        //   debugger;
+        // }
+        // debugger;
       if (isDimension) {
         let dimensions = [];
         //debugger;
@@ -196,7 +200,7 @@ export function suggest({
               (isExpressionType('string', expectedType) && field.isString())
             );
           };
-          //debugger;
+          debugger;
           dimensions = query.dimensionOptions(dimensionFilter).all();
         }
         finalSuggestions.push(

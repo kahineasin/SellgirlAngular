@@ -325,7 +325,7 @@ export class SqlQueryUtil {
                   'field-literal',
                   //"o_" + tmpField.value.ColumnName,
                   'FIELD_' + tmpField.value.ColumnName,
-                  me.getMetabaseBaseType(tmpField.value.DataType), //这里的dataType应该需要转换为metabase的--benjamin todo
+                  me.getMetabaseBaseType(tmpField.value.DataType), // 
                 ]); // type/DateTime "type/Text"
               }
             }
@@ -372,7 +372,7 @@ export class SqlQueryUtil {
                   childQuery.aggregation[i][0].toUpperCase() +
                     '_' +
                     tmpField.value.ColumnName,
-                  me.getMetabaseBaseType(tmpField.value.DataType), //这里的dataType应该需要转换为metabase的--benjamin todo
+                  me.getMetabaseBaseType(tmpField.value.DataType), 
                 ]); // type/DateTime "type/Text"
                 // }
               }
@@ -1159,7 +1159,8 @@ export class SqlQueryUtil {
       position: null,
       parent_id: null,
 
-      table_id: a.MetabaseShortId,
+      //table_id: a.MetabaseShortId,
+      table_id: a.TableShortId,
 
       fk_target_field_id: null,
 

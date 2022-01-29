@@ -178,54 +178,6 @@
 
 </div>
 
-<!--metabase选择了groupBy条件后是可以用结果集来多级嵌套的,这步晚些做(之前简单测试过嵌套好像没大问题)--benjamin todo-->
-<!-- <div
-  *ngIf="query['source-query'] !== null && query['source-query'] !== undefined"
-  class="sqlQueryContainer"
->
-  <sql-query-area
-    [(databaseId)]="databaseId"
-    [query]="query['source-query']"
-  ></sql-query-area>
-  <div *ngIf="hasJoin">关联</div>
-  <join-step *ngIf="hasJoin" [tableList]="tableList"></join-step>
-  <div *ngIf="hasFilter">过滤器</div>
-  <div class="NotebookRow" style="background-color: rgba(113, 114, 173, 0.1)">
-    <filter-step
-      *ngIf="hasFilter"
-      [query]="query"
-      [filter]="query.filter"
-      [isFirstFloor]="true"
-      [fieldList]="fieldList"
-    ></filter-step>
-  </div>
-  <div style="display: flex; flex-flow: row">
-    <nz-space [nzSize]="">
-      <button
-        *nzSpaceItem
-        nz-button
-        [nzSize]="size"
-        nzType="default"
-        (click)="hasFilter = !hasFilter"
-      >
-        <i nz-icon nzType="filter" nzTheme="fill"></i> 过滤
-      </button>
-      <button
-        *nzSpaceItem
-        nz-button
-        nzType="primary"
-        type="button"
-        (click)="addJoin($event)"
-        [disabled]="!allowJoin"
-      >
-        <i nz-icon>
-          <svg pfSvgIconPath [svgIconType]="'SQL_LEFT_JOIN'"></svg>
-        </i>
-        Join
-      </button>
-    </nz-space>
-  </div>
-</div> -->
 
 <ng-template #deleteRowTpl>
   <i nz-icon style="

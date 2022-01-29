@@ -84,7 +84,7 @@ import { PfInputModule } from './share/pf-input';
 import { PfHoverModule } from './share/pf-hover-style';
 import { SqlQueryAreaModule } from './sql-query-area';
 import { DatamodelQueryEditComponent } from './datamodel-query-edit/datamodel-query-edit.component';
-import { SqlQueryAreaImportTestModule } from './sql-query-area-import-test';
+//import { SqlQueryAreaImportTestModule } from './sql-query-area-import-test';
 import {HashLocationStrategy, LocationStrategy} from "@angular/common";
 
 const icons: IconDefinition[] = [
@@ -166,7 +166,7 @@ registerLocaleData(zh);
     PfInputModule,
     PfHoverModule,
 
-    SqlQueryAreaImportTestModule,
+    //SqlQueryAreaImportTestModule,
     SqlQueryAreaModule,
     NzIconModule.forRoot(icons),
   ],

@@ -142,7 +142,7 @@ export default class StructuredQueryClass
    */
   tables(): TableClass[] {
     const database = this.database();
-    return (database && (database as any).tables) || null;
+    return (database && database.tables) || null;
   }
 
   /**
@@ -254,7 +254,7 @@ export default class StructuredQueryClass
       //     .value()
       // );
       let tmp = this.datasetQuery() as StructuredDatasetQuery;
-      tmp.database = (this.metadata().table(tableId) as any).database.id;
+      tmp.database = this.metadata().table(tableId).database.id;
       tmp.query = { 'source-table': tableId };
       return new StructuredQueryClass(this._originalQuestion, tmp);
     } else {
@@ -574,7 +574,7 @@ export default class StructuredQueryClass
    */
   breakout(breakout: Breakout | Dimension | FieldClass): StructuredQueryClass {
     if (breakout instanceof FieldClass) {
-      breakout = (breakout as any).dimension();
+      breakout = breakout.dimension();
     }
     if (breakout instanceof Dimension) {
       breakout = breakout.mbql() as any;
@@ -1284,7 +1284,7 @@ export default class StructuredQueryClass
   @memoize
   tableDimensions(): Dimension[] {
     const table: TableClass = this.table();
-    let dimen = (table as any).dimensions(); //测试时暂加any
+    let dimen = table.dimensions(); //测试时暂加any
     let r = table
       ? // HACK: ensure the dimensions are associated with this query
         dimen.map((d) => (d._query ? d : this.parseFieldReference(d.mbql())))
