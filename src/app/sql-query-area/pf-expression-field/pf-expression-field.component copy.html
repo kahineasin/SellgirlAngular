@@ -1,0 +1,196 @@
+<!-- <ng-template [ngIf]="!pfUtil.isListEmpty(filter)">
+  <ng-template [ngIf]="
+        (filter.length > 1 && (filter[1] === 'or' || filter[1] === 'and')) ||
+        isArray(filter[0])
+      ">
+    <div class="NotebookCell">
+      <ng-container *ngFor="
+            let item of filter;
+            index as index;
+            first as first;
+            last as last;
+            odd as odd;
+            even as even
+          ">
+
+        <a *ngIf="odd" nz-dropdown nzTrigger="click" [nzDropdownMenu]="andOrMenu" style="line-height: 32px">
+          {{ item }}
+          <i nz-icon nzType="down"></i>
+        </a>
+        <nz-dropdown-menu #andOrMenu>
+          <ul nz-menu>
+            <li nz-menu-item (click)="onAndOrChange('and' === item ? 'or' : 'and', index)">
+              {{ "and" === item ? "or" : "and" }}
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+        <filter-step class="filter-step-node" *ngIf="even" [query]="query" [filter]="item" [fieldList]="fieldList"
+          [sourceOutFieldList]="sourceOutFieldList" (deleteStep)="onDelete(filter, index, first)"></filter-step>
+      </ng-container>
+
+      <div class="NotebookCellItem" (click)="initAddingParam(); onAdd($event, addFilterPopups)">
+        <i nz-icon style="color: white">
+          <svg class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+            <path
+              d="M12.4285714,12.4285714 L12.4285714,0 L19.5714286,0 L19.5714286,12.4285714 L32,12.4285714 L32,19.5714286 L19.5714286,19.5714286 L19.5714286,32 L12.4285714,32 L12.4285714,19.5714286 L0,19.5714286 L0,12.4285714 L12.4285714,12.4285714 Z">
+            </path>
+          </svg>
+        </i>
+      </div>
+    </div>
+  </ng-template>-->
+
+<ng-template [ngIf]="isBinaryOperation()">
+  <div class="NotebookCellItem" (click)="
+          initEditingParam(expressionOption); addFilterPopups.open($event.currentTarget)
+        ">
+    <ng-container *ngTemplateOutlet="fieldTpl; context: { field: expressionOption[1] }"></ng-container>
+    <span>&nbsp;{{ expressionOption[0] }}&nbsp;</span>
+    <ng-container *ngTemplateOutlet="fieldTpl; context: { field: expressionOption[2] }"></ng-container>
+
+    <!-- <ng-container *ngTemplateOutlet="deleteTpl"></ng-container> -->
+  </div>
+</ng-template>
+<!--
+  <ng-template [ngIf]="filter[0] == 'contains'">
+    <div class="NotebookCellItem">
+      <ng-container *ngTemplateOutlet="fieldTpl; context: { field: filter[1] }"></ng-container>
+      <span>&nbsp;包含&nbsp;</span>
+      <ng-container *ngTemplateOutlet="fieldTpl; context: { field: filter[2] }"></ng-container>
+      <ng-container *ngTemplateOutlet="deleteTpl"></ng-container>
+    </div>
+  </ng-template>
+
+  <ng-template [ngIf]="filter[0] == 'bracket'">
+    <div class="NotebookCell">
+      <span>&nbsp;(&nbsp;</span>
+      <filter-step class="filter-step-node" [query]="query" [filter]="filter[1]" [fieldList]="fieldList"
+        [sourceOutFieldList]="sourceOutFieldList" (deleteStep)="deleteStep.emit()"></filter-step>
+      <span>&nbsp;)&nbsp;</span>
+    </div>
+  </ng-template>
+</ng-template>
+
+<ng-template [ngIf]="pfUtil.isListEmpty(filter) && isFirstFloor">
+  <div class="NotebookCell" style="line-height: 50px">
+    <div class="NotebookCellItem" (click)="initAddingParam(); onAdd($event, addFilterPopups)">
+      <p style="display: inline">添加筛选条件来缩小你的答案范围</p>
+    </div>
+  </div>
+</ng-template>
+
+
+-->
+<ng-template #fieldTpl let-field="field">
+  <ng-template [ngIf]="isArray(field)">
+    <span>{{ getFieldFullName(field) }}</span>
+  </ng-template>
+  <ng-template [ngIf]="!isArray(field)">
+    <span>{{ field }}</span>
+  </ng-template>
+</ng-template>
+
+<!-- <ng-template #deleteTpl>
+  <i nz-icon class="sqlDeleteFieldBtn" (click)="deleteCompare()" style="color: rgb(213, 213, 252)"><svg
+      class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+      <path d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "></path>
+    </svg>
+  </i>
+</ng-template> -->
+<pf-dropdown-popups #addFilterPopups>
+  <ul nz-menu *ngIf="'andOr' === addStep">
+    <ng-template [ngIf]="pfUtil.isListEmpty(expressionOption)">
+    </ng-template>
+    <ng-template [ngIf]="!pfUtil.isListEmpty(expressionOption)">
+      <li *ngFor="let option of ['and', 'or']" nz-menu-item (click)="goSelectField(option, addFilterPopups)">
+        {{ option }}
+      </li>
+      <li nz-submenu [nzTitle]="'(...)'" [nzOpen]="false" [nzMenuClassName]="addFilterPopups.hashId">
+        <ul>
+          <li nz-menu-item (click)="
+                isAddingBracket = true; goSelectField('and', addFilterPopups)
+              ">
+            and (...)
+          </li>
+          <li nz-menu-item (click)="
+                isAddingBracket = true; goSelectField('or', addFilterPopups)
+              ">
+            or (...)
+          </li>
+        </ul>
+      </li>
+    </ng-template>
+  </ul>
+  <ul *ngIf="'field' === addStep" nz-menu nzMode="inline">
+    <ng-container *ngFor="
+          let item of sourceOutFieldList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        ">
+      <li nz-menu-item (click)="selectColumnBySourceOut(item)">
+        {{ item[1] }}
+      </li>
+    </ng-container>
+    <li *ngFor="
+          let item of fieldList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
+      [nzOpen]="0 === index">
+
+      <ul>
+        <li>
+          <nz-input-group [nzSuffix]="suffixIconSearch">
+            <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+          </nz-input-group>
+          <ng-template #suffixIconSearch>
+            <i nz-icon nzType="search"></i>
+          </ng-template>
+        </li>
+        <ng-container *ngFor="
+              let item2 of item.value;
+              index2 as index;
+              first2 as first;
+              last2 as last;
+              odd2 as odd;
+              even2 as even
+            ">
+          <li *ngIf="likeText(item2.ColumnName, searchBox.value)" nz-menu-item (click)="selectColumn(item2, item.key)">
+            {{ item2.ColumnName }}
+          </li>
+        </ng-container>
+      </ul>
+    </li>
+  </ul>
+
+  <div *ngIf="'compare' === addStep">
+    <ul>
+      <li class="popupsBackTitle">
+        <a (click)="addStep = 'field'"><i nz-icon nzType="left" nzTheme="outline"></i>
+          <a *ngIf="!isAnyNull2(addingSourceOutField)">
+            {{ addingSourceOutField[1] }}
+          </a>
+          <a *ngIf="isAnyNull2(addingSourceOutField)">{{ getTableName() }}
+          </a>
+        </a>
+        <pf-select [(ngModel)]="compare" [list]="compareList" [disabled]="false" style="width: 80px">
+        </pf-select>
+      </li>
+
+      <li>
+        <input nz-input placeholder="输入过滤值" #filterValueTBox [(ngModel)]="compareValue" />
+      </li>
+      <li>
+        <button nz-button nzType="default" (click)="saveFilter(filterValueTBox.value); addFilterPopups.close()">
+          {{ isAdd ? "添加过滤器" : "修改过滤器" }}
+        </button>
+      </li>
+    </ul>
+  </div>
+</pf-dropdown-popups>

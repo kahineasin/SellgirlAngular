@@ -1,0 +1,49 @@
+.filter-step-node {
+  display: inline;
+  line-height: 50px;
+}
+.filter-step {
+  /*display: inline;*/
+  display: flex;
+  flex-flow: row;
+}
+.NotebookCell {
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   -webkit-box-align: center;
+  //   align-items: center;
+
+  display: inline;
+}
+.NotebookCellItem {
+  /*参考metabase的.fCuzOO的样式*/
+  /*此样式是参考metabase*/
+  font-weight: bold;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  color: white;
+  background-color: rgb(113, 114, 173);
+  transition: background 300ms linear 0s, border 300ms linear 0s;
+
+  margin-bottom: 8px;
+  margin-right: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: inline;
+  white-space: nowrap;
+  line-height: 50px;
+}
+.NotebookCellItem:hover {
+  background-color: rgba(113, 114, 173, 0.8);
+}
+.sqlDeleteFieldBtn {
+  margin-left: 8px;
+}
+
+.PopoverBody {
+  border: 1px solid #edf2f5;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 13%);
+  background-color: #ffffff;
+  border-radius: 6px;
+  overflow: auto;
+}

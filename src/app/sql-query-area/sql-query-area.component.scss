@@ -1,0 +1,71 @@
+/**
+* 样式说明:
+* 1.NotebookCellItem 深色背景的小单元 inline
+* 2.NotebookCell     浅色背景的中单元 block(为了加背景色)
+* 3.NotebookRow      一整行(metabase上没有对应的)(后来觉得这个样式是没太大必要,子组件都没用到此样式)
+*/
+
+/*.sqlQueryContainer {
+  margin-left: 10px;多级嵌套后这个放到第一个父节点吧
+}*/
+.sqlQueryContainer > * {
+  margin-top: 10px;
+}
+
+.NotebookRow {
+  width: 70%;
+  /*border-radius: 8px;
+  padding: 0px 5px;*/
+}
+/*.sqlQueryCell {
+  background-color: rgb(80, 158, 227);
+}
+*/
+.NotebookCell {
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   -webkit-box-align: center;
+  //   align-items: center;
+
+  display: inline-block;
+  line-height: 50px;
+
+  border-radius: 8px;
+  padding: 0px 5px;
+}
+.NotebookCellItem {
+  /*参考metabase的.fCuzOO的样式*/
+  /*此样式是参考metabase*/
+  font-weight: bold;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  color: white;
+  /*background-color: rgb(113, 114, 173);*/
+  transition: background 300ms linear 0s, border 300ms linear 0s;
+
+  margin-bottom: 8px;
+  margin-right: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: inline;
+  white-space: nowrap;
+}
+.deleteRowBtn {
+  color: rgb(213, 213, 252);
+  float: right;
+  padding-top: 5px;
+  cursor: pointer;
+}
+
+.btnRow {
+  display: flex;
+  flex-flow: row;
+}
+
+.btnRow {
+  display: flex;
+  flex-flow: row;
+}
+.btnRow > * {
+  margin: 0 0 0 5px;
+}

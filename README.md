@@ -42,6 +42,11 @@ ng-zorro-antd 11.4.1
 npm install crypto-js@3.3.0 #大包
 npm install --save @types/crypto-js #ts 版本包
 
+## 安装时间转换插件
+
+npm install dayjs --save
+相关:https://day.js.org/docs/en/installation/typescript
+
 ## 安装有向图插件
 
 npm install @swimlane/ngx-graph --save
@@ -53,6 +58,41 @@ cnpm install @sbzen/ng-cron --save
 https://bzenkosergey.github.io/ng-cron/angular/#/
 https://github.com/BzenkoSergey/ng-cron
 https://bzenkosergey.github.io/ng-cron/angular/#/doc/localization
+
+## 为了使用 metabase 的类,安装这些库
+
+### underscore(不使用了,不安装)
+
+为了便于直接移植使用 metabase 的类(注意一定要用 cnpm 才能安装,原因不明)
+cnpm install underscore --save
+cnpm install @types/underscore --save
+
+### lodash.memoize
+
+npm i --save lodash.memoize
+
+### chevrotain
+
+表达式解析
+npm install chevrotain --save
+
+### regexp.escape
+
+当前^1.1.0
+npm install regexp.escape --save
+
+### icepick
+
+"icepick": "^2.4.0",
+https://gitee.com/mirrors_benmosher/icepick?_from=gitee_search
+https://github.com/aearly/icepick
+npm install icepick --save
+metabase 用于冻结对象
+结果还是删除了这个库，感觉没什么用，会把对象的属性设置为只读的
+
+### password-generator
+
+npm install password-generator
 
 ## 严格模式
 

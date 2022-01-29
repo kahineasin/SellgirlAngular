@@ -1,0 +1,24 @@
+.NotebookCell {
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   -webkit-box-align: center;
+  //   align-items: center;
+
+  display: inline;
+}
+.NotebookCellItem {
+  /*参考metabase的.fCuzOO的样式*/
+  /*此样式是参考metabase*/
+  font-weight: bold;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  color: white;
+  /*background-color: rgb(113, 114, 173);*/
+  transition: background 300ms linear 0s, border 300ms linear 0s;
+
+  margin-bottom: 8px;
+  margin-right: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: inline;
+}

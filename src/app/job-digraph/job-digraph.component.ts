@@ -6,30 +6,30 @@ import {
   HostListener,
   OnInit,
   ViewChild,
-} from "@angular/core";
+} from '@angular/core';
 import {
   Validators,
   FormBuilder,
   AbstractControl,
   FormControl,
   ValidationErrors,
-} from "@angular/forms";
-import { Router, ActivatedRoute } from "@angular/router";
+} from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 //import {  NgxGraphModule } from '@swimlane/ngx-graph';
-import { Node } from "@swimlane/ngx-graph";
-import { NzMessageService } from "ng-zorro-antd/message";
+import { Node } from '@swimlane/ngx-graph';
+import { NzMessageService } from 'ng-zorro-antd/message';
 //import { NzModalService } from 'ng-zorro-antd/modal';
 
-import { Guid } from "guid-typescript";
-import format from "date-fns/format";
+import { Guid } from 'guid-typescript';
+import format from 'date-fns/format';
 
 // import { ComputesReferenceService } from "../../core/services/computes-reference.service";
 // import { UserProviderService } from "../../../../core/services/user-provider.service";
 // import { DcosReferenceService } from "../../../dcos/core/services/dcos-reference.service";
-import { Observable, Observer, Operator, Subject, Subscription } from "rxjs";
-import { NzUploadChangeParam, NzUploadFile } from "ng-zorro-antd/upload";
+import { Observable, Observer, Operator, Subject, Subscription } from 'rxjs';
+import { NzUploadChangeParam, NzUploadFile } from 'ng-zorro-antd/upload';
 //import { ConfigService } from "../../../../core/services/app-config.service";
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import {
   HttpClient,
@@ -38,8 +38,8 @@ import {
   HttpHeaders,
   HttpRequest,
   HttpResponse,
-} from "@angular/common/http";
-import { filter } from "rxjs/operators";
+} from '@angular/common/http';
+import { filter } from 'rxjs/operators';
 //import { addListener } from "process";
 // import { KeyValuePair } from "../../../../core/common/pfModel";
 // import { PfUtil, ProcedureManager } from "../../../../core/common/pfUtil";
@@ -53,12 +53,12 @@ import {
   ProcedureModel,
   ProcedureType,
   RegistryImage,
-} from "../job-model/job-model";
+} from '../model/job-model';
 //import { deprecate } from "util";
-import { NzModalService } from "ng-zorro-antd/modal";
-import { DragType } from "../pf_drag/pf-drag.directive";
-import { PfClickArrowComponent } from "../pf-click-arrow/pf-click-arrow.component";
-import { PfDropModel } from "../pf_drag/pf-drop.directive";
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { DragType } from '../pf_drag/pf-drag.directive';
+import { PfClickArrowComponent } from '../pf-click-arrow/pf-click-arrow.component';
+import { PfDropModel } from '../pf_drag/pf-drop.directive';
 import { KeyValuePair, IPfObject } from '../common/pfModel';
 import { ProcedureManager, PfUtil } from '../common/pfUtil';
 import { ConfigService } from '../service/app-config.service';
@@ -85,21 +85,20 @@ interface JobModel {
 @Component({
   selector: 'app-job-digraph',
   templateUrl: './job-digraph.component.html',
-  styleUrls: ['./job-digraph.component.css']
+  styleUrls: ['./job-digraph.component.css'],
 })
 export class JobDigraphComponent implements OnInit {
-
   // constructor() { }
 
   // ngOnInit(): void {
   // }
 
-  public applicationName: string = "";
+  public applicationName: string = '';
   public pageSize: number = 13;
   public pageIndex: number = 1;
 
-  validColor = "#1890ff";
-  invalidColor = "red";
+  validColor = '#1890ff';
+  invalidColor = 'red';
 
   isVisible = false;
 
@@ -110,10 +109,10 @@ export class JobDigraphComponent implements OnInit {
   //pvalid = false;
   digraphVisible = false;
 
-  imageBaseUrl = "uat-registry.perfect99.com";
+  imageBaseUrl = 'uat-registry.perfect99.com';
 
   //画图工具按钮
-  size: string = "";
+  size: string = '';
   currentPaintType: PaintType = PaintType.none;
   // none: PaintType = PaintType.None;
   // line: PaintType = PaintType.Line;
@@ -131,14 +130,14 @@ export class JobDigraphComponent implements OnInit {
   lineY1: number = 0;
   lineX2: number = 0;
   lineY2: number = 0;
-  arrowStartNode: Node={id:""};
+  arrowStartNode: Node = { id: '' };
   //arrowEndNode:Node;
   @ViewChild(PfClickArrowComponent)
   private pfClickArrow!: PfClickArrowComponent;
 
   //步骤弹窗
-  newNodeX: number=0; //当拖动新增时，打开新增弹窗时保存的临时节点位置
-  newNodeY: number=0;
+  newNodeX: number = 0; //当拖动新增时，打开新增弹窗时保存的临时节点位置
+  newNodeY: number = 0;
   newNodeId: number = 1;
   isProcedureFormLoading = false;
 
@@ -149,8 +148,8 @@ export class JobDigraphComponent implements OnInit {
   fetchPopupsUploadingSubscription?: Subscription; //为了终止上传
   mainLoading = false;
   uploadedPercent: number = 0;
-  uploadStatus: string = "";
-  uploadStatusText: string = "上传中";
+  uploadStatus: string = '';
+  uploadStatusText: string = '上传中';
 
   //历史弹窗
   isHistoryPopupsVisible = false;
@@ -163,7 +162,7 @@ export class JobDigraphComponent implements OnInit {
   //listOfData: ReadonlyArray<Data> = [];
   //listOfCurrentPageData: ReadonlyArray<Data> = [];
 
-  defaultValue: any = "value5";
+  defaultValue: any = 'value5';
   menus: any[] = [];
 
   //作业信息弹窗
@@ -176,7 +175,7 @@ export class JobDigraphComponent implements OnInit {
   isENVPopupsVisible = false;
   environmentListOfControl: Array<{ id: number; key: string; value: string }> =
     [];
-  validENV :IPfObject= {}; //已验证的环境变量(点保存时把 environmentListOfControl 存到 validENV)
+  validENV: IPfObject = {}; //已验证的环境变量(点保存时把 environmentListOfControl 存到 validENV)
 
   //CRON编辑弹窗
   isCRONPopupsVisible = false;
@@ -184,8 +183,8 @@ export class JobDigraphComponent implements OnInit {
   //cronData = "";
   //cronData = "* * * * * * *";
   // cronData = "? ? ? ? ? ? ?";
-  emptyCronData = "* * * ? ? ? *";
-  cronData = "* * * ? ? ? *";
+  emptyCronData = '* * * ? ? ? *';
+  cronData = '* * * ? ? ? *';
 
   // //cron测试
   // freq = "";
@@ -196,8 +195,8 @@ export class JobDigraphComponent implements OnInit {
   // };
   // cronValue = "2,0,4,3,1 0/1 3/2 ? * 4/5 *";
 
-  cusListener?: Observable<string> ;
-  cusListenerer?: Observer<string> ;
+  cusListener?: Observable<string>;
+  cusListenerer?: Observer<string>;
 
   digraphLinkData: LinkModel[] = [
     // {
@@ -275,17 +274,17 @@ export class JobDigraphComponent implements OnInit {
     //   label: "流程D",
     // },
   ];
-  digraphIdPrev: string = "dig"; //https://www.cnblogs.com/zxy-joy/p/10469116.html   id会作为dom的id,css标准不能以数字开头,会报错 Failed to execute 'querySelector' on 'Element': '#96f5b2a7-5d8d-fb65-0e46-7c635095370546d32a9a-a2b5-698b-c540-38378aa95b37' is not a valid selector.
+  digraphIdPrev: string = 'dig'; //https://www.cnblogs.com/zxy-joy/p/10469116.html   id会作为dom的id,css标准不能以数字开头,会报错 Failed to execute 'querySelector' on 'Element': '#96f5b2a7-5d8d-fb65-0e46-7c635095370546d32a9a-a2b5-698b-c540-38378aa95b37' is not a valid selector.
 
   procedureManager: ProcedureManager<ProcedureModel> = new ProcedureManager(
-    "procedureId",
-    "from",
-    "to"
+    'procedureId',
+    'from',
+    'to'
   );
 
   jobConfigData: ProcedureModel[] = [];
-  containerImage:RegistryImage[] = [];
-  containerImageVersion:any[] = [];
+  containerImage: RegistryImage[] = [];
+  containerImageVersion: any[] = [];
   isConfirmLoading = false;
   isJobInfoConfirmLoading = false;
   listOfData: JobFile[] = [
@@ -348,7 +347,9 @@ export class JobDigraphComponent implements OnInit {
     });
   };
 
-  envAsyncValidator = (control: AbstractControl) =>//FormControl不行?
+  envAsyncValidator = (
+    control: AbstractControl //FormControl不行?
+  ) =>
     new Observable((observer: Observer<ValidationErrors | null>) => {
       //这样的异步验证,重新打开弹窗时会是验证中的图标在转,未找到解决办法--benjamin todo
       setTimeout(() => {
@@ -372,51 +373,51 @@ export class JobDigraphComponent implements OnInit {
   public procedureForm = this.fb.group({
     //JobId: ["", Validators.required],
     isAdd: [true],
-    procedureId: [""],
-    procedureName: ["", [Validators.required], [this.userNameAsyncValidator]],
+    procedureId: [''],
+    procedureName: ['', [Validators.required], [this.userNameAsyncValidator]],
     //from:["", Validators.required],
     from: [[]],
     to: [[]],
-    envShort: [""],
-    cmdShort: [""],
-    containerImage: ["", Validators.required],
-    containerImageName: [""],
-    containerImageVersion: [""],
-    cmd: ["", Validators.required],
+    envShort: [''],
+    cmdShort: [''],
+    containerImage: ['', Validators.required],
+    containerImageName: [''],
+    containerImageVersion: [''],
+    cmd: ['', Validators.required],
     fetch: [[]],
     //fetchUri: ["", Validators.required],
-    fetchShort: "",
+    fetchShort: '',
     maxLaunchDelay: [3600],
     retry: [3],
     retryInterval: [300],
-    description: [""], //,
+    description: [''], //,
     //Time: [format(new Date(), 'yyyy-MM-dd HH:mm:ss'), Validators.required]
-    type: [""],
+    type: [''],
   });
   public jobForm = this.fb.group({
     //isAdd:[true],
-    JobId: ["", Validators.required],
-    JobName: ["", Validators.required],
-    CRON: ["", Validators.required],
-    TimeZone: ["Asia/Shanghai", Validators.required],
+    JobId: ['', Validators.required],
+    JobName: ['', Validators.required],
+    CRON: ['', Validators.required],
+    TimeZone: ['Asia/Shanghai', Validators.required],
     //Configure: ["", Validators.required],
     // Dependencies: [""],
     Dependencies: [[]],
-    Description: [""],
-    Time: [format(new Date(), "yyyy-MM-dd HH:mm:ss"), Validators.required],
-    UpdateTime: [""],
-    UserId: ["", Validators.required],
+    Description: [''],
+    Time: [format(new Date(), 'yyyy-MM-dd HH:mm:ss'), Validators.required],
+    UpdateTime: [''],
+    UserId: ['', Validators.required],
   });
   public environmentForm = this.fb.group({});
 
   public treeItems: any[] = [];
   //private jobId: string = "00000000-0000-0000-0000-000000000000";
   private jobIsAdd = true; //当前如果点保存,是新增还是修改
-  private action: string = "Add";
+  private action: string = 'Add';
   private isJobInfoFilled = false; //两部分,config和jobInfo.如果点保存时jobInfo未填写过,弹出弹窗
 
   //private userId = this.userProvider.getUserInfo().UserId;
-  private userId = "";
+  private userId = '';
 
   constructor(
     public config: ConfigService,
@@ -432,19 +433,17 @@ export class JobDigraphComponent implements OnInit {
     private pfUtil: PfUtil,
     public el: ElementRef
   ) {
-    var me=this;
+    var me = this;
     me.validColor = reference.validColor;
     me.invalidColor = reference.invalidColor;
 
-    me.userProvider.initUserInfo()
-    .subscribe(b=>{
-
-      var userInfo=me.userProvider.getUserInfo();
-      if(userInfo!=null){
-        me.userId=userInfo.UserId;
+    me.userProvider.initUserInfo().subscribe((b) => {
+      var userInfo = me.userProvider.getUserInfo();
+      if (userInfo != null) {
+        me.userId = userInfo.UserId;
       }
     });
-    
+
     me.cusListener = new Observable((observer: Observer<string>) => {
       me.cusListenerer = observer;
       //me.msg.info("1111");
@@ -577,7 +576,11 @@ export class JobDigraphComponent implements OnInit {
     var me = this;
     //me.getCurrentProcedure().procedureId
     me.digraphNodeData = me.procedureManager.getNodes().map((a) => {
-      return { id: me.digraphIdPrev + a.procedureId, label: a.procedureName,  data: { procedureType: a.type } };
+      return {
+        id: me.digraphIdPrev + a.procedureId,
+        label: a.procedureName,
+        data: { procedureType: a.type },
+      };
     });
     me.digraphLinkData = me.procedureManager.getLinks().map((a) => {
       return {
@@ -588,7 +591,7 @@ export class JobDigraphComponent implements OnInit {
           a.target.procedureId,
         source: me.digraphIdPrev + a.source.procedureId,
         target: me.digraphIdPrev + a.target.procedureId,
-        label: "",
+        label: '',
       };
     });
   }
@@ -616,16 +619,16 @@ export class JobDigraphComponent implements OnInit {
 
     for (let i = 0; i <= 6; i++) {
       this.menus.push({
-        value: "value" + i,
-        label: "item" + i,
+        value: 'value' + i,
+        label: 'item' + i,
       });
     }
 
     //me.testRequest();
-    let jobId = this.activatRouter.snapshot.paramMap.get("jobId");
-    this.jobIsAdd = jobId == undefined || jobId == null || jobId == "";
+    let jobId = this.activatRouter.snapshot.paramMap.get('jobId');
+    this.jobIsAdd = jobId == undefined || jobId == null || jobId == '';
     if (!this.isAdd()) {
-      this.action = "Update";
+      this.action = 'Update';
       this.reference
         // .request(
         //   "POST",
@@ -637,144 +640,146 @@ export class JobDigraphComponent implements OnInit {
         .getJob(jobId)
         .subscribe((response) => {
           //if (response.Success == "True" && response.Result != null) {
-            // let itemInfo = JSON.parse(
-            //   this.reference.base64Decode(response.Result)
-            // );
-            let itemInfo =response;
+          // let itemInfo = JSON.parse(
+          //   this.reference.base64Decode(response.Result)
+          // );
+          let itemInfo = response;
 
-            //console.log(itemInfo);
-            //this.baseForm.setValue(itemInfo);
-            var configObj = JSON.parse(
-              this.reference.base64Decode(itemInfo.Configure)
+          //console.log(itemInfo);
+          //this.baseForm.setValue(itemInfo);
+          var configObj = JSON.parse(
+            this.reference.base64Decode(itemInfo.Configure)
+          );
+
+          //如果数据库的from放进了不存在的from或to,要去掉(错误数据处理)
+          for (var i = 0; i < configObj.length; i++) {
+            var configI = configObj[i];
+            configI.from = configI.from.filter(
+              (a: any) =>
+                configObj.findIndex((b: any) => b.procedureId == a) > -1
             );
+            configI.to = configI.to.filter(
+              (a: any) =>
+                configObj.findIndex((b: any) => b.procedureId == a) > -1
+            );
+          }
 
-            //如果数据库的from放进了不存在的from或to,要去掉(错误数据处理)
-            for (var i = 0; i < configObj.length; i++) {
-              var configI = configObj[i];
-              configI.from = configI.from.filter(
-                (a:any) => configObj.findIndex((b:any) => b.procedureId == a) > -1
-              );
-              configI.to = configI.to.filter(
-                (a:any) => configObj.findIndex((b:any) => b.procedureId == a) > -1
-              );
-            }
+          //debugger;
+          for (var i = 0; i < configObj.length; i++) {
+            var configI = configObj[i];
 
-            //debugger;
-            for (var i = 0; i < configObj.length; i++) {
-              var configI = configObj[i];
+            //更新图表
+            var tmpJobConfig: ProcedureModel = {
+              isAdd: false,
+              procedureId: configI.procedureId,
+              procedureName: configI.procedureName,
+              status: configI.status,
+              from: configI.from,
+              to: configI.to,
+              env: configI.scheduler.env == null ? {} : configI.scheduler.env,
+              containerImage: configI.scheduler.container.docker.image,
+              cmd: configI.scheduler.cmd,
+              fetch:
+                configI.scheduler.fetch instanceof Array
+                  ? configI.scheduler.fetch
+                  : [],
+              maxLaunchDelay: configI.maxLaunchDelay,
+              retry: configI.retry,
+              retryInterval: configI.retryInterval,
+              description: configI.description,
+              type: configI.type,
+            };
+            me.procedureManager.addProcedure(tmpJobConfig);
 
-              //更新图表
-              var tmpJobConfig: ProcedureModel = {
-                isAdd: false,
-                procedureId: configI.procedureId,
-                procedureName: configI.procedureName,
-                status: configI.status,
-                from: configI.from,
-                to: configI.to,
-                env: configI.scheduler.env ==null? {}:configI.scheduler.env,
-                containerImage: configI.scheduler.container.docker.image,
-                cmd: configI.scheduler.cmd,
-                fetch:
-                  configI.scheduler.fetch instanceof Array
-                    ? configI.scheduler.fetch
-                    : [],
-                maxLaunchDelay: configI.maxLaunchDelay,
-                retry: configI.retry,
-                retryInterval: configI.retryInterval,
-                description: configI.description,
-                type: configI.type,
-              };
-              me.procedureManager.addProcedure(tmpJobConfig);
+            me.updateDigraphByProcedureManager();
+            //me.update$.next(true); //这里组件还未初始化,所以不用update
 
-              me.updateDigraphByProcedureManager();
-              //me.update$.next(true); //这里组件还未初始化,所以不用update
+            // setTimeout(function () {
+            //   //不延迟的话，居中会偏右，原因未明(似乎和“新增步骤”按钮的绝对定位有关)
+            //   me.updateDigraphByProcedureManager();
+            //   me.update$.next(true); //这里组件还未初始化,所以不用update
+            // }, 1000);
 
-              // setTimeout(function () {
-              //   //不延迟的话，居中会偏右，原因未明(似乎和“新增步骤”按钮的绝对定位有关)
-              //   me.updateDigraphByProcedureManager();
-              //   me.update$.next(true); //这里组件还未初始化,所以不用update
-              // }, 1000);
+            //更新数据
+            // //debugger;
+            me.jobConfigData.push(tmpJobConfig);
 
-              //更新数据
-              // //debugger;
-              me.jobConfigData.push(tmpJobConfig);
-
-              // me.digraphNodeData.push({
-              //   id: me.digraphIdPrev + configI.procedureId,
-              //   label: configI.procedureName,
-              // });
-              // //this.update$.next(true);
-              // for (var j = 0; j < configI.from.length; j++) {
-              //   if (
-              //     this.digraphLinkData.findIndex(
-              //       (x) =>
-              //         x.source == me.digraphIdPrev + configI.from[j] &&
-              //         x.target == me.digraphIdPrev + configI.procedureId
-              //     ) < 0
-              //   ) {
-              //     this.digraphLinkData.push({
-              //       id:
-              //         me.digraphIdPrev + configI.from[j] + configI.procedureId,
-              //       source: me.digraphIdPrev + configI.from[j],
-              //       target: me.digraphIdPrev + configI.procedureId,
-              //       label: "",
-              //     });
-              //   }
-              // }
-              // for (var j = 0; j < configI.to.length; j++) {
-              //   if (
-              //     this.digraphLinkData.findIndex(
-              //       (x) =>
-              //         x.source == me.digraphIdPrev + configI.procedureId &&
-              //         x.target == me.digraphIdPrev + configI.to[j]
-              //     ) < 0
-              //   ) {
-              //     this.digraphLinkData.push({
-              //       id: me.digraphIdPrev + configI.procedureId + configI.to[j],
-              //       source: me.digraphIdPrev + configI.procedureId,
-              //       target: me.digraphIdPrev + configI.to[j],
-              //       label: "",
-              //     });
-              //   }
-              // }
-              // //this.update$.next(true);
-            }
-
-            //me.procedureManager.printContent();
-
-            // for (var i = 0; i < configObj.length; i++) {
-            //   var configI = configObj[i];
-
-            //   for (var j = 0; j < configI.from.length; j++) {
+            // me.digraphNodeData.push({
+            //   id: me.digraphIdPrev + configI.procedureId,
+            //   label: configI.procedureName,
+            // });
+            // //this.update$.next(true);
+            // for (var j = 0; j < configI.from.length; j++) {
+            //   if (
+            //     this.digraphLinkData.findIndex(
+            //       (x) =>
+            //         x.source == me.digraphIdPrev + configI.from[j] &&
+            //         x.target == me.digraphIdPrev + configI.procedureId
+            //     ) < 0
+            //   ) {
             //     this.digraphLinkData.push({
-            //       id: configI.from[j] + configI.procedureId,
-            //       source: configI.from[j],
-            //       target: configI.procedureId,
-            //       label: "",
-            //     });
-            //   }
-            //   for (var j = 0; j < configI.to.length; j++) {
-            //     this.digraphLinkData.push({
-            //       id: configI.procedureId + configI.to[j],
-            //       source: configI.procedureId,
-            //       target: configI.to[j],
+            //       id:
+            //         me.digraphIdPrev + configI.from[j] + configI.procedureId,
+            //       source: me.digraphIdPrev + configI.from[j],
+            //       target: me.digraphIdPrev + configI.procedureId,
             //       label: "",
             //     });
             //   }
             // }
-            //debugger;
-            //me.jobForm.setValue(itemInfo);
-            itemInfo.Dependencies = itemInfo.Dependencies.split(",");
-            me.jobForm.patchValue(itemInfo);
-            me.cronData = itemInfo.CRON;
-            me.isJobInfoFilled = true;
+            // for (var j = 0; j < configI.to.length; j++) {
+            //   if (
+            //     this.digraphLinkData.findIndex(
+            //       (x) =>
+            //         x.source == me.digraphIdPrev + configI.procedureId &&
+            //         x.target == me.digraphIdPrev + configI.to[j]
+            //     ) < 0
+            //   ) {
+            //     this.digraphLinkData.push({
+            //       id: me.digraphIdPrev + configI.procedureId + configI.to[j],
+            //       source: me.digraphIdPrev + configI.procedureId,
+            //       target: me.digraphIdPrev + configI.to[j],
+            //       label: "",
+            //     });
+            //   }
+            // }
+            // //this.update$.next(true);
+          }
 
-            // setTimeout(function () {
-            //   me.updateDigraphByProcedureManager();
-            //   me.update$.next(true); //这里组件还未初始化,所以不用update
-            // }, 1000);
-            // me.updateDigraphByProcedureManager();
-            // me.update$.next(true); //这里组件还未初始化,所以不用update
+          //me.procedureManager.printContent();
+
+          // for (var i = 0; i < configObj.length; i++) {
+          //   var configI = configObj[i];
+
+          //   for (var j = 0; j < configI.from.length; j++) {
+          //     this.digraphLinkData.push({
+          //       id: configI.from[j] + configI.procedureId,
+          //       source: configI.from[j],
+          //       target: configI.procedureId,
+          //       label: "",
+          //     });
+          //   }
+          //   for (var j = 0; j < configI.to.length; j++) {
+          //     this.digraphLinkData.push({
+          //       id: configI.procedureId + configI.to[j],
+          //       source: configI.procedureId,
+          //       target: configI.to[j],
+          //       label: "",
+          //     });
+          //   }
+          // }
+          //debugger;
+          //me.jobForm.setValue(itemInfo);
+          itemInfo.Dependencies = itemInfo.Dependencies.split(',');
+          me.jobForm.patchValue(itemInfo);
+          me.cronData = itemInfo.CRON;
+          me.isJobInfoFilled = true;
+
+          // setTimeout(function () {
+          //   me.updateDigraphByProcedureManager();
+          //   me.update$.next(true); //这里组件还未初始化,所以不用update
+          // }, 1000);
+          // me.updateDigraphByProcedureManager();
+          // me.update$.next(true); //这里组件还未初始化,所以不用update
           //}
         });
     } else {
@@ -792,7 +797,7 @@ export class JobDigraphComponent implements OnInit {
       //   "",
       //   false
       // )
-      .getImageList("","")
+      .getImageList('', '')
       .subscribe((response) => {
         // if (response.Success == "True") {
         //   var data = JSON.parse(this.reference.base64Decode(response.Result));
@@ -803,7 +808,7 @@ export class JobDigraphComponent implements OnInit {
         //   }
         //   //console.log(data);
         // }
-        
+
         me.containerImage.splice(0, me.containerImage.length);
         for (var i = 0; i < response.length; i++) {
           me.containerImage.push(response[i]);
@@ -846,7 +851,6 @@ export class JobDigraphComponent implements OnInit {
     // me.cusListener = new Observable((observer: Observer<string>) => {
     //   me.msg.info("收到事件"+observer);
     // });
-
   }
 
   back(): void {
@@ -870,9 +874,9 @@ export class JobDigraphComponent implements OnInit {
       containerImage:
         //"https://uat-registry.perfect99.com/" +
         me.imageBaseUrl +
-        "/" +
+        '/' +
         baseFormObj.containerImageName +
-        ":" +
+        ':' +
         baseFormObj.containerImageVersion,
     });
   }
@@ -913,7 +917,7 @@ export class JobDigraphComponent implements OnInit {
         //   }
         //   me.updateContainerImage();
         // }
-        
+
         me.containerImageVersion = response;
         if (me.containerImageVersion.length > 0) {
           me.procedureForm.patchValue({
@@ -929,7 +933,7 @@ export class JobDigraphComponent implements OnInit {
   }
 
   fmt(a: boolean): String {
-    return "aa";
+    return 'aa';
   }
 
   // encrypt(): void {
@@ -1039,14 +1043,14 @@ export class JobDigraphComponent implements OnInit {
     //me.cusListener.toPromise();
     //return;
     if (me.jobConfigData.length < 1) {
-      me.msg.info("没有建任何步骤");
+      me.msg.info('没有建任何步骤');
       return;
     }
-    if (!me.isJobInfoFilled&&me.cusListener!=null) {
-      me.msg.info("请先填写作业信息");
+    if (!me.isJobInfoFilled && me.cusListener != null) {
+      me.msg.info('请先填写作业信息');
       me.cusListener.subscribe({
-        next: (x) => me.msg.info("3333" + x),
-        error: (err) => me.msg.info("4444" + err),
+        next: (x) => me.msg.info('3333' + x),
+        error: (err) => me.msg.info('4444' + err),
         complete: () => {
           //me.msg.info("5555");
           me.saveJob();
@@ -1079,14 +1083,14 @@ export class JobDigraphComponent implements OnInit {
     //   });
   }
 
-  getNewNodeName():string{
-    var me=this;
-    var i:number=me.jobConfigData.length + 1;
-    while(true){
-      var n="n" + me.pfUtil.padZeroLeft(i , 3);
-      if(me.jobConfigData.findIndex(a=>a.procedureName==n)>-1){
+  getNewNodeName(): string {
+    var me = this;
+    var i: number = me.jobConfigData.length + 1;
+    while (true) {
+      var n = 'n' + me.pfUtil.padZeroLeft(i, 3);
+      if (me.jobConfigData.findIndex((a) => a.procedureName == n) > -1) {
         i++;
-      }else{
+      } else {
         return n;
       }
     }
@@ -1175,7 +1179,7 @@ export class JobDigraphComponent implements OnInit {
   }
 
   handleCancel(): void {
-    console.log("EditProcedurePopups closed");
+    console.log('EditProcedurePopups closed');
     var me = this;
     if (
       me.isFetchPopupsLoading &&
@@ -1197,7 +1201,7 @@ export class JobDigraphComponent implements OnInit {
           id: me.digraphIdPrev + a + baseFormObj.procedureId,
           source: me.digraphIdPrev + a,
           target: me.digraphIdPrev + baseFormObj.procedureId,
-          label: "",
+          label: '',
         };
       }),
       ...baseFormObj.to.map((a) => {
@@ -1205,7 +1209,7 @@ export class JobDigraphComponent implements OnInit {
           id: me.digraphIdPrev + baseFormObj.procedureId + a,
           source: me.digraphIdPrev + baseFormObj.procedureId,
           target: me.digraphIdPrev + a,
-          label: "",
+          label: '',
         };
       }),
     ];
@@ -1244,26 +1248,26 @@ export class JobDigraphComponent implements OnInit {
   }
   //画图相关
   public getStyles(
-    node:any //: Node
+    node: any //: Node
   ): any {
     var c =
       node.data != undefined && node.data.backgroundColor != undefined
         ? node.data.backgroundColor
-        : "red";
+        : 'red';
     //console.info(c);
     return {
-      "background-color": c,
+      'background-color': c,
     };
   }
-  public onLegendLabelClick(e:any): any {
-    console.info("dddd");
+  public onLegendLabelClick(e: any): any {
+    console.info('dddd');
     console.info(e);
   }
   // private nodeToProcedure(p:Node){
   //   return
   // }
   //pf-click-arrow组件的end事件的target有可能是node内部的任意元素
-  public findUpNodeDom(dom:any) :any{
+  public findUpNodeDom(dom: any): any {
     var me = this;
     if (
       dom.id != undefined &&
@@ -1276,7 +1280,7 @@ export class JobDigraphComponent implements OnInit {
     }
     return null;
   }
-  public onArrowMoveEnd(event:any) {
+  public onArrowMoveEnd(event: any) {
     // //me.isDragging = false;
     // //debugger;
     var me = this;
@@ -1289,11 +1293,10 @@ export class JobDigraphComponent implements OnInit {
       var endNode = me.jobConfigData.find(
         (a) => me.digraphIdPrev + a.procedureId == nodeDom.id
       );
-      if(startNode!=null&&endNode!=null){
-        
-      me.procedureManager.addLink(startNode, endNode);
-      me.updateDigraphByProcedureManager();
-      me.update$.next(true);
+      if (startNode != null && endNode != null) {
+        me.procedureManager.addLink(startNode, endNode);
+        me.updateDigraphByProcedureManager();
+        me.update$.next(true);
       }
     }
     // //debugger;
@@ -1314,14 +1317,13 @@ export class JobDigraphComponent implements OnInit {
       me.showEditProcedurePopups(event);
     } else if (PaintType.delete == me.currentPaintType) {
       this.modalService.confirm({
-        nzTitle: "<i>确定</i>",
-        nzContent: "<b>确定删除步骤" + event.label + "吗</b>",
+        nzTitle: '<i>确定</i>',
+        nzContent: '<b>确定删除步骤' + event.label + '吗</b>',
         nzOnOk: () => {
-          var tmpJobConfig :ProcedureModel|null= this.jobConfigData.find(
-            (x) => x.procedureName == event.label
-          )||null;
-          if(tmpJobConfig!=null){
-
+          var tmpJobConfig: ProcedureModel | null =
+            this.jobConfigData.find((x) => x.procedureName == event.label) ||
+            null;
+          if (tmpJobConfig != null) {
             me.doDeleteProcedure(tmpJobConfig);
           }
         },
@@ -1330,11 +1332,11 @@ export class JobDigraphComponent implements OnInit {
       //me.lineX2 = 500;
       //me.startMove$.next([event.position.x, event.position.y]);
 
-      console.info("arrow Click");
+      console.info('arrow Click');
       if (me.pfClickArrow.isDragging) {
         //不会进入这里，因为箭头挡住了
         //debugger;
-        console.info("arrow Click isDragging");
+        console.info('arrow Click isDragging');
         // //箭头挡住不会触发这里的click事件
         // me.onArrowMoveEnd(event);
         // me.arrowStartNode = null;
@@ -1368,43 +1370,41 @@ export class JobDigraphComponent implements OnInit {
       // });
     }
   }
-  public onLinkClick(event:any) {
+  public onLinkClick(event: any) {
     var me = this;
     //debugger;
-    console.info("onLinkClick");
+    console.info('onLinkClick');
     console.info(event);
     if (PaintType.none == me.currentPaintType) {
       //me.showEditProcedurePopups(event);
     } else if (PaintType.delete == me.currentPaintType) {
       var id = event.target.parentElement.parentElement.id; //"dig43424c97-b27b-4fd2-a569-0c041ced9acddig1c72eebd-23f3-d8f9-4994-d3a9300df0a7"
-      var idArr = id.split("dig");
-      var l:ProcedureModel|null = me.procedureManager.getNode(idArr[1]);
-      var r:ProcedureModel|null = me.procedureManager.getNode(idArr[2]);
-      if(l!=null&&r!=null){
-
+      var idArr = id.split('dig');
+      var l: ProcedureModel | null = me.procedureManager.getNode(idArr[1]);
+      var r: ProcedureModel | null = me.procedureManager.getNode(idArr[2]);
+      if (l != null && r != null) {
         this.modalService.confirm({
-          nzTitle: "<i>确定</i>",
+          nzTitle: '<i>确定</i>',
           nzContent:
-            "<b>确定删除关系 " +
+            '<b>确定删除关系 ' +
             l.procedureName +
-            "=>" +
+            '=>' +
             r.procedureName +
-            " 吗</b>",
+            ' 吗</b>',
           nzOnOk: () => {
             // var tmpJobConfig = this.jobConfigData.find(
             //   (x) => x.procedureName == event.label
             // );
             // me.doDeleteProcedure(tmpJobConfig);
             //me.procedureManager.deleteLinkByKey(idArr[1], idArr[2]);
-      if(l!=null&&l!=undefined&&r!=null){
-            me.procedureManager.deleteLink(l, r);
-      }
+            if (l != null && l != undefined && r != null) {
+              me.procedureManager.deleteLink(l, r);
+            }
             me.updateDigraphByProcedureManager();
             me.update$.next(true);
           },
         });
       }
-      
     }
   }
   public showEditProcedurePopups(e: any): any {
@@ -1418,12 +1418,14 @@ export class JobDigraphComponent implements OnInit {
     var tmpJobConfig = this.jobConfigData.find(
       (x) => x.procedureName == e.label
     );
-    if(tmpJobConfig==null){return;}
+    if (tmpJobConfig == null) {
+      return;
+    }
     //debugger;
     this.procedureForm.patchValue(tmpJobConfig);
     me.validENV = tmpJobConfig.env;
     me.updateENVShort();
-    me.validFetch = tmpJobConfig.fetch ||[];
+    me.validFetch = tmpJobConfig.fetch || [];
     me.updateUploadShort();
 
     // me.getHistoryData();
@@ -1473,7 +1475,7 @@ export class JobDigraphComponent implements OnInit {
               me.digraphIdPrev + baseFormObj.from[i] + baseFormObj.procedureId,
             source: me.digraphIdPrev + baseFormObj.from[i],
             target: me.digraphIdPrev + baseFormObj.procedureId,
-            label: "",
+            label: '',
           });
           // you have to return `{error: true}` to mark it as an error event
           //observer.next({ error: true, duplicated: true });
@@ -1491,7 +1493,7 @@ export class JobDigraphComponent implements OnInit {
             id: me.digraphIdPrev + baseFormObj.procedureId + baseFormObj.to[i],
             source: me.digraphIdPrev + baseFormObj.procedureId,
             target: me.digraphIdPrev + baseFormObj.to[i],
-            label: "",
+            label: '',
           });
           // you have to return `{error: true}` to mark it as an error event
           //observer.next({ error: true, duplicated: true });
@@ -1657,11 +1659,11 @@ export class JobDigraphComponent implements OnInit {
   }
   addPathToCmd(uri: string) {
     const me = this;
-    me.doAddUriToCmd(uri, "path");
+    me.doAddUriToCmd(uri, 'path');
   }
   addUriToCmd(uri: string) {
     const me = this;
-    me.doAddUriToCmd(uri, "uri");
+    me.doAddUriToCmd(uri, 'uri');
   }
   // /**
   //  *
@@ -1729,31 +1731,31 @@ export class JobDigraphComponent implements OnInit {
   //   me.msg.info("已添加:" + pathArr[1] + pathArr[2]);
   // }
 
-    /**
+  /**
    *
    * @param uri 格式如http://uat-dcos.perfect99.com:29201/download/xschedulerjob/testinsert_20210811085718.jar
    * @param urlType uri/path
    */
-     doAddUriToCmd(uri: string, urlType: string): void {
-      // debugger;
-      const me = this;
-      let s = me.getCurrentProcedure().cmd;
-      if (s == null || s === undefined) {
-        s = "";
-      }
-      if (s.length > 0 && s[s.length] !== " ") {
-        s += " ";
-      }
-      const pathArr = me.getFilePathByFetchDownloadUri(uri);
-      const sandboxPath = "$MESOS_SANDBOX/" + pathArr[1] + pathArr[2];
-      let isDone = false;
-      if ("" === s) {
-        if (ProcedureType.APP_JAVA === me.getCurrentProcedure().type) {
-          s += "chmod +x " + sandboxPath + " & java -jar " + sandboxPath;
-          isDone = true;
-        } else if (ProcedureType.APP_SPARK === me.getCurrentProcedure().type) {
-          s +=
-            "./bin/x-spark-submit \\\n\
+  doAddUriToCmd(uri: string, urlType: string): void {
+    // debugger;
+    const me = this;
+    let s = me.getCurrentProcedure().cmd;
+    if (s == null || s === undefined) {
+      s = '';
+    }
+    if (s.length > 0 && s[s.length] !== ' ') {
+      s += ' ';
+    }
+    const pathArr = me.getFilePathByFetchDownloadUri(uri);
+    const sandboxPath = '$MESOS_SANDBOX/' + pathArr[1] + pathArr[2];
+    let isDone = false;
+    if ('' === s) {
+      if (ProcedureType.APP_JAVA === me.getCurrentProcedure().type) {
+        s += 'chmod +x ' + sandboxPath + ' & java -jar ' + sandboxPath;
+        isDone = true;
+      } else if (ProcedureType.APP_SPARK === me.getCurrentProcedure().type) {
+        s +=
+          './bin/x-spark-submit \\\n\
             --class XxxClassFullName \\\n\
             --master mesos://uat-cloud.perfect99.com:11001 \\\n\
             --deploy-mode cluster \\\n\
@@ -1762,26 +1764,26 @@ export class JobDigraphComponent implements OnInit {
             --executor-memory 1G \\\n\
             --total-executor-cores 10 \\\n\
             --conf spark.driver.extraClassPath=/mnt/mesos/sandbox/*.jar \\\n\
-            " +
-            uri;
-          isDone = true;
-        } else if (ProcedureType.APP_DATAX === me.getCurrentProcedure().type) {
-          s += "/usr/local/datax/bin/datax.py  \n\
-            " + sandboxPath;
-          isDone = true;
-        }
+            ' +
+          uri;
+        isDone = true;
+      } else if (ProcedureType.APP_DATAX === me.getCurrentProcedure().type) {
+        s += '/usr/local/datax/bin/datax.py  \n\
+            ' + sandboxPath;
+        isDone = true;
       }
-      if (!isDone) {
-        if ("uri" === urlType) {
-          s += uri;
-        } else {
-          s += sandboxPath;
-        }
-      }
-      me.isFetchPopupsVisible = false;
-      me.procedureForm.patchValue({ cmd: s });
-      me.msg.info("已添加:" + pathArr[1] + pathArr[2]);
     }
+    if (!isDone) {
+      if ('uri' === urlType) {
+        s += uri;
+      } else {
+        s += sandboxPath;
+      }
+    }
+    me.isFetchPopupsVisible = false;
+    me.procedureForm.patchValue({ cmd: s });
+    me.msg.info('已添加:' + pathArr[1] + pathArr[2]);
+  }
   getFetchDownloadUri(uri: string): string {
     var me = this;
     //旧版本的下载url是这种形式：http://localhost:29201/download?filePath=testPath001%2Ftest001国_20210702172118.jar
@@ -1791,7 +1793,7 @@ export class JobDigraphComponent implements OnInit {
     //   encodeURIComponent(uri)
     // );
     //新版本的下载url优化成这种形式：http://localhost:29201/download/testPath001/test001_20210702164841.jar(这是为了便于第三方下载此文件时用/分隔文件名)
-    return me.config.getUploadBaseUrl() + "/download/" + uri;
+    return me.config.getUploadBaseUrl() + '/download/' + uri;
   }
   getFilePathByFetchDownloadUri(uri: string): string[] {
     var me = this;
@@ -1833,19 +1835,19 @@ export class JobDigraphComponent implements OnInit {
     // me.baseForm.patchValue({fetchShort:"已上传"+me.baseForm.value.fetch.length+"个"});
     me.procedureForm.patchValue({
       //fetchShort: "已上传" + me.validFetch.length + "个", //,
-      fetchShort: "已选择" + me.validFetch.length + "个", //,
+      fetchShort: '已选择' + me.validFetch.length + '个', //,
       //fetch: me.fetchGridData,
     });
   }
   updateENVShort() {
     var me = this;
     me.procedureForm.patchValue({
-      envShort: Object.keys(me.validENV).join(","),
+      envShort: Object.keys(me.validENV).join(','),
     });
   }
-  handleUpload = (item:any): any => {
+  handleUpload = (item: any): any => {
     //debugger;
-    console.info("aaaaaaaaaaaaaaaaaaaaaaaaa");
+    console.info('aaaaaaaaaaaaaaaaaaaaaaaaa');
     var me = this;
     me.isFetchPopupsLoading = true;
     me.mainLoading = true;
@@ -1865,23 +1867,23 @@ export class JobDigraphComponent implements OnInit {
     //   funcName: baseFormObj.procedureName??baseFormObj.procedureId,
     //   id:baseFormObj.procedureId
     // });
-    formData.append("file", item.file as any);
-    formData.append("filePath", "xschedulerjob");
+    formData.append('file', item.file as any);
+    formData.append('filePath', 'xschedulerjob');
     formData.append(
-      "funcName",
+      'funcName',
       baseFormObj.procedureName || baseFormObj.procedureId
     );
-    formData.append("id", baseFormObj.procedureId);
+    formData.append('id', baseFormObj.procedureId);
     // let headers = new HttpHeaders();
     // headers= headers.set('content-type', 'text/plain;charset=utf-8');
-    const req = new HttpRequest("POST", item.action, formData, {
-      responseType: "text",
+    const req = new HttpRequest('POST', item.action, formData, {
+      responseType: 'text',
       reportProgress: true,
       //headers:headers
       // reportProgress: true
     });
     me.uploadedPercent = 0;
-    me.uploadStatus = "active";
+    me.uploadStatus = 'active';
 
     //远程
     // me.fetchPopupsUploadingSubscription = me.http
@@ -1973,14 +1975,14 @@ export class JobDigraphComponent implements OnInit {
     //       me.uploadStatus = "exception";
     //     }
     //   );
-    
+
     //本地模拟
     // const observable = new Observable<string>((subscriber) => {
     //   var total=100;
     //   for(var i=0;i<10;i++){
     //       me.uploadedPercent = Math.ceil((10*i * 100) / total);
 
-    //   }      
+    //   }
     //   // formData.append("file", item.file as any);
     //   // formData.append("filePath", "xschedulerjob");
     //   //debugger;
@@ -1997,20 +1999,25 @@ export class JobDigraphComponent implements OnInit {
     //   me.reference.saveFile(file);
     //   subscriber.next(fileName);
     // });
-    
-    var total=100;
-    for(var i=0;i<10;i++){
-        me.uploadedPercent = Math.ceil((10*i * 100) / total);
 
-    }      
-    me.reference.saveFile(baseFormObj.procedureId,"xschedulerjob",baseFormObj.procedureName || baseFormObj.procedureId,item.file)
+    var total = 100;
+    for (var i = 0; i < 10; i++) {
+      me.uploadedPercent = Math.ceil((10 * i * 100) / total);
+    }
+    me.reference
+      .saveFile(
+        baseFormObj.procedureId,
+        'xschedulerjob',
+        baseFormObj.procedureName || baseFormObj.procedureId,
+        item.file
+      )
       .subscribe(
         (event: string) => {
           //debugger;
           // this.uploading = false;
           // this.fileList = [];
           //debugger;
-          this.msg.success("上传镜像成功.");
+          this.msg.success('上传镜像成功.');
           //var uri = event;
           var path = event;
           const uri = me.getFetchDownloadUri(path);
@@ -2051,10 +2058,7 @@ export class JobDigraphComponent implements OnInit {
           //me.procedureForm.patchValue({ fetch: me.validFetch });
 
           //新版fetch用下拉
-          var fetch = [
-            ...(baseFormObj.fetch || []),
-            uri,
-          ];
+          var fetch = [...(baseFormObj.fetch || []), uri];
           //me.getHistoryData();
           me.getFetchList();
           // debugger;
@@ -2069,8 +2073,8 @@ export class JobDigraphComponent implements OnInit {
         (err) => {
           //debugger;
           // this.uploading = false;
-          me.msg.error("上传失败.");
-          me.uploadStatus = "exception";
+          me.msg.error('上传失败.');
+          me.uploadStatus = 'exception';
         }
       );
   };
@@ -2097,16 +2101,16 @@ export class JobDigraphComponent implements OnInit {
     var me = this;
     this.reference
       .request(
-        "POST",
-        "DcosService/GetFileList",
+        'POST',
+        'DcosService/GetFileList',
         this.userProvider.getToken(),
         //"",
         //[{ key: "id", value: "1403141437104" }], //id改为me.baseForm.procedureId--benjamin todo
-        [{ key: "id", value: me.getCurrentProcedure().procedureId }], //id改为me.baseForm.procedureId--benjamin todo
+        [{ key: 'id', value: me.getCurrentProcedure().procedureId }], //id改为me.baseForm.procedureId--benjamin todo
         false
       )
       .subscribe((response) => {
-        if (response.Success == "True") {
+        if (response.Success == 'True') {
           var data = JSON.parse(this.reference.base64Decode(response.Result));
           //me.containerImage=[];
           me.fetchHistoryGridData = data;
@@ -2138,47 +2142,44 @@ export class JobDigraphComponent implements OnInit {
       .getFileList(me.getCurrentProcedure().procedureId)
       .subscribe((response) => {
         //if (response.Success == "True") {
-          // var data: JobFile[] = JSON.parse(
-          //   this.reference.base64Decode(response.Result)
-          // );
-          var data: JobFile[] = response;
+        // var data: JobFile[] = JSON.parse(
+        //   this.reference.base64Decode(response.Result)
+        // );
+        var data: JobFile[] = response;
 
+        //me.containerImage=[];
+        //me.fetchHistoryGridData = data;
+        // for (var i = 0; i < me.fetchHistoryGridData.length; i++) {
+        //   me.fetchHistoryGridData[i].Url = me.getFetchDownloadUri(
+        //     me.fetchHistoryGridData[i].Url
+        //   );
+        // }
 
-          //me.containerImage=[];
-          //me.fetchHistoryGridData = data;
-          // for (var i = 0; i < me.fetchHistoryGridData.length; i++) {
-          //   me.fetchHistoryGridData[i].Url = me.getFetchDownloadUri(
-          //     me.fetchHistoryGridData[i].Url
-          //   );
-          // }
-
-          //debugger;
-          me.fetchList = [
-            ...me.validFetch,
-            ...data
-              .map((a) => {
-                var r: FetchUri = {
-                  uri: me.getFetchDownloadUri(a.Url),
-                  extract: true,
-                  executable: true,
-                  cache: false,
-                };
-                // r.uri = me.getFetchDownloadUri(a);
-                return r;
-              })
-              .filter(
-                (a) => me.validFetch.findIndex((b) => b.uri == a.uri) < 0
-              ),
-          ];
-          me.fetchHistoryCheckedId.clear();
-          me.validFetch.map((a) => {
-            me.fetchHistoryCheckedId.add(a.uri);
-          });
-          // me.listOfData.splice(0,me.listOfData.length);
-          // for(var i=0;i<data.length;i++){
-          //   me.listOfData.push(data[i]);
-          // }
-          console.log(me.fetchHistoryGridData);
+        //debugger;
+        me.fetchList = [
+          ...me.validFetch,
+          ...data
+            .map((a) => {
+              var r: FetchUri = {
+                uri: me.getFetchDownloadUri(a.Url),
+                extract: true,
+                executable: true,
+                cache: false,
+              };
+              // r.uri = me.getFetchDownloadUri(a);
+              return r;
+            })
+            .filter((a) => me.validFetch.findIndex((b) => b.uri == a.uri) < 0),
+        ];
+        me.fetchHistoryCheckedId.clear();
+        me.validFetch.map((a) => {
+          me.fetchHistoryCheckedId.add(a.uri);
+        });
+        // me.listOfData.splice(0,me.listOfData.length);
+        // for(var i=0;i<data.length;i++){
+        //   me.listOfData.push(data[i]);
+        // }
+        console.log(me.fetchHistoryGridData);
         //}
       });
   }
@@ -2282,16 +2283,16 @@ export class JobDigraphComponent implements OnInit {
     // me.fetchGridData.splice(0,me.fetchGridData.length);
     //debugger;
     let jobId = me.jobForm.value.JobId;
-    if (me.isAdd() && (jobId == undefined || jobId == null || jobId == "")) {
+    if (me.isAdd() && (jobId == undefined || jobId == null || jobId == '')) {
       this.jobForm.patchValue({
         JobId: Guid.create().toString(),
-        Time: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+        Time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
         UserId: me.userId,
       });
     }
     me.isJobInfoPopupsVisible = true;
   }
-  onCronChange(event:any): void {
+  onCronChange(event: any): void {
     var me = this;
     console.info(event);
     console.info(me.cronData);
@@ -2328,8 +2329,8 @@ export class JobDigraphComponent implements OnInit {
       jobConfig.push({
         procedureId: me.jobConfigData[i].procedureId,
         procedureName: me.jobConfigData[i].procedureName,
-        schedulerId: "",
-        status: "NONE",
+        schedulerId: '',
+        status: 'NONE',
         maxLaunchDelay: me.jobConfigData[i].maxLaunchDelay,
         retry: me.jobConfigData[i].retry,
         retryInterval: me.jobConfigData[i].retryInterval,
@@ -2337,12 +2338,12 @@ export class JobDigraphComponent implements OnInit {
         to: me.jobConfigData[i].to,
         type: me.jobConfigData[i].type,
         scheduler: {
-          user: "root",
-          cpus: "1.0",
-          mem: "1024.0",
+          user: 'root',
+          cpus: '1.0',
+          mem: '1024.0',
           env: me.jobConfigData[i].env,
           container: {
-            type: "MESOS",
+            type: 'MESOS',
             docker: {
               image: me.jobConfigData[i].containerImage, //"uat-registry.perfect99.com/datax:2021.05.17.0933",
               forcePullImage: false,
@@ -2362,8 +2363,8 @@ export class JobDigraphComponent implements OnInit {
           // ],
           networks: [
             {
-              name: "dcos",
-              mode: "container",
+              name: 'dcos',
+              mode: 'container',
             },
           ],
           constraints: [],
@@ -2393,7 +2394,7 @@ export class JobDigraphComponent implements OnInit {
     //debugger;
     var updateTime = me.isAdd()
       ? baseFormObj.Time
-      : format(new Date(), "yyyy-MM-dd HH:mm:ss");
+      : format(new Date(), 'yyyy-MM-dd HH:mm:ss');
     me.reference
       // .request(
       //   "POST",
@@ -2433,22 +2434,19 @@ export class JobDigraphComponent implements OnInit {
       //     UpdateTime: updateTime,
       //   }
       // )
-      .saveJob(
-          {
-            JobId: baseFormObj.JobId,
-            JobName: baseFormObj.JobName,
-            CRON: baseFormObj.CRON,
-            TimeZone: baseFormObj.TimeZone,
-            //"Configure":  baseFormObj.Configure ,
-            Configure: this.reference.base64Encode(JSON.stringify(jobConfig)),
-            Dependencies: baseFormObj.Dependencies,
-            Description: baseFormObj.Description,
-            Time: baseFormObj.Time,
-            UserId: me.userId,
-            UpdateTime: updateTime,
-          }
-
-      )
+      .saveJob({
+        JobId: baseFormObj.JobId,
+        JobName: baseFormObj.JobName,
+        CRON: baseFormObj.CRON,
+        TimeZone: baseFormObj.TimeZone,
+        //"Configure":  baseFormObj.Configure ,
+        Configure: this.reference.base64Encode(JSON.stringify(jobConfig)),
+        Dependencies: baseFormObj.Dependencies,
+        Description: baseFormObj.Description,
+        Time: baseFormObj.Time,
+        UserId: me.userId,
+        UpdateTime: updateTime,
+      })
       .subscribe((response) => {
         // //debugger;
         // if (response.Success == "True") {
@@ -2463,20 +2461,16 @@ export class JobDigraphComponent implements OnInit {
         // } else {
         //   me.msg.info(response.Message ?? "保存失败");
         // }
-        
-        me.msg.success("保存成功");
+
+        me.msg.success('保存成功');
         if (me.isAdd()) {
           // this.router.navigate([
           //   "computes/xSchedulerJob-edit/" + me.jobForm.value.JobId,
           // ]);
-          this.router.navigate([
-            "job-edit/" + me.jobForm.value.JobId,
-          ]);
+          this.router.navigate(['job-edit/' + me.jobForm.value.JobId]);
         } else {
           me.jobForm.patchValue({ UpdateTime: updateTime });
         }
-        
-        
       });
   }
   // setMediaUploadHeaders = (file: UploadFile) => {
@@ -2518,9 +2512,9 @@ export class JobDigraphComponent implements OnInit {
     // for (var i = me.environmentListOfControl.length-1; i >=0; i--) {
     //   me.doRemoveField(me.environmentListOfControl[i], "environment");
     // }
-    me.doRemoveAllField("environment");
+    me.doRemoveAllField('environment');
     for (let key in me.validENV) {
-      me.doAddField("environment", key, me.validENV[key]);
+      me.doAddField('environment', key, me.validENV[key]);
     }
     me.isENVPopupsVisible = true;
   }
@@ -2532,7 +2526,7 @@ export class JobDigraphComponent implements OnInit {
     //}
     me.isCRONPopupsVisible = true;
   }
-  passengerChange(property:any): void {
+  passengerChange(property: any): void {
     // var list = new Array();
     // var json= JSON.parse(this.description);
     // let itemInfo:any ;
@@ -2562,7 +2556,7 @@ export class JobDigraphComponent implements OnInit {
     i: { id: number; key: string; value: string },
     type: string
   ): void {
-    if (type == "environment") {
+    if (type == 'environment') {
       if (this.environmentListOfControl.length > 0) {
         const index = this.environmentListOfControl.indexOf(i);
         this.environmentListOfControl.splice(index, 1);
@@ -2636,7 +2630,7 @@ export class JobDigraphComponent implements OnInit {
 
     // var json= JSON.parse(this.description);
 
-    if (type == "environment") {
+    if (type == 'environment') {
       const id =
         this.environmentListOfControl.length > 0
           ? this.environmentListOfControl[
@@ -2698,7 +2692,7 @@ export class JobDigraphComponent implements OnInit {
     if (e) {
       e.preventDefault();
     }
-    me.doAddField(type, "", "");
+    me.doAddField(type, '', '');
     // // var json= JSON.parse(this.description);
 
     // if (type == "environment") {
@@ -2773,7 +2767,7 @@ export class JobDigraphComponent implements OnInit {
     me.updateENVShort();
     me.isENVPopupsVisible = false;
   }
-  saveCRON(event:any): void {
+  saveCRON(event: any): void {
     var me = this;
 
     me.jobForm.patchValue({ CRON: me.cronData });
@@ -2852,51 +2846,47 @@ export class JobDigraphComponent implements OnInit {
   setProcedureImage(procedureType: string) {
     var me = this;
     const observable = new Observable<boolean>((subscriber) => {
+      //下拉框
+      this.reference.getImageList('', procedureType).subscribe((response) => {
+        var data = response;
+        //debugger;
+        const image: RegistryImage | null = data.length > 0 ? data[0] : null;
+        // this.reference
+        //   .getImageVersionList(image)
+        //   .subscribe((response) => {
+        //       var versionData: any[] = response;
+        //       if (versionData.length > 0) {
+        //         me.procedureForm.patchValue({
+        //           containerImage:
+        //             //"https://uat-registry.perfect99.com/" +
+        //             me.imageBaseUrl + "/" + image + ":" + versionData[0],
+        //             type: procedureType,
+        //         });
+        //         subscriber.next(true);
+        //       }else{
 
-    //下拉框
-    this.reference
-      .getImageList("",procedureType)
-      .subscribe((response) => {
-
-          var data=response;
-          //debugger;
-          const image: RegistryImage | null = data.length > 0 ? data[0] : null;
-          // this.reference
-          //   .getImageVersionList(image)
-          //   .subscribe((response) => {
-          //       var versionData: any[] = response;
-          //       if (versionData.length > 0) {
-          //         me.procedureForm.patchValue({
-          //           containerImage:
-          //             //"https://uat-registry.perfect99.com/" +
-          //             me.imageBaseUrl + "/" + image + ":" + versionData[0],
-          //             type: procedureType,
-          //         });
-          //         subscriber.next(true);
-          //       }else{
-                  
-          //       subscriber.next(false);
-          //       }
-          //   });
-          if (image != null) {
-            this.reference
-              .getImageDockerList(image.Name)
-              .subscribe((response2) => {
-                const versionData: any[] = response2.map((a) => a.tag);
-                if (versionData.length > 0) {
-                  me.procedureForm.patchValue({
-                    containerImage:
-                      me.imageBaseUrl + "/" + image.Name + ":" + versionData[0],
-                    type: procedureType,
-                  });
-                  subscriber.next(true);
-                } else {
-                  subscriber.next(false);
-                }
-              });
-          } else {
-            subscriber.next(false);
-          }
+        //       subscriber.next(false);
+        //       }
+        //   });
+        if (image != null) {
+          this.reference
+            .getImageDockerList(image.Name)
+            .subscribe((response2) => {
+              const versionData: any[] = response2.map((a) => a.tag);
+              if (versionData.length > 0) {
+                me.procedureForm.patchValue({
+                  containerImage:
+                    me.imageBaseUrl + '/' + image.Name + ':' + versionData[0],
+                  type: procedureType,
+                });
+                subscriber.next(true);
+              } else {
+                subscriber.next(false);
+              }
+            });
+        } else {
+          subscriber.next(false);
+        }
       });
     });
     return observable;
@@ -2905,25 +2895,24 @@ export class JobDigraphComponent implements OnInit {
   onProcedureMoveDrop(event: PfDropModel) {
     var me = this;
     me.isProcedureFormLoading = true;
-    console.info("onProcedureMoveDrop");
+    console.info('onProcedureMoveDrop');
 
     me.newNodeX = event.x2;
     me.newNodeY = event.y2;
 
     me.addProcedure();
     var dragDom: any = event.dragDom;
-    console.info(dragDom.attributes["procedureType"]);
+    console.info(dragDom.attributes['procedureType']);
 
-    if (dragDom.attributes["procedureType"] == undefined) {
+    if (dragDom.attributes['procedureType'] == undefined) {
       return;
     }
-    var procedureType = dragDom.attributes["procedureType"].value;
-
+    var procedureType = dragDom.attributes['procedureType'].value;
 
     // me.setProcedureImage(procedureType).subscribe((a) => {
     //   me.isProcedureFormLoading = false;
     // });
-    if ("APP_DEFAULT" !== procedureType) {
+    if ('APP_DEFAULT' !== procedureType) {
       me.setProcedureImage(procedureType).subscribe(
         (a) => {
           me.isProcedureFormLoading = false;
@@ -2948,9 +2937,9 @@ export class JobDigraphComponent implements OnInit {
     //debugger;
     return !(
       me.procedureForm.value.cmd == null ||
-      me.procedureForm.value.cmd == "" ||
+      me.procedureForm.value.cmd == '' ||
       me.procedureForm.value.fetch == null ||
-      me.procedureForm.value.fetch == ""
+      me.procedureForm.value.fetch == ''
     );
     // me.procedureForm.value.fetch == null || me.procedureForm.value.fetch == ""
     //   ? me.validColor
@@ -2960,7 +2949,7 @@ export class JobDigraphComponent implements OnInit {
     var me = this;
     return !(
       me.cronData == null ||
-      me.cronData == "" ||
+      me.cronData == '' ||
       me.cronData == me.emptyCronData
     ); //某些未知原因，组件会自动把cronData更新为"0 0 0 ? * * *"，所以这个值也认为是验证没通过，是没问题的
   }
@@ -2969,14 +2958,14 @@ export class JobDigraphComponent implements OnInit {
     //debugger;
     return !(
       me.procedureForm.value.containerImage == null ||
-      me.procedureForm.value.containerImage == ""
+      me.procedureForm.value.containerImage == ''
     );
     // me.procedureForm.value.fetch == null || me.procedureForm.value.fetch == ""
     //   ? me.validColor
     //   : me.invalidColor;
   }
-  isJobValid(){
-    var me=this;
+  isJobValid() {
+    var me = this;
     return !me.jobForm.valid || !me.isCronTabValid();
   }
   // // 监听document移动事件事件
@@ -2995,4 +2984,7 @@ export class JobDigraphComponent implements OnInit {
     var me = this;
     return me.reference.getProcedureIconImage(procedureType);
   }
+  // public testIf() {
+  //   console.info('---------------------testIf-------------------' + new Date());
+  // }
 }

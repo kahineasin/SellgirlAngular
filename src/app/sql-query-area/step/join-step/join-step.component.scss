@@ -1,0 +1,19 @@
+.pf-select-ul li {
+  min-height: 32px;
+  padding: 5px 12px;
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  /*我增加的样式*/
+  font-size: 14px;
+}
+.pf-select-ul li.selected {
+  background-color: #b7e8ff;
+}
+.pf-select-ul li:hover {
+  background-color: #e6f7ff;
+}

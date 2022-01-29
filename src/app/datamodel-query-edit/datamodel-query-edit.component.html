@@ -1,0 +1,73 @@
+<div class="form-page">
+  <div class="page-header flexDiv">
+    <!-- <div class="flexDiv"> -->
+    <div class="left">
+      <div class="back" style="float:left">
+        <a (click)="back()"><i nz-icon nzType="left" nzTheme="outline"></i>返回</a>
+      </div>
+    </div>
+    <div class="center">
+      数据模型查询:&nbsp;{{ isDatamodelAdd ? "新增" : datamodelQueryName }}
+    </div>
+    <div class="right">
+      <ng-container *ngIf="databaseId>-1" style="" class="toolbar">
+        <button nz-button nzType="default" (click)="goTableListPage()">查看数据</button>
+        &nbsp;
+        <button nz-button nzType="default" (click)="openSqlPopups()">查看sql语句</button>
+      </ng-container>
+    </div>
+    <!-- </div> -->
+  </div>
+  <div class="page-form" style="position: relative; padding-left: 10px">
+    <div>{{ getCurrentFilter() }}</div>
+    <!-- <p>databaseUUID:{{databaseUUID}}</p> -->
+    <sql-query-area *ngIf="query" [(databaseId)]="databaseId" [question]="question" [query]="query.query['query']"
+      [isFirstFloor]="true" [(showXForFirstTime)]="showXForFirstTime" (queryAddLevel)="onQueryAddLevel($event)"
+      (queryDeleteLevel)="onQueryDeleteLevel($event)" (tableIdChange)="onTableIdChange($event)"></sql-query-area>
+  </div>
+  <div class="page-bottom">
+    <button nz-button nzType="primary" type="button" (click)="confirm()">
+      确定保存
+    </button>
+    <nz-modal [(nzVisible)]="isAddModelVisible" [nzTitle]="isDatamodelAdd ? '新增问题' : '编辑问题'"
+      (nzOnCancel)="addModelCancel()" (nzOnOk)="addModelOk()">
+      <ng-container *nzModalContent>
+        <form nz-form class="login-form">
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" nzRequired>模型名称</nz-form-label>
+            <nz-form-control>
+              <input nz-input [(ngModel)]="datamodelQueryName" [ngModelOptions]="{ standalone: true }" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="4" nzRequired>模型说明</nz-form-label>
+            <nz-form-control>
+              <textarea [(ngModel)]="description" [ngModelOptions]="{ standalone: true }" nz-input rows="4"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSm]="4">选择分组</nz-form-label>
+            <nz-form-control>
+              <nz-select [(ngModel)]="groupSelectedValue" [ngModelOptions]="{ standalone: true }">
+                <nz-option nzLabel="无" nzValue=""></nz-option>
+                <nz-option *ngFor="let item of modelGroupList" [nzLabel]="item.Name" [nzValue]="item.Id"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+    </nz-modal>
+    <button nz-button nzType="default" type="button" (click)="back()">
+      返 回
+    </button>
+  </div>
+  <nz-modal [(nzVisible)]="isSqlPopupsVisible" [nzTitle]="'这个查询的SQL语句'" (nzOnCancel)="isSqlPopupsVisible=false">
+    <ng-container *nzModalContent>
+      <p>{{sql}}</p>
+    </ng-container>
+    <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="isSqlPopupsVisible=false">关闭</button>
+      <button nz-button nzType="default" (click)="copySql()">复制sql</button>
+    </div>
+  </nz-modal>
+</div>

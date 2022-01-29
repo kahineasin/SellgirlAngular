@@ -1,0 +1,326 @@
+<div style="display: flex; flex-flow: row">
+  <!--flex布局的这一层的高度和父级是一样的-->
+  <div style="width: 50%">
+    <div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor()">
+      <ng-template [ngIf]="!pfUtil.isListEmpty(query.aggregation)">
+        <div *ngFor="
+            let item of query.aggregation;
+            index as index;
+            first as first;
+            last as last;
+            odd as odd;
+            even as even
+          " class="NotebookCellItem" (click)="
+            initAggregationEditingParam(item, index);
+            selectAggregationPopups.open($event.currentTarget)
+          " [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+          <!-- <span> aa </span> -->
+          <ng-container *ngTemplateOutlet="aggregationFieldTpl; context: { field: item }"></ng-container>
+          <!-- <ng-container *ngTemplateOutlet="deleteTpl"></ng-container> -->
+          <i nz-icon class="sqlDeleteFieldBtn" (click)="query.aggregation.splice(index, 1); breakoutChange.emit()"><svg
+              class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+              <path d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "></path>
+            </svg>
+          </i>
+        </div>
+
+        <div class="NotebookCellItem" (click)="
+            initAggregationAddingParam();
+            selectAggregationPopups.open($event.currentTarget)
+          " [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+          <i nz-icon style="color: white">
+            <svg viewBox="0 0 32 32" width="16" height="16">
+              <path
+                d="M12.4285714,12.4285714 L12.4285714,0 L19.5714286,0 L19.5714286,12.4285714 L32,12.4285714 L32,19.5714286 L19.5714286,19.5714286 L19.5714286,32 L12.4285714,32 L12.4285714,19.5714286 L0,19.5714286 L0,12.4285714 L12.4285714,12.4285714 Z">
+              </path>
+            </svg>
+            <!-- <p>afdafdsdf</p> -->
+          </i>
+        </div>
+      </ng-template>
+      <ng-template [ngIf]="pfUtil.isListEmpty(query.aggregation)">
+        <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor()" (click)="
+            initAggregationAddingParam();
+            selectAggregationPopups.open($event.currentTarget)
+          ">
+          <p style="display: inline">选择你要查看的指标</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <span style="
+      writing-mode: vertical-lr;
+      line-height: 16px;
+      vertical-align: middle;
+      text-align: center;
+      margin-right: 5px;
+      margin-left: 5px;
+    " [style.color]="getFrontColor()">通过</span>
+  <div style="width: 50%">
+    <div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor()">
+      <ng-template [ngIf]="!pfUtil.isListEmpty(query.breakout)">
+        <div *ngFor="
+            let item of query.breakout;
+            index as index;
+            first as first;
+            last as last;
+            odd as odd;
+            even as even
+          " class="NotebookCellItem" (click)="
+            initEditingParam(index);
+            selectBreakoutPopups.open($event.currentTarget)
+          " [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+          <!-- <span> aa </span> -->
+          <ng-container *ngTemplateOutlet="fieldTpl; context: { field: item }"></ng-container>
+          <!-- <ng-container *ngTemplateOutlet="deleteTpl"></ng-container> -->
+          <i nz-icon class="sqlDeleteFieldBtn" (click)="query.breakout.splice(index, 1); breakoutChange.emit()"><svg
+              class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+              <path d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "></path>
+            </svg>
+          </i>
+        </div>
+
+        <div class="NotebookCellItem" (click)="
+            initAddingParam(); selectBreakoutPopups.open($event.currentTarget)
+          " [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+          <i nz-icon>
+            <svg viewBox="0 0 32 32" width="16" height="16">
+              <path
+                d="M12.4285714,12.4285714 L12.4285714,0 L19.5714286,0 L19.5714286,12.4285714 L32,12.4285714 L32,19.5714286 L19.5714286,19.5714286 L19.5714286,32 L12.4285714,32 L12.4285714,19.5714286 L0,19.5714286 L0,12.4285714 L12.4285714,12.4285714 Z">
+              </path>
+            </svg>
+            <!-- <p>afdafdsdf</p> -->
+          </i>
+        </div>
+      </ng-template>
+      <ng-template [ngIf]="pfUtil.isListEmpty(query.breakout)">
+        <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor()" (click)="
+            initAddingParam(); selectBreakoutPopups.open($event.currentTarget)
+          ">
+          <p style="display: inline">选择分组的列</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<pf-dropdown-popups #selectAggregationPopups>
+  <ul *ngIf="'type' === aggregationStep" nz-menu nzMode="inline">
+    <li nz-submenu [nzTitle]="'基础指标'" nzIcon="table" [nzOpen]="true" [nzMenuClassName]="selectAggregationPopups.hashId">
+      <ul>
+        <ng-container *ngFor="let item of aggregationTypeList">
+          <li *ngIf="!hasAggregationNoFieldType(item.key)" nz-menu-item (click)="
+              goSelectAggregationField(item.key, selectAggregationPopups)
+            ">
+            {{ item.value }}
+          </li>
+        </ng-container>
+      </ul>
+    </li>
+    <li nz-menu-item (click)="aggregationStep = 'custom'">
+      <i nz-icon>
+        <svg viewBox="0 0 32 32">
+          <path
+            d="M3 27.41l1.984 4.422L27.895 32l.04-5.33-17.086-.125 8.296-9.457-.08-3.602L11.25 5.33H27.43V0H5.003L3.08 4.51l10.448 10.9z">
+          </path>
+        </svg> </i>自定义表达式
+    </li>
+  </ul>
+
+  <!-- <ul *ngIf="'field' === aggregationStep" nz-menu nzMode="inline">
+    <li class="popupsBackTitle">
+      <a (click)="aggregationStep = 'type'" style=""><i nz-icon nzType="left" nzTheme="outline"></i>{{
+        getAggregationTypeName() }}</a>
+    </li>
+    <ng-container *ngFor="
+        let item of sourceOutFieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      ">
+      <li *ngIf="!hasAggregation(item)" nz-menu-item (click)="
+          saveAggregationBySourceOut(item); selectAggregationPopups.close()
+        ">
+        {{ item[1] }}
+      </li>
+    </ng-container>
+    <li *ngFor="
+        let item of fieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
+      [nzOpen]="0 === index" [(nzOpen)]="item.key.isMenuOpened" (nzOpenChange)="openTableMenuHandler(item.key)">
+      <ul>
+        <li>
+          <nz-input-group [nzSuffix]="suffixIconSearch">
+            <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+          </nz-input-group>
+          <ng-template #suffixIconSearch>
+            <i nz-icon nzType="search"></i>
+          </ng-template>
+        </li>
+        <ng-container *ngFor="
+            let item2 of item.value;
+            index2 as index;
+            first2 as first;
+            last2 as last;
+            odd2 as odd;
+            even2 as even
+          ">
+          <li *ngIf="
+              likeText(item2.ColumnName, searchBox.value) &&
+              !isExistInAggregation(item2, item.key)
+            " nz-menu-item (click)="
+              saveAggregation(item2, item.key); selectAggregationPopups.close()
+            ">
+            <i nz-icon class="fieldLiIcon ">
+              <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
+            </i>
+            {{ item2.ColumnName }}
+          </li>
+        </ng-container>
+      </ul>
+    </li>
+  </ul> -->
+
+  <p *ngIf="'field' === aggregationStep" class="popupsBackTitle">
+    <a (click)="aggregationStep = 'type'" style="">
+      <i nz-icon nzType="left" nzTheme="outline"></i>{{
+      getAggregationTypeName() }}</a>
+  </p>
+  <sql-select-column-ul *ngIf="'field' === aggregationStep" [sourceOutFieldList]="sourceOutFieldList"
+    [fieldList]="fieldList" (selectSourceOutField)="saveAggregationBySourceOut($event); selectAggregationPopups.close()"
+    (selectField)="saveAggregation($event.field, $event.table); selectAggregationPopups.close()"
+    [sourceOutFieldFilter]="aggregationSourceOutFieldFilter" [fieldFilter]="aggregationFieldFilter">
+  </sql-select-column-ul>
+
+  <ul *ngIf="'custom' === aggregationStep" style="width:500px" [formGroup]="addingCustomForm">
+    <li class="popupsBackTitle">
+      <a (click)="aggregationStep = 'field'"><i nz-icon nzType="left" nzTheme="outline"></i>自定义表达式</a>
+    </li>
+    <!-- <div>{{ getCurrentExpressionOption() }}</div> -->
+    <li>{{getCurrentExpressionOption()}}</li>
+    <li>
+      <!-- <div class="relative my1" style="position: relative;">
+        <div style="position: absolute;left:0px;top:0px">=</div> -->
+      <!-- <expression-editor-textfield [query]="query" [startRule]="'aggregation'"></expression-editor-textfield> -->
+
+      <!--这样行不通,当按delete和backspace删除掉所有时,就变得不可编辑了-->
+      <!-- <div contenteditable="true" style="padding-left: 26px;height: 30px;width:200px" class="input">
+          <pf-expression-field [query]="query" [expressionOption]="addingCustomOption" [isFirstFloor]="true"
+            [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList"
+            (expressionOptionChange)="onExpressionOptionChange($event)">
+          </pf-expression-field>
+        </div> -->
+
+      <!--这样也行不通,当按delete和backspace删除掉所有时,同样会变得不可编辑-->
+      <!-- <pf-expression-field contenteditable="true" [query]="query" [expressionOption]="addingCustomOption"
+          [isFirstFloor]="true" [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList"
+          (expressionOptionChange)="onExpressionOptionChange($event)" style="height:30px;width:300px">
+        </pf-expression-field> -->
+
+      <!-- <div contenteditable="true" style="padding-left: 26px;height: 30px;width:200px" class="input"></div> -->
+
+      <pf-expression-field-jq #customField [query]="query" [queryClass]="queryClass" [(databaseId)]="databaseId"
+        [(expressionOption)]="addingCustomOption" [startRenderByExpression$]="startRenderCustomByExpression$"
+        [startRule]="'aggregation'" [isFirstFloor]="true" [fieldList]="fieldList"
+        [sourceOutFieldList]="sourceOutFieldList" style="height:30px;width:300px">
+      </pf-expression-field-jq>
+      <!-- </div> -->
+    </li>
+    <li>
+      <input type="text" nz-input placeholder="自定义字段名" #searchBox formControlName="addingCustomName" />
+    </li>
+    <li>
+      <button nz-button nzType="default" [disabled]="!(customField.isValid()&&addingCustomForm.valid)" (click)="
+      saveAggregationByCustom(); selectAggregationPopups.close()
+    ">完成</button>
+    </li>
+  </ul>
+</pf-dropdown-popups>
+
+<pf-dropdown-popups #selectBreakoutPopups>
+  <!-- <p *ngIf="'field' === addStep">选择表字段</p> -->
+  <!-- <ul nz-menu nzMode="inline">
+    <ng-container *ngFor="
+        let item of sourceOutFieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      ">
+      <li *ngIf="!hasBreakout(item)" nz-menu-item (click)="saveBreakoutBySourceOut(item); selectBreakoutPopups.close()">
+        {{ item[1] }}
+      </li>
+    </ng-container>
+    <li *ngFor="
+        let item of fieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
+      [nzOpen]="0 === index" [(nzOpen)]="item.key.isMenuOpened" (nzOpenChange)="openTableMenuHandler(item.key)">
+      <ul>
+        <li>
+          <nz-input-group [nzSuffix]="suffixIconSearch">
+            <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+          </nz-input-group>
+          <ng-template #suffixIconSearch>
+            <i nz-icon nzType="search"></i>
+          </ng-template>
+        </li>
+        <ng-container *ngFor="
+            let item2 of item.value;
+            index2 as index;
+            first2 as first;
+            last2 as last;
+            odd2 as odd;
+            even2 as even
+          ">
+          <li *ngIf="
+              likeText(item2.ColumnName, searchBox.value) &&
+              !isExistInBreakout(item2, item.key)
+            " nz-menu-item (click)="
+              saveBreakout(item2, item.key); selectBreakoutPopups.close()
+            ">
+            <i nz-icon class="fieldLiIcon ">
+              <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
+            </i>
+            {{ item2.ColumnName }}
+          </li>
+        </ng-container>
+      </ul>
+    </li>
+  </ul> -->
+  <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
+    (selectSourceOutField)="saveBreakoutBySourceOut($event); selectBreakoutPopups.close()"
+    (selectField)="saveBreakout($event.field, $event.table); selectBreakoutPopups.close()"
+    [sourceOutFieldFilter]="breakoutSourceOutFieldFilter" [fieldFilter]="breakoutFieldFilter">
+  </sql-select-column-ul>
+</pf-dropdown-popups>
+
+<ng-template #fieldTpl let-field="field">
+  <ng-template [ngIf]="isArray(field)">
+    <!-- <ng-template [ngIf]="field[0] == 'field-id'">
+      <span>{{ getFieldFullName(field) }}</span>
+    </ng-template>
+    <ng-template [ngIf]="field[0] == 'joined-field'"
+      ><span>{{ field[1] }}.{{ field[2][1] }}</span>
+    </ng-template> -->
+    <span>{{ getFieldFullName(field) }}</span>
+  </ng-template>
+  <ng-template [ngIf]="!isArray(field)">
+    <span>{{ field }}</span>
+  </ng-template>
+</ng-template>
+<ng-template #aggregationFieldTpl let-field="field">
+  <span>{{ getAggregationDisplayName(field) }}</span>
+</ng-template>

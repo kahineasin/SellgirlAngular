@@ -1,0 +1,5 @@
+<div class="input" style="padding-left: 26px;" contentEditable spellCheck="false"
+    (keydown)="tokenizedEditing ? onKeyDownTokenized($event) : onKeyDownNormal($event)" (input)="onInput($event)"
+    (focus)="onFocus.emit($event)" (blur)="onBlur.emit($event)" (click)="onFieldClick($event)">
+    <!-- <tokenized-expression [source]="this.getValue()" [startRule]="startRule"></tokenized-expression> -->
+</div>

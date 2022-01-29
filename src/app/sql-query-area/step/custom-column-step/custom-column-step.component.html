@@ -1,0 +1,151 @@
+<div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor()">
+    <ng-template [ngIf]="!pfUtil.isObjectEmpty(query['expressions'])">
+        <!--      
+        (click)="
+          initEditingParam(index); selectBreakoutPopups.open($event.currentTarget)
+        "
+      -->
+        <div *ngFor="
+          let item of query['expressions'] | keyvalue;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        " class="NotebookCellItem" (click)="
+        initEditingParam(item.key, item.value);
+        selectBreakoutPopups.open($event.currentTarget)
+      " [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+            <!-- <span> aa </span> -->
+            <!-- <i nz-icon style="font-size: 32px">
+                <svg pfSvgIconPath [svgIconType]="
+              item[0] === 'desc' ? 'SQL_ORDER_DESC' : 'SQL_ORDER_ASC'
+            " width="16" height="17"></svg>
+            </i> -->
+
+            <!-- <ng-container *ngTemplateOutlet="fieldTpl; context: { field: item[1] }"></ng-container> -->
+            <span>{{ item.key }}</span>
+            <!-- <ng-container *ngTemplateOutlet="deleteTpl"></ng-container> -->
+            <i nz-icon class="sqlDeleteFieldBtn" (click)="deleteExpression(item.key);customColumnChange.emit()"><svg
+                    class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+                    <path d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "></path>
+                </svg>
+            </i>
+        </div>
+
+        <div class="NotebookCellItem" (click)="
+          initAddingParam(); selectBreakoutPopups.open($event.currentTarget)
+        " [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+            <i nz-icon>
+                <svg viewBox="0 0 32 32" width="16" height="16">
+                    <path
+                        d="M12.4285714,12.4285714 L12.4285714,0 L19.5714286,0 L19.5714286,12.4285714 L32,12.4285714 L32,19.5714286 L19.5714286,19.5714286 L19.5714286,32 L12.4285714,32 L12.4285714,19.5714286 L0,19.5714286 L0,12.4285714 L12.4285714,12.4285714 Z">
+                    </path>
+                </svg>
+                <!-- <p>afdafdsdf</p> -->
+            </i>
+        </div>
+    </ng-template>
+    <ng-template [ngIf]="pfUtil.isObjectEmpty(query['expressions'])">
+        <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor()" (click)="
+          initAddingParam(); selectBreakoutPopups.open($event.currentTarget)
+        ">
+            <p style="display: inline">添加自定义列</p>
+        </div>
+    </ng-template>
+</div>
+
+<!--弹窗-->
+<pf-dropdown-popups #selectBreakoutPopups>
+    <!-- <ul nz-menu nzMode="inline">
+        <ng-container *ngFor="
+          let item of sourceOutFieldList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        ">
+            <li nz-menu-item (click)="saveOrderBySourceOut(item); selectBreakoutPopups.close()">
+                {{ item[1] }}
+            </li>
+        </ng-container>
+        <li *ngFor="
+          let item of fieldList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
+            [nzOpen]="0 === index">
+            <ul>
+                <li>
+                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                        <input type="text" nz-input placeholder="input search text" #searchBox
+                            [(ngModel)]="searchText" />
+                    </nz-input-group>
+                    <ng-template #suffixIconSearch>
+                        <i nz-icon nzType="search"></i>
+                    </ng-template>
+                </li>
+                <ng-container *ngFor="
+              let item2 of item.value;
+              index2 as index;
+              first2 as first;
+              last2 as last;
+              odd2 as odd;
+              even2 as even
+            ">
+                    <li *ngIf="
+                likeText(item2.ColumnName, searchBox.value) &&
+                !isExistInBreakout(item2, item.key)
+              " nz-menu-item (click)="saveOrder(item2, item.key); selectBreakoutPopups.close()">
+                        {{ item2.ColumnName }}
+                    </li>
+                </ng-container>
+            </ul>
+        </li>
+    </ul> -->
+
+    <ul style="width:500px" [formGroup]="addingCustomForm">
+        <li class="popupsBackTitle">
+            <a (click)="aggregationStep = 'field'"><i nz-icon nzType="left" nzTheme="outline"></i>自定义表达式</a>
+        </li>
+        <!-- <li>{{getCurrentExpressionOption()}}</li> -->
+        <li>
+
+            <!-- <pf-expression-field-jq #customField [query]="query" [queryClass]="queryClass" [(databaseId)]="databaseId"
+                [expressionOption]="addingCustomOption" [isFirstFloor]="true" [fieldList]="fieldList"
+                [sourceOutFieldList]="sourceOutFieldList" (expressionOptionChange)="onExpressionOptionChange($event)"
+                style="height:30px;width:300px">
+            </pf-expression-field-jq> -->
+            <pf-expression-field-jq #customField [query]="query" [queryClass]="queryClass" [(databaseId)]="databaseId"
+                [(expressionOption)]="addingCustomOption" [startRenderByExpression$]="startRenderCustomByExpression$"
+                [isFirstFloor]="true" [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList"
+                style="height:30px;width:300px">
+            </pf-expression-field-jq>
+            <!-- </div> -->
+        </li>
+        <li>
+            <input type="text" nz-input placeholder="自定义字段名" #searchBox formControlName="addingCustomName" />
+        </li>
+        <li>
+            <button nz-button nzType="default" [disabled]="!(customField.isValid()&&addingCustomForm.valid)" (click)="
+            saveCustomColumn(); selectBreakoutPopups.close()
+    ">完成</button>
+        </li>
+    </ul>
+</pf-dropdown-popups>
+
+<!-- <ng-template #fieldTpl let-field="field">
+    <ng-template [ngIf]="isArray(field)">
+        <span>{{ getFieldFullName(field) }}</span>
+    </ng-template>
+    <ng-template [ngIf]="!isArray(field)">
+        <span>{{ field }}</span>
+    </ng-template>
+</ng-template> -->
+<!-- <ng-template #aggregationFieldTpl let-field="field">
+    <span>{{ getAggregationDisplayName(field) }}</span>
+</ng-template> -->

@@ -1,0 +1,53 @@
+<div class="relative my1 pf-expression-field-jq-edit-container" style="position: relative;"
+  [class.border-error]="invalid">
+  <div style="position: absolute;left:0px;top:12px">=</div>
+  <!-- <div contenteditable="true" style="padding-left: 26px;font-weight: bolder;" class="input pf-expression-field-jq-edit"
+    autoFocus (blur)="onFieldBlur($event)" (click)="onFieldClick($event)" (change)="onFieldChange($event)"
+    (input)="onFieldInput($event)" (compositionstart)="onFieldCompositionstart($event)"
+    (compositionend)="onFieldCompositionend($event)">
+  </div> -->
+  <div contenteditable="true" style="padding-left: 26px;font-weight: bolder;" class="input pf-expression-field-jq-edit"
+    (click)="onFieldClick($event)" (input)="onFieldInput($event)" (compositionstart)="onFieldCompositionstart($event)"
+    (compositionend)="onFieldCompositionend($event)">
+  </div>
+</div>
+<div *ngIf="invalid" class="text-error mb1">{{invalidMessage}}</div>
+<!-- <ng-container *ngTemplateOutlet="testTpl"></ng-container> -->
+
+<ng-template #testTpl>
+  <p>-------------------测试-------------------</p>
+  <label class="name">expression</label>
+  <textarea rows="4" nz-input [(ngModel)]="testExpressionString"></textarea>
+  <label class="name">source</label>
+  <textarea rows="4" nz-input [(ngModel)]="testSource"></textarea>
+  <label class="name">syntaxTree</label>
+  <textarea rows="4" nz-input [(ngModel)]="testSyntaxTreeString"></textarea>
+  <label class="name">result</label>
+  <textarea rows="4" nz-input [(ngModel)]="testParseResult"></textarea>
+  <button nz-button type="button" (click)="testExpressionToSource()">ExpressionToSource</button>
+  <button nz-button type="button" (click)="testSourceToSyntaxTree()">SourceToSyntaxTree</button>
+  <button nz-button type="button" (click)="testSourceToX()">SourceToSyntaxTree</button>
+  <button nz-button type="button" (click)="testSome()">测试</button>
+</ng-template>
+
+<ng-template #fieldTpl let-field="field">
+  <ng-template [ngIf]="isArray(field)">
+    <span>{{ getFieldFullName(field) }}</span>
+  </ng-template>
+  <ng-template [ngIf]="!isArray(field)">
+    <span>{{ field }}</span>
+  </ng-template>
+</ng-template>
+
+<pf-dropdown-popups #suggestPopups [startOpen$]="startOpenSuggest$" [startOpenIfClosed$]="startOpenSuggestIfClosed$"
+  [startClose$]=" startCloseSuggest$">
+  <ul class="suggestListUl"
+    *ngFor="let suggestion of suggestions;index as index; first as first; last as last; odd as odd; even as even;">
+    <li *ngIf="index === 0 || suggestion.type !== suggestions[index - 1].type" class="suggestListUlGroup">
+      <b>{{suggestion.type}}</b>
+    </li>
+    <li pfHover [hoverStyle]="{ backgroundColor:'#509ee3' }" (click)="onSuggestionMouseDown($event,index)">
+      {{suggestion.name}}
+    </li>
+  </ul>
+</pf-dropdown-popups>

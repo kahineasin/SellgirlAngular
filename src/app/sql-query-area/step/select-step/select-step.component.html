@@ -1,0 +1,87 @@
+<div class="NotebookCell" style="line-height: 50px; width: 100%" [style.backgroundColor]="getBackColor()">
+  <!-- <div
+    class="NotebookCellItem"
+    (click)="showSelectDatabasePopups($event, selectDatabasePopups)"
+  >
+    <span>
+      {{ getDatabaseName() }}
+    </span>
+  </div> -->
+  <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor()"
+    (click)="showSelectTablePopups($event, selectTablePopups)">
+    <!-- <p>{{tableList.length}}</p> -->
+    <span>
+      {{ getTableName() }}
+    </span>
+  </div>
+
+  <a *ngIf="!pfUtil.isListEmpty(columnList)" (click)="selectFieldPopups.open($event.currentTarget)"
+    style="float: right; padding-right: 10px">字段</a>
+</div>
+
+<pf-dropdown-popups #selectFieldPopups>
+  <label nz-checkbox [ngModel]="columnId.length === columnList.length"
+    [nzDisabled]="columnId.length === columnList.length" (ngModelChange)="onSelectAll($event)">字段</label>
+  <hr />
+  <ul>
+    <li *ngFor="let item of columnList">
+      <label nz-checkbox [ngModel]="columnId.indexOf(item.ShortId) > -1" (ngModelChange)="onSelect($event, item)">{{
+        getColumnFullName(item) }}</label>
+    </li>
+  </ul>
+</pf-dropdown-popups>
+
+<pf-dropdown-popups #selectTablePopups>
+  <!-- <p>{{ step }}</p> -->
+  <ul nz-menu *ngIf="'database' === step">
+    <li *ngFor="let item of databaseList" nz-menu-item (click)="goSelectTable(item, selectTablePopups)">
+      <i nz-icon nzType="database" nzTheme="outline"></i>
+      {{ item.DatabaseName }}
+    </li>
+  </ul>
+
+  <ng-template [ngIf]="'table' === step">
+    <a (click)="goSelectDatabase(selectTablePopups)" style="line-height: 50px"><i nz-icon nzType="left"
+        nzTheme="outline"></i>
+      {{ getDatabaseName() }}
+    </a>
+    <ul nz-menu nzMode="inline">
+      <li>
+        <nz-input-group [nzSuffix]="suffixIconSearch">
+          <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+      </li>
+      <!-- <li
+      *ngFor="
+        let item of tableList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      "
+      nz-menu-item
+      nzIcon="table"
+    >
+      {{ item.TableName }}
+    </li> -->
+      <ng-container *ngFor="
+          let item of tableList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        ">
+        <li *ngIf="likeText(item.TableName, searchBox.value)" nz-menu-item
+          (click)="selectTable(item); selectTablePopups.close()">
+          <i nz-icon nzType="table" nzTheme="outline"></i>
+          {{ item.TableName }}
+        </li>
+      </ng-container>
+    </ul>
+  </ng-template>
+</pf-dropdown-popups>

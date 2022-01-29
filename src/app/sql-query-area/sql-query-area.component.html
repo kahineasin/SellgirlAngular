@@ -1,0 +1,240 @@
+<!--本来应该不需要这个判断,但当删除最外层query时,不知为何会有query为undefined的情况,估计和组件消毁的过程有关.后来发现是datamodel-query-edit.component.ts->onQueryDeleteLevel()方法设置错了对象-->
+<div *ngIf="!pfUtil.isAnyNull(query)" style="display: flex; flex-flow: column" class="sqlQueryContainer">
+  <!-- <p>fieldList cout:{{fieldList.length}}</p> -->
+  <div *ngIf="isSourceQuery" class="sqlQueryContainer">
+    <!-- <sql-query-area [(databaseId)]="databaseId" [query]="query['source-query']"
+      (outFieldChange)="onInnerOutFieldChange()" (databaseIdChange)="onSurceQueryDatabaseIdChange($event)">
+    </sql-query-area> -->
+    <sql-query-area [(databaseId)]="databaseId" [question]="question" [query]="query['source-query']"
+      (outFieldChange)="onInnerOutFieldChange()" (tableIdChange)="onTableIdChange($event)">
+    </sql-query-area>
+  </div>
+  <!-- <textarea rows="20">{{getQueryClassString()}}</textarea> -->
+  <div *ngIf="!isSourceQuery" [style.color]="getFrontColor('select')">
+    数据
+  </div>
+  <div *ngIf="!isSourceQuery" class="NotebookRow">
+    <!-- <p>{{databaseId}}</p> -->
+    <!-- <select-step [(databaseId)]="databaseId" [query]="query" [tableList]="tableList" [color]="cellColor.select"
+      (tableIdChange)="onTableIdChange($event)" (databaseIdChange)="onDatabaseIdChange($event)"></select-step> -->
+    <select-step [databaseId]="databaseId" [query]="query" [queryClass]="queryClass" [color]="cellColor.select"
+      (tableIdChange)="onTableIdChange($event)"></select-step>
+  </div>
+
+  <!-- <div *ngIf="!pfUtil.isAnyNull(query['source-query'])" class="NotebookRow">
+    <div
+      class="NotebookCell"
+      [style.backgroundColor]="getBackColor('select')"
+      style="width: 100%"
+    >
+      <div
+        class="NotebookCellItem"
+        [style.backgroundColor]="getFrontColor('select')"
+        style="cursor: default"
+      >
+        从上一个结果集
+      </div>
+    </div>
+  </div> -->
+
+  <!--本来应该不需要这个判断,但当删除最外层query时,不知为何会有query为undefined的情况,估计和组件消毁的过程有关-->
+  <!-- <ng-container *ngIf="!pfUtil.isAnyNull(query)"> -->
+  <step-row *ngIf="isSourceQuery" [title]="'&nbsp;'" [color]="cellColor.select" [allowDelete]="isFirstFloor"
+    (delete)="onSourceQueryDelete()">
+    <!-- <div class="NotebookRow" [style.backgroundColor]="getBackColor('select')">
+      <select-step [query]="query" [tableList]="tableList"></select-step>
+    </div> -->
+    <div class="NotebookCell" [style.backgroundColor]="getBackColor('select')" style="width: 100%">
+      <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor('select')" style="cursor: default">
+        从上一个结果集
+      </div>
+    </div>
+  </step-row>
+
+  <!--<div *ngIf="hasJoin">关联</div>
+   <join-step
+    *ngIf="hasJoin"
+    [sourceTableId]="tableId"
+    [tableList]="tableList"
+    [fieldList]="fieldList"
+  ></join-step> -->
+
+  <ng-container *ngFor="
+      let item of query.joins;
+      index as index;
+      first as first;
+      last as last;
+      odd as odd;
+      even as even
+    ">
+    <!-- <step-row
+      *ngIf="rowVisible['join']"
+      [title]="'关联'"
+      [color]="cellColor.join"
+      (delete)="rowVisible['join'] = false"
+    > -->
+    <step-row *ngIf="rowVisible['join']" [title]="'关联'" [color]="cellColor.join"
+      (delete)="query.joins.splice(index, 1); onJoinTableIdChange()">
+      <!-- <div
+        class="NotebookCell"
+        style="background-color: rgba(80, 158, 227, 0.1); width: 100%"
+      > -->
+      <join-step [databaseId]="databaseId" [color]="cellColor.join" [query]="query" [join]="item"
+        [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList" (tableIdChange)="onJoinTableIdChange()"
+        (joinFieldChange)="onJoinFieldChange()"></join-step>
+      <!-- </div> -->
+    </step-row>
+  </ng-container>
+
+
+  <step-row *ngIf="rowVisible['filter']" [title]="'过滤器'" [color]="cellColor['filter']"
+    (delete)="query.filter = []; rowVisible['filter'] = false">
+    <div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor('filter')">
+      <filter-step [query]="query" [filter]="query.filter" [isFirstFloor]="true" [fieldList]="fieldList"
+        [sourceOutFieldList]="sourceOutFieldList" (filterChange)="onFilterChange($event)"></filter-step>
+    </div>
+  </step-row>
+
+
+
+  <!-- <p>{{rowVisible['aggregation']}}</p> -->
+  <step-row *ngIf="rowVisible['aggregation']" [title]="'聚合'" [color]="cellColor.aggregation" (delete)="
+      query.breakout = [];
+      query.aggregation = [];
+      rowVisible['aggregation'] = false;
+      showXForFirstTimeChange.emit('');
+      updateBtnAllowStatus()
+    ">
+    <aggregation-step [databaseId]="databaseId" [query]="query" [queryClass]="queryClass" [fieldList]="fieldList"
+      [sourceOutFieldList]="sourceOutFieldList" [color]="cellColor.aggregation" style="width: 70%"
+      (breakoutChange)="onBreakoutChange($event)"></aggregation-step>
+  </step-row>
+
+  <step-row *ngIf="rowVisible['order']" [title]="'排序'" [color]="cellColor.order"
+    (delete)="query['order-by'] = []; rowVisible['order'] = false">
+    <order-step [query]="query" [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList"
+      [color]="cellColor.order" style="width: 70%"></order-step>
+  </step-row>
+
+  <step-row *ngIf="rowVisible['customColumn']" [title]="'自定义列'" [color]="cellColor.customColumn" (delete)="
+  query['expressions'] = {}; 
+  rowVisible['customColumn'] = false;
+    showXForFirstTimeChange.emit('');
+    updateBtnAllowStatus()">
+    <custom-column-step [databaseId]="databaseId" [query]="query" [queryClass]="queryClass" [fieldList]="fieldList"
+      [sourceOutFieldList]="sourceOutFieldList" (customColumnChange)="onCustomColumnChange($event)"
+      [color]="cellColor.customColumn" style="width: 70%">
+    </custom-column-step>
+  </step-row>
+
+  <!-- <div>
+    <filter-step *ngIf="hasFilter" [testCnt]="1"></filter-step>
+    <filter-step *ngIf="hasFilter" [filter]="filter"></filter-step>
+  </div> -->
+  <div style="" class="btnRow">
+    <!-- <nz-space [nzSize]=""> -->
+    <!--这-->
+    <button *ngIf="allowFilter && !rowVisible['filter']" nz-button nzSize="large" nzType="default"
+      (click)="addFilter($event)" [style.color]="getFrontColor('filter')"
+      [style.backgroundColor]="getBackColor('filter')">
+      <i nz-icon nzType="filter" nzTheme="fill"></i> 过滤
+    </button>
+    <button *ngIf="allowJoin" nz-button nzSize="large" nzType="default" type="button" (click)="addJoin($event)"
+      [style.color]="getFrontColor('join')" [style.backgroundColor]="getBackColor('join')">
+      <i nz-icon>
+        <svg pfSvgIconPath [svgIconType]="'SQL_LEFT_JOIN'"></svg>
+      </i>
+      关联
+    </button>
+    <button *ngIf="allowAggregation" nz-button nzSize="large" nzType="default" type="button"
+      (click)="addAggregation($event)" [style.color]="getFrontColor('aggregation')"
+      [style.backgroundColor]="getBackColor('aggregation')">
+      <i nz-icon>
+        <svg pfSvgIconPath [svgIconType]="'SQL_AGGREGATION'"></svg>
+      </i>
+      聚合
+    </button>
+
+    <button *ngIf="allowOrder && !rowVisible['order']" nz-button nzSize="large" nzType="default" type="button"
+      (click)="rowVisible['order'] = !rowVisible['order']" [style.color]="getFrontColor('order')"
+      [style.backgroundColor]="getBackColor('order')">
+      <i nz-icon>
+        <svg pfSvgIconPath [svgIconType]="'SQL_ORDER'"></svg>
+      </i>
+      排序
+    </button>
+
+    <button *ngIf="allowCustomColumn " nz-button nzSize="large" nzType="default" type="button"
+      (click)="addCustomColumn($event)" [style.color]="getFrontColor('customColumn')"
+      [style.backgroundColor]="getBackColor('customColumn')">
+      <i nz-icon>
+        <svg pfSvgIconPath [svgIconType]="'CUSTOM_COLUMN'"></svg>
+      </i>
+      自定义列
+    </button>
+    <!-- </nz-space> -->
+  </div>
+  <!-- </ng-container> -->
+
+</div>
+
+<!--metabase选择了groupBy条件后是可以用结果集来多级嵌套的,这步晚些做(之前简单测试过嵌套好像没大问题)--benjamin todo-->
+<!-- <div
+  *ngIf="query['source-query'] !== null && query['source-query'] !== undefined"
+  class="sqlQueryContainer"
+>
+  <sql-query-area
+    [(databaseId)]="databaseId"
+    [query]="query['source-query']"
+  ></sql-query-area>
+  <div *ngIf="hasJoin">关联</div>
+  <join-step *ngIf="hasJoin" [tableList]="tableList"></join-step>
+  <div *ngIf="hasFilter">过滤器</div>
+  <div class="NotebookRow" style="background-color: rgba(113, 114, 173, 0.1)">
+    <filter-step
+      *ngIf="hasFilter"
+      [query]="query"
+      [filter]="query.filter"
+      [isFirstFloor]="true"
+      [fieldList]="fieldList"
+    ></filter-step>
+  </div>
+  <div style="display: flex; flex-flow: row">
+    <nz-space [nzSize]="">
+      <button
+        *nzSpaceItem
+        nz-button
+        [nzSize]="size"
+        nzType="default"
+        (click)="hasFilter = !hasFilter"
+      >
+        <i nz-icon nzType="filter" nzTheme="fill"></i> 过滤
+      </button>
+      <button
+        *nzSpaceItem
+        nz-button
+        nzType="primary"
+        type="button"
+        (click)="addJoin($event)"
+        [disabled]="!allowJoin"
+      >
+        <i nz-icon>
+          <svg pfSvgIconPath [svgIconType]="'SQL_LEFT_JOIN'"></svg>
+        </i>
+        Join
+      </button>
+    </nz-space>
+  </div>
+</div> -->
+
+<ng-template #deleteRowTpl>
+  <i nz-icon style="
+      color: rgb(213, 213, 252);
+      float: right;
+      padding-top: 5px;
+      cursor: pointer;
+    "><svg class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+      <path d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "></path>
+    </svg>
+  </i>
+</ng-template>

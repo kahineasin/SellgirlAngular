@@ -1,0 +1,330 @@
+<div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor()">
+  <!-- <p>alias:{{join.alias}}</p> -->
+  <div class="NotebookCellItem" style="cursor: auto" [style.backgroundColor]="getFrontColor()" pfHover
+    [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+    <span>
+      <!-- <div [formGroup]="fieldForm">
+        <input
+          type="text"
+          id="namexxx"
+          class="form-control"
+          formControlName="leftFieldId"
+          required
+        />
+      </div> -->
+      <!-- {{ getTableName(query["source-table"]) }} -->
+      {{ getSourceName() }}
+    </span>
+  </div>
+  <!-- <pf-select
+    [(ngModel)]="joinType"
+    [list]="joinTypeList"
+    [disabled]="false"
+    style="width: 80px"
+    [inputStyle]="{ border: 'none', backgroundColor: 'inherit' }"
+  >
+  </pf-select> -->
+
+  <!-- <pf-select
+    [(ngModel)]="joinType"
+    [list]="joinTypeList"
+    [disabled]="false"
+    style="width: 80px"
+  >
+  </pf-select> -->
+
+  <div (click)="joinTypePopups.open($event.currentTarget)" class="pf-select-input"
+    style="display: inline; margin-right: 8px; cursor: pointer">
+    <i nz-icon style="font-size: 32px; vertical-align: middle" [style.color]="getFrontColor()">
+      <svg *ngIf="'left-join' === joinType" pfSvgIconPath [svgIconType]="'SQL_LEFT_JOIN'"></svg>
+      <svg *ngIf="'right-join' === joinType" pfSvgIconPath [svgIconType]="'SQL_RIGHT_JOIN'"></svg>
+      <svg *ngIf="'inner-join' === joinType" pfSvgIconPath [svgIconType]="'SQL_INNER_JOIN'"></svg>
+    </i>
+  </div>
+  <pf-dropdown-popups #joinTypePopups>
+    <ul class="pf-select-ul">
+      <li *ngFor="let item of joinTypeList" [attr.value]="item.key" (click)="
+          joinType = item.key; join.strategy = item.key; joinTypePopups.close()
+        " [class.selected]="joinType === item.key">
+        {{ item.value }}
+      </li>
+    </ul>
+  </pf-dropdown-popups>
+  <div class="NotebookCellItem JoinRTableCellItem" (click)="showSelectTablePopups($event, selectTablePopups)"
+    [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+    <span>
+      {{ getJoinTableName(join["source-table"]) }}
+    </span>
+  </div>
+  <ng-container *ngIf="!pfUtil.isAnyNull(join['source-table'])">
+    <span>where</span>
+    <ng-container *ngFor="
+        let item of join.condition;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      ">
+      <!-- <a
+        *ngIf="odd"
+        nz-dropdown
+        nzTrigger="click"
+        [nzDropdownMenu]="andOrMenu"
+        style="line-height: 32px"
+      >
+        {{ item }}
+        <i nz-icon nzType="down"></i>
+      </a>
+      <nz-dropdown-menu #andOrMenu>
+        <ul nz-menu>
+          <li
+            nz-menu-item
+            (click)="onAndOrChange('and' === item ? 'or' : 'and', index)"
+          >
+            {{ "and" === item ? "or" : "and" }}
+          </li>
+        </ul>
+      </nz-dropdown-menu> -->
+
+      <!-- <div
+        *ngIf="odd"
+        (click)="andOrPopups.open($event.currentTarget)"
+        class="pf-select-input"
+        style="display: inline; margin-right: 8px"
+      >
+        {{ item }}
+        <i nz-icon nzType="down"></i>
+      </div>
+      <pf-dropdown-popups #andOrPopups>
+        <ul class="pf-select-ul">
+          <li
+            *ngFor="let item2 of ['and', 'or']"
+            (click)="item=item2; joinTypePopups.close()"
+            [class.selected]="item === item2"
+          >
+            {{ item2 }}
+          </li>
+        </ul>
+      </pf-dropdown-popups> -->
+
+      <span *ngIf="odd">{{ item }}</span>
+
+      <div *ngIf="even" class="NotebookCellItem" (click)="
+          initEditingParam(index, item);
+          selectFieldPopups.open($event.currentTarget)
+        " [style.backgroundColor]="getFrontColor()">
+        <ng-container *ngTemplateOutlet="fieldTpl; context: { field: item[1] }"></ng-container>
+        <span>&nbsp;{{ item[0] }}&nbsp;</span>
+        <ng-container *ngTemplateOutlet="fieldTpl; context: { field: item[2] }"></ng-container>
+
+        <ng-container *ngTemplateOutlet="deleteTpl; context: { idx: index, first: first }"></ng-container>
+        <!-- <i nz-icon class="sqlDeleteFieldBtn" (click)="deleteCompare(filter)"
+          ><svg
+            class="Icon Icon-close Icon-cxuQhR kBrLuA"
+            viewBox="0 0 32 32"
+            width="16"
+            height="16"
+            fill="currentcolor"
+          >
+            <path
+              d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "
+            ></path>
+          </svg>
+        </i> -->
+      </div>
+    </ng-container>
+
+    <div class="NotebookCellItem addConditionBtn"
+      (click)="initAddingParam(); selectFieldPopups.open($event.currentTarget)"
+      [style.backgroundColor]="getFrontColor()">
+      <i nz-icon style="color: white">
+        <svg class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+          <path
+            d="M12.4285714,12.4285714 L12.4285714,0 L19.5714286,0 L19.5714286,12.4285714 L32,12.4285714 L32,19.5714286 L19.5714286,19.5714286 L19.5714286,32 L12.4285714,32 L12.4285714,19.5714286 L0,19.5714286 L0,12.4285714 L12.4285714,12.4285714 Z">
+          </path>
+        </svg>
+        <!-- <p>afdafdsdf</p> -->
+      </i>
+    </div>
+  </ng-container>
+
+  <a *ngIf="!pfUtil.isListEmpty(join.condition)" (click)="selectOutFieldPopups.open($event.currentTarget)"
+    style="float: right; padding-right: 10px">字段</a>
+</div>
+
+<!--共用模板-->
+<ng-template #fieldTpl let-field="field">
+  <ng-template [ngIf]="isArray(field)">
+    <!-- <ng-template [ngIf]="field[0] == 'field-id'">
+      <span>{{ getFieldFullName(field) }}</span>
+    </ng-template>
+    <ng-template [ngIf]="field[0] == 'joined-field'">
+      <span>{{ field[1] }}.{{ field[2][1] }}</span>
+    </ng-template> -->
+    <span>{{ getFieldName(field) }}</span>
+  </ng-template>
+  <ng-template [ngIf]="!isArray(field)">
+    <span>{{ field }}</span>
+  </ng-template>
+</ng-template>
+
+<ng-template #deleteTpl let-idx="idx" let-first="first">
+  <i nz-icon class="sqlDeleteFieldBtn" (click)="deleteCompare(idx, first)" style="color: rgb(213, 213, 252)"><svg
+      class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+      <path d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "></path>
+    </svg>
+  </i>
+</ng-template>
+
+<!--弹窗-->
+
+<pf-dropdown-popups #selectTablePopups>
+  <!-- <p>{{ step }}</p> -->
+  <!--这里需要改为：只能选择主表的库 或者 选择SavedQuestion--benjamin todo-->
+  <ul nz-menu *ngIf="'database' === step">
+    <li *ngFor="let item of databaseList" nz-menu-item (click)="goSelectTable(item, selectTablePopups)">
+      <i nz-icon nzType="database" nzTheme="outline"></i>
+      {{ item.DatabaseName }}
+    </li>
+  </ul>
+
+  <ng-template [ngIf]="'table' === step">
+    <a (click)="goSelectDatabase(selectTablePopups)" style="line-height: 50px">
+      <!-- <i nz-icon nzType="left"
+        nzTheme="outline"></i> -->
+      {{ getDatabaseName() }}
+    </a>
+    <ul nz-menu nzMode="inline">
+      <li>
+        <nz-input-group [nzSuffix]="suffixIconSearch">
+          <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+      </li>
+      <!-- <li
+        *ngFor="
+          let item of tableList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        "
+        nz-menu-item
+        nzIcon="table"
+      >
+        {{ item.TableName }}
+      </li> -->
+      <ng-container *ngFor="
+          let item of tableList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        ">
+        <li *ngIf="likeText(item.TableName, searchBox.value)" nz-menu-item
+          (click)="selectTable(item); selectTablePopups.close()">
+          <i nz-icon nzType="table" nzTheme="outline"></i>
+          {{ item.TableName }}
+        </li>
+      </ng-container>
+    </ul>
+  </ng-template>
+</pf-dropdown-popups>
+
+<pf-dropdown-popups #selectFieldPopups>
+  <!--测试list绑定函数结果-->
+  <!-- <pf-select
+    [(ngModel)]="leftFieldId"
+    [list]="[
+      { key: 'aa', value: 'aa' },
+      { key: 'bb', value: 'bb' }
+    ]"
+    [disabled]="false"
+    style="width: 80px"
+  >
+  </pf-select>
+  <pf-select
+    [(ngModel)]="leftFieldId"
+    [list]="getFieldDropdownDataByTableId(query['source-table'])"
+    [disabled]="false"
+    style="width: 80px"
+  >
+  </pf-select>
+  <pf-select
+    [(ngModel)]="leftFieldId"
+    [list]="leftFieldList"
+    [disabled]="false"
+    style="width: 80px"
+  >
+  </pf-select> -->
+
+  <ul *ngIf="
+      fieldList !== null && fieldList !== undefined && fieldList.length > 0
+    " [formGroup]="fieldForm">
+    <li style="white-space: nowrap">
+      <span> {{ getSourceName() }}. </span>
+      <!-- <pf-select
+        [(ngModel)]="leftFieldId"
+        [list]="leftFieldList"
+        [pfPlaceHolder]="'选择字段'"
+        [editable]="false"
+        [disabled]="false"
+        style="width: 80px"
+      >
+      </pf-select> -->
+
+      <!-- <div [formGroup]="fieldForm">
+        <pf-select
+          formControlName="leftFieldId3"
+          [list]="leftFieldList"
+          [pfPlaceHolder]="'选择字段'"
+          [editable]="false"
+          [disabled]="false"
+          style="width: 80px"
+        >
+        </pf-select>
+      </div> -->
+
+      <pf-select formControlName="leftFieldId" [list]="leftFieldList" [pfPlaceHolder]="'选择字段'" [editable]="false"
+        [disabled]="false" style="width: 80px">
+      </pf-select>
+      <span>=</span>
+      <span> {{ getTableName(join["source-table"]) }}. </span>
+      <!-- <pf-select
+        [(ngModel)]="rightFieldId"
+        [list]="rightFieldList"
+        [pfPlaceHolder]="'选择字段'"
+        [editable]="false"
+        [disabled]="false"
+        style="width: 80px"
+      >
+      </pf-select> -->
+
+      <pf-select formControlName="rightFieldId" [list]="rightFieldList" [pfPlaceHolder]="'选择字段'" [editable]="false"
+        [disabled]="false" style="width: 80px">
+      </pf-select>
+    </li>
+    <li>
+      <button nz-button nzType="default" (click)="saveField(selectFieldPopups)">
+        {{ isAdd ? "添加关联条件" : "修改关联条件" }}
+      </button>
+    </li>
+  </ul>
+</pf-dropdown-popups>
+
+<pf-dropdown-popups #selectOutFieldPopups>
+  <label nz-checkbox [ngModel]="outFieldId.length === rightFieldList.length"
+    (ngModelChange)="onSelectAll($event)">字段</label>
+  <hr />
+  <ul>
+    <li *ngFor="let item of rightFieldList">
+      <label nz-checkbox [ngModel]="outFieldId.indexOf(tParseInt(item.key)) > -1"
+        (ngModelChange)="onSelect($event, item)">{{ item.value }}</label>
+    </li>
+  </ul>
+</pf-dropdown-popups>

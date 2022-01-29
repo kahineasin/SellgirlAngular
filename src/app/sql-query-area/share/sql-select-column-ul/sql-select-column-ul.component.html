@@ -1,0 +1,53 @@
+<ul nz-menu nzMode="inline">
+    <ng-container *ngFor="
+        let item of sourceOutFieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      ">
+        <li *ngIf="null===sourceOutFieldFilter||sourceOutFieldFilter(item)" nz-menu-item
+            (click)="selectSourceOutField.emit(item)">
+            {{ item[1] }}
+        </li>
+    </ng-container>
+    <li *ngFor="
+        let item of fieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
+        [(nzOpen)]="item.key.isMenuOpened" (nzOpenChange)="openTableMenuHandler(item.key)">
+        <ul>
+            <li>
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </li>
+            <ng-container *ngFor="
+            let item2 of item.value;
+            index2 as index;
+            first2 as first;
+            last2 as last;
+            odd2 as odd;
+            even2 as even
+          ">
+                <li *ngIf="
+              likeText(item2.ColumnName, searchBox.value)
+              &&(null===fieldFilter||fieldFilter(item2,item.key))
+            " nz-menu-item (click)="selectField.emit({field:item2,table: item.key}) ">
+                    <i nz-icon class="fieldLiIcon ">
+                        <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
+                    </i>
+                    {{ item2.ColumnName }}
+                </li>
+            </ng-container>
+        </ul>
+    </li>
+</ul>

@@ -1,0 +1,48 @@
+ul {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+ul li {
+  list-style: none;
+}
+
+.pf-expression-field-jq-edit-container {
+  // line-height: 40px;
+  border: 1px solid rgba(0, 0, 0);
+  border-radius: 4px;
+}
+.pf-expression-field-jq-edit {
+  min-height: 40px;
+  padding: 12px 12px 12px 26px;
+}
+
+/*.Expression-dimension > */
+.Expression-identifier {
+  color: #509ee3;
+}
+.Expression-aggregation > .Expression-function-name,
+.Expression-aggregation > .Expression-group > .Expression-open-paren,
+.Expression-aggregation > .Expression-group > .Expression-close-paren {
+  color: #88bf4d;
+}
+
+.border-error {
+  border-color: #ed6e6e !important;
+  border-top-color: rgb(237, 110, 110) !important;
+  border-right-color: rgb(237, 110, 110) !important;
+  border-bottom-color: rgb(237, 110, 110) !important;
+  border-left-color: rgb(237, 110, 110) !important;
+}
+.text-error,
+.text-error-hover:hover {
+  color: #ed6e6e;
+}
+
+ul.suggestListUl li {
+  line-height: 30px;
+  padding-left: 14px;
+}
+ul.suggestListUl li.suggestListUlGroup {
+  color: #666666;
+}

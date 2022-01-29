@@ -1,31 +1,29 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { enc, HmacSHA1 } from "crypto-js";
-import { Observable } from "rxjs";
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { enc, HmacSHA1 } from 'crypto-js';
+import { Observable } from 'rxjs';
 //import { ConfigService } from "./app-config.service";
-import { PfUtil } from "../common/pfUtil";
-import { KeyValuePair } from "../common/pfModel";
+import { PfUtil } from '../common/pfUtil';
+import { KeyValuePair } from '../common/pfModel';
 import { ConfigService } from './app-config.service';
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export abstract class ReferenceService {
-  protected applicationId: string = "";
-  protected applicationKey: string = "";
-  protected secertKey: string = "";
-  protected requestBaseUrl: string = "";
-  private timestamp: string = "";
-  private nonce: string = "";
-  private authorization: string = "";
-  private postData: string = "";
-  private signature: string = "";
-  private signatureString: string = "";
+  protected applicationId: string = '';
+  protected applicationKey: string = '';
+  protected secertKey: string = '';
+  protected requestBaseUrl: string = '';
+  private timestamp: string = '';
+  private nonce: string = '';
+  private authorization: string = '';
+  private postData: string = '';
+  private signature: string = '';
+  private signatureString: string = '';
   private flag: boolean = false;
-  private signature_algorithm: string = "HMACSHA1";
-  protected pfUtil: PfUtil ;
+  private signature_algorithm: string = 'HMACSHA1';
+  protected pfUtil: PfUtil;
 
-  constructor(
-    protected appConfig: ConfigService, 
-    protected http: HttpClient) {
+  constructor(protected appConfig: ConfigService, protected http: HttpClient) {
     // this.applicationId = appConfig.getApplicationId();
     // this.applicationKey = appConfig.getApplicationKey();
     // this.secertKey = appConfig.getSecertKey();
@@ -40,16 +38,16 @@ export abstract class ReferenceService {
     postData: KeyValuePair[] | string,
     body: boolean
   ): Observable<NetworkServiceResponse> {
-    url = url.startsWith("http")
+    url = url.startsWith('http')
       ? url
-      : this.requestBaseUrl + (url.startsWith("/") ? url.substring(1) : url);
+      : this.requestBaseUrl + (url.startsWith('/') ? url.substring(1) : url);
     httpMethod = httpMethod.toUpperCase();
     let authData = this.getAuthorizationData();
 
-    var requestData:any[] = [];
+    var requestData: any[] = [];
     this.combine(requestData, authData);
 
-    if (httpMethod == "POST" && postData != null && body == false)
+    if (httpMethod == 'POST' && postData != null && body == false)
       this.combine(requestData, <KeyValuePair[]>postData);
 
     var sig_url = this.flag == true ? url : this.pathAndQuery(url);
@@ -60,7 +58,7 @@ export abstract class ReferenceService {
       requestData,
       body
     );
-    authData.push(new KeyValuePair("signature", this.signature));
+    authData.push(new KeyValuePair('signature', this.signature));
 
     console.log(url);
     console.log(token);
@@ -68,23 +66,23 @@ export abstract class ReferenceService {
     // console.log(body);
 
     //console.log(this.requestBaseUrl);
-    if (token != "") authData.push(new KeyValuePair("token", token));
+    if (token != '') authData.push(new KeyValuePair('token', token));
 
-    this.authorization = this.generateAuthorizationString("OAuth", authData);
-    if (httpMethod == "POST" && postData != null && body == false)
+    this.authorization = this.generateAuthorizationString('OAuth', authData);
+    if (httpMethod == 'POST' && postData != null && body == false)
       this.postData = this.generatePostData(<KeyValuePair[]>postData);
-    else if (httpMethod == "POST" && postData != null)
+    else if (httpMethod == 'POST' && postData != null)
       this.postData = <string>postData;
-    else this.postData = "";
+    else this.postData = '';
 
     let httpOptions = {
       headers: new HttpHeaders({
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: this.authorization,
       }),
     };
 
-    if (httpMethod == "POST") {
+    if (httpMethod == 'POST') {
       var res = this.http.post<NetworkServiceResponse>(
         url,
         this.postData,
@@ -114,28 +112,43 @@ export abstract class ReferenceService {
     body: KeyValuePair[] | any
   ): Observable<NetworkServiceResponse> {
     var me = this;
-    url = url.startsWith("http")
+    url = url.startsWith('http')
       ? url
-      : this.requestBaseUrl + (url.startsWith("/") ? url.substring(1) : url);
+      : this.requestBaseUrl + (url.startsWith('/') ? url.substring(1) : url);
     httpMethod = httpMethod.toUpperCase();
 
     url = me.pfUtil.setUrlParams(url, urlParams);
 
     let authData = this.getAuthorizationData();
 
-    var requestData:any[] = [];
+    var requestData: any[] = [];
     // if (url.indexOf("XSchedulerJob/GetRecords") > -1) {
     //   debugger;
     // }
     this.combine(requestData, authData);
 
     //旧版
-    // if (httpMethod == "POST" && postData != null && body == false)
-    //   this.combine(requestData, <KeyValuePair[]>postData);
-    //新版--benjamin
-    var bodyIsFormData = body instanceof Array; //旧版的body是个boolean值,和新版bodyIsFormData的值相反
+    // // if (httpMethod == "POST" && postData != null && body == false)
+    // //   this.combine(requestData, <KeyValuePair[]>postData);
+    // //新版--benjamin
+    // var bodyIsFormData = body instanceof Array; //旧版的body是个boolean值,和新版bodyIsFormData的值相反
+    // if (bodyIsFormData) {
+    //   this.combine(requestData, <KeyValuePair[]>body);
+    // }
+
+    let bodyIsFormData = false;
+    if (body instanceof Array && body.length > 0) {
+      if (body[0] instanceof KeyValuePair) {
+        bodyIsFormData = true;
+      } else if (body[0]['key'] != undefined) {
+        //本来直接这样判断比较准确:const bodyIsFormData = body instanceof Array&&body.length>0&&body[0] instanceof KeyValuePair;
+        //但为了使body可以接收[{key,value},...]这样的常规写法,所以是数组同时有key属性就当作是formData方式
+        bodyIsFormData = true;
+        body = body.map((a) => new KeyValuePair(a['key'], a['value'])); //这里不转换也是可以的,但做了转换的话,后面就更准确
+      }
+    }
     if (bodyIsFormData) {
-      this.combine(requestData, <KeyValuePair[]>body);
+      this.combine(requestData, body as KeyValuePair[]);
     }
 
     var sig_url = this.flag == true ? url : this.pathAndQuery(url);
@@ -155,9 +168,9 @@ export abstract class ReferenceService {
       !bodyIsFormData
     );
     //debugger;
-    authData.push(new KeyValuePair("signature", this.signature));
+    authData.push(new KeyValuePair('signature', this.signature));
 
-    if (url.indexOf("XSchedulerJob/GetRecords") > -1) {
+    if (url.indexOf('XSchedulerJob/GetRecords') > -1) {
       // console.log(url);
       // //console.log(token);
       // //console.log(postData);
@@ -172,9 +185,9 @@ export abstract class ReferenceService {
     }
 
     //console.log(this.requestBaseUrl);
-    if (token != "") authData.push(new KeyValuePair("token", token));
+    if (token != '') authData.push(new KeyValuePair('token', token));
 
-    this.authorization = this.generateAuthorizationString("OAuth", authData);
+    this.authorization = this.generateAuthorizationString('OAuth', authData);
 
     //旧版
     // if (httpMethod == "POST" && postData != null && body == false)
@@ -183,7 +196,7 @@ export abstract class ReferenceService {
     //   this.postData = <string>postData;
     // else this.postData = "";
     //新版--benjamin
-    var postBody = "";
+    var postBody = '';
     if (body != null) {
       if (bodyIsFormData) {
         postBody = this.generatePostData(<KeyValuePair[]>body);
@@ -194,12 +207,12 @@ export abstract class ReferenceService {
 
     let httpOptions = {
       headers: new HttpHeaders({
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: this.authorization,
       }),
     };
 
-    if (httpMethod == "POST") {
+    if (httpMethod == 'POST') {
       var res = this.http.post<NetworkServiceResponse>(
         url,
         //this.postData,
@@ -212,6 +225,65 @@ export abstract class ReferenceService {
       return res;
     }
   }
+  /**
+   * 此方法要求返回的Result不为null,当为null时认为是异常,所以如果不需要Result,就直接使用httpRequest方法
+   *
+   * 注意参数签名的规则有:
+   * 1.keyValue的Value如果是int也要在两边加字符串(已优化,新版可以支持int)
+   * 2.如果value为null的话,可以去掉该keyValue (已优化,新版已经可以接收null参数)
+   *
+   * 待优化:
+   * 1.后台有formBody参数时,如果body传null,报签名错误;但如果乱填一个参数,反而可以查询(这个问题无法改善,应该是后台判断的)
+   *
+   * @httpMethod
+   * @url
+   * @token
+   * @urlParams 自动拼接到url的参数(自动url编码)
+   * @body 会对keyValue类型自动转换为FormData的形式(自动url编码), 其它类型是直接post(作为流)
+   */
+  public httpResult<TResult>(
+    httpMethod: string,
+    url: string,
+    token: string,
+    urlParams: KeyValuePair[],
+    body: KeyValuePair[] | any
+  ): Observable<TResult> {
+    const me = this;
+    const observable = new Observable<TResult>((subscriber) => {
+      me.httpRequest(httpMethod, url, token, urlParams, body).subscribe(
+        (response) => {
+          //debugger;
+          if (response.Success === 'True' && response.Result != null) {
+            //const data: TResult = JSON.parse(me.base64Decode(response.Result));
+            let s: string = me.base64Decode(response.Result);
+            let data: TResult;
+            try {
+              data = JSON.parse(s);
+            } catch (e) {
+              data = s as unknown as TResult;
+            }
+            subscriber.next(data);
+          } else {
+            subscriber.error(response.Message);
+          }
+        },
+        (err) => {
+          //debugger;
+          subscriber.error(err);
+          // if (err instanceof HttpErrorResponse) {
+          //   subscriber.error(err.message); //为了尽量保证error的参数是string类型
+          // } else {
+          //   subscriber.error(err);
+          // }
+          // if(typeof err === 'string'){
+          //   subscriber.error(err);
+          // }else{
+          // }
+        }
+      );
+    });
+    return observable;
+  }
 
   private generateSignature(
     httpMethod: string,
@@ -222,27 +294,27 @@ export abstract class ReferenceService {
   ): string {
     this.signatureString =
       httpMethod.toUpperCase() +
-      "&" +
+      '&' +
       this.encode(requestUrl) +
-      "&" +
+      '&' +
       this.generateSignatureString(
         httpMethod.toUpperCase(),
         requestUrl,
         data,
-        "="
+        '='
       );
-    if (this.signature_algorithm == "HMACSHA1") {
-      let key: string = this.secertKey + (token == "" ? "" : "&" + token);
+    if (this.signature_algorithm == 'HMACSHA1') {
+      let key: string = this.secertKey + (token == '' ? '' : '&' + token);
       return enc.Base64.stringify(HmacSHA1(this.signatureString, key));
     }
-    return "";
+    return '';
   }
 
   private generateAuthorizationString(
     authType: string,
     data: KeyValuePair[]
   ): string {
-    let authString: string = authType + " ";
+    let authString: string = authType + ' ';
     for (var i = 0; i < data.length; i++) {
       authString =
         authString +
@@ -251,7 +323,7 @@ export abstract class ReferenceService {
         this.encode(data[i].value.toString()) +
         '"';
 
-      if (i < data.length - 1) authString = authString + ",";
+      if (i < data.length - 1) authString = authString + ',';
     }
 
     return authString;
@@ -263,14 +335,14 @@ export abstract class ReferenceService {
     parameters: KeyValuePair[],
     spliter: string
   ): string {
-    let parameterIndex: number = url.indexOf("?");
+    let parameterIndex: number = url.indexOf('?');
     if (parameterIndex > -1) {
       let urlParameterString = url.substring(parameterIndex + 1);
       url = url.substring(0, parameterIndex);
-      let urlParameters = urlParameterString.split("&");
+      let urlParameters = urlParameterString.split('&');
       let pkv;
       for (var i = 0; i < urlParameters.length; i++) {
-        pkv = urlParameters[i].split("=");
+        pkv = urlParameters[i].split('=');
         parameters.push(new KeyValuePair(pkv[0], pkv[1]));
       }
     }
@@ -279,12 +351,24 @@ export abstract class ReferenceService {
     this.combine(pairs, parameters);
 
     pairs.sort(this.compare);
-    let sigString = "";
-    for (var i = 0; i < pairs.length; i++) {
-      sigString =
-        sigString + pairs[i].key + spliter + this.encode(pairs[i].value);
+    let sigString = '';
+    // for (var i = 0; i < pairs.length; i++) {
+    //   sigString =
+    //     sigString + pairs[i].key + spliter + this.encode(pairs[i].value);
 
-      if (i < pairs.length - 1) sigString = sigString + "&";
+    //   if (i < pairs.length - 1) sigString = sigString + '&';
+    // }
+    for (let i = 0; i < pairs.length; i++) {
+      // sigString =
+      //   sigString + pairs[i].key + spliter + this.encode(pairs[i].value);
+      sigString =
+        sigString +
+        pairs[i].key +
+        spliter +
+        this.encode(pairs[i].value == null ? '' : pairs[i].value.toString()); //为了可以用非string的value值--benjamin 20210831
+      if (i < pairs.length - 1) {
+        sigString = sigString + '&';
+      }
     }
 
     return sigString;
@@ -299,38 +383,59 @@ export abstract class ReferenceService {
 
   private getAuthorizationData(): KeyValuePair[] {
     let data: KeyValuePair[] = [];
-    data.push(new KeyValuePair("appid", this.applicationId));
-    data.push(new KeyValuePair("appkey", this.applicationKey));
+    data.push(new KeyValuePair('appid', this.applicationId));
+    data.push(new KeyValuePair('appkey', this.applicationKey));
     data.push(
-      new KeyValuePair("signature_algorithm", this.signature_algorithm)
+      new KeyValuePair('signature_algorithm', this.signature_algorithm)
     ); //HMACSHA1
-    data.push(new KeyValuePair("timestamp", this.getTimestamp()));
-    data.push(new KeyValuePair("nonce", this.getNonce()));
+    data.push(new KeyValuePair('timestamp', this.getTimestamp()));
+    data.push(new KeyValuePair('nonce', this.getNonce()));
 
     return data;
   }
 
-  private generatePostData (data: KeyValuePair[]): string {
-    var me=this;
-    let dataString = "";
-    for (var i = 0; i < data.length; i++) {
+  // private generatePostData(data: KeyValuePair[]): string {
+  //   var me = this;
+  //   let dataString = '';
+  //   for (var i = 0; i < data.length; i++) {
+  //     try {
+  //       if (data[i].value != null) {
+  //         //防止路由中有空参数会报错(如:http://localhost:4200/ai/xSchedulerJob-add)--benjamin 20210618
+  //         dataString =
+  //           dataString +
+  //           data[i].key +
+  //           '=' +
+  //           me.encode(data[i].value.toString());
+  //       }
+  //     } catch (e) {
+  //       debugger;
+  //     }
+
+  //     if (i < data.length - 1) dataString = dataString + '&';
+  //   }
+
+  //   return dataString;
+  // }
+  /**
+   * 新版可以跳过null参数--benjamin20210917
+   * @param data
+   * @returns
+   */
+  private generatePostData = function (data: KeyValuePair[]): string {
+    let list = [];
+    for (let i = 0; i < data.length; i++) {
       try {
-        if (data[i].value != null) {
-          //防止路由中有空参数会报错(如:http://localhost:4200/ai/xSchedulerJob-add)--benjamin 20210618
-          dataString =
-            dataString +
-            data[i].key +
-            "=" +
-            me.encode(data[i].value.toString());
-        }
+        list.push(
+          data[i].key +
+            '=' +
+            this.encode(data[i].value == null ? '' : data[i].value.toString())
+        );
       } catch (e) {
-        debugger;
+        console.info('ReferenceService.generatePostData');
+        console.info(e);
       }
-
-      if (i < data.length - 1) dataString = dataString + "&";
     }
-
-    return dataString;
+    return list.join('&');
   };
 
   private combine(data1: any[], data2: any[]): void {
@@ -338,15 +443,15 @@ export abstract class ReferenceService {
   }
 
   private pathAndQuery(url: string): string {
-    url = url.replace("http://", "").replace("https://", "");
-    let index = url.indexOf("/");
+    url = url.replace('http://', '').replace('https://', '');
+    let index = url.indexOf('/');
     return url.substring(index);
   }
 
   public getTimestamp(): string {
-    if (this.timestamp == "")
+    if (this.timestamp == '')
       return (
-        new Date().getTime() - new Date("1970/01/01").getTime()
+        new Date().getTime() - new Date('1970/01/01').getTime()
       ).toString();
     else return this.timestamp;
   }
@@ -356,8 +461,8 @@ export abstract class ReferenceService {
   }
 
   public getNonce(): string {
-    if (this.nonce == "") {
-      let str = "";
+    if (this.nonce == '') {
+      let str = '';
       let index = 0;
       while (index < 10) {
         str = str + String.fromCharCode(65 + Math.random() * 26);
@@ -373,12 +478,12 @@ export abstract class ReferenceService {
   }
 
   public encode(data: string): string {
-    let str = "";
+    let str = '';
     if (data == null) {
       return str;
     }
     for (var i = 0; i < data.length; i++) {
-      if (data[i] == " ") str = str + "+";
+      if (data[i] == ' ') str = str + '+';
       else {
         var chars = encodeURIComponent(data[i]);
         if (chars.length > 1) str = str + chars.toLowerCase();
@@ -425,4 +530,9 @@ export class NetworkServiceResponse {
   public Message?: string;
   public Result?: any;
   public StatusCode?: number;
+}
+
+export interface PageResult<TData> {
+  DataSource: TData;
+  RecordCount: number;
 }

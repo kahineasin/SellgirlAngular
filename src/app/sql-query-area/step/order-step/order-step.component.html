@@ -1,0 +1,136 @@
+<div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor()">
+  <ng-template [ngIf]="!pfUtil.isListEmpty(query['order-by'])">
+    <!--      
+      (click)="
+        initEditingParam(index); selectBreakoutPopups.open($event.currentTarget)
+      "
+    -->
+    <div *ngFor="
+        let item of query['order-by'];
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      " class="NotebookCellItem" (click)="item[0] = item[0] === 'asc' ? 'desc' : 'asc'"
+      [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+      <!-- <span> aa </span> -->
+      <i nz-icon style="font-size: 32px">
+        <svg pfSvgIconPath [svgIconType]="
+            item[0] === 'desc' ? 'SQL_ORDER_DESC' : 'SQL_ORDER_ASC'
+          " width="16" height="17"></svg>
+      </i>
+      <ng-container *ngTemplateOutlet="fieldTpl; context: { field: item[1] }"></ng-container>
+      <!-- <ng-container *ngTemplateOutlet="deleteTpl"></ng-container> -->
+      <i nz-icon class="sqlDeleteFieldBtn" (click)="query['order-by'].splice(index, 1)"><svg
+          class="Icon Icon-close Icon-cxuQhR kBrLuA" viewBox="0 0 32 32" width="16" height="16">
+          <path d="M4 8 L8 4 L16 12 L24 4 L28 8 L20 16 L28 24 L24 28 L16 20 L8 28 L4 24 L12 16 z "></path>
+        </svg>
+      </i>
+    </div>
+
+    <div class="NotebookCellItem" (click)="
+        initAddingParam(); selectBreakoutPopups.open($event.currentTarget)
+      " [style.backgroundColor]="getFrontColor()" pfHover [hoverStyle]="{ backgroundColor: getFrontHoverColor() }">
+      <i nz-icon>
+        <svg viewBox="0 0 32 32" width="16" height="16">
+          <path
+            d="M12.4285714,12.4285714 L12.4285714,0 L19.5714286,0 L19.5714286,12.4285714 L32,12.4285714 L32,19.5714286 L19.5714286,19.5714286 L19.5714286,32 L12.4285714,32 L12.4285714,19.5714286 L0,19.5714286 L0,12.4285714 L12.4285714,12.4285714 Z">
+          </path>
+        </svg>
+        <!-- <p>afdafdsdf</p> -->
+      </i>
+    </div>
+  </ng-template>
+  <ng-template [ngIf]="pfUtil.isListEmpty(query['order-by'])">
+    <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor()" (click)="
+        initAddingParam(); selectBreakoutPopups.open($event.currentTarget)
+      ">
+      <p style="display: inline">选择排序的列</p>
+    </div>
+  </ng-template>
+</div>
+
+<!--弹窗-->
+<pf-dropdown-popups #selectBreakoutPopups>
+  <!-- <p *ngIf="'field' === addStep">选择表字段</p> -->
+  <!-- <ul nz-menu nzMode="inline">
+    <ng-container *ngFor="
+        let item of sourceOutFieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      ">
+      <li nz-menu-item (click)="saveOrderBySourceOut(item); selectBreakoutPopups.close()">
+        {{ item[1] }}
+      </li>
+    </ng-container>
+    <li *ngFor="
+        let item of fieldList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
+      [(nzOpen)]="item.key.isMenuOpened" (nzOpenChange)="openTableMenuHandler(item.key)">
+      <ul>
+        <li>
+          <nz-input-group [nzSuffix]="suffixIconSearch">
+            <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+          </nz-input-group>
+          <ng-template #suffixIconSearch>
+            <i nz-icon nzType="search"></i>
+          </ng-template>
+        </li>
+        <ng-container *ngFor="
+            let item2 of item.value;
+            index2 as index;
+            first2 as first;
+            last2 as last;
+            odd2 as odd;
+            even2 as even
+          ">
+          <li *ngIf="
+              likeText(item2.ColumnName, searchBox.value) &&
+              !isExistInBreakout(item2, item.key)
+            " nz-menu-item (click)="saveOrder(item2, item.key); selectBreakoutPopups.close()">
+            <i nz-icon style="color:#c7cfd4;margin-right: 0px;">
+              <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
+            </i>
+            {{ item2.ColumnName }}
+          </li>
+        </ng-container>
+      </ul>
+    </li>
+  </ul> -->
+  <!-- <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [fieldList]="_fieldList"
+    (selectSourceOutField)="saveOrderBySourceOut($event); selectBreakoutPopups.close()"
+    (selectField)="saveOrder($event.field, $event.table); selectBreakoutPopups.close()" [fieldFilter]="fieldFilter">
+  </sql-select-column-ul> -->
+  <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
+    (selectSourceOutField)="saveOrderBySourceOut($event); selectBreakoutPopups.close()"
+    (selectField)="saveOrder($event.field, $event.table); selectBreakoutPopups.close()"
+    [sourceOutFieldFilter]="sourceOutFieldFilter" [fieldFilter]="fieldFilter">
+  </sql-select-column-ul>
+</pf-dropdown-popups>
+
+<ng-template #fieldTpl let-field="field">
+  <ng-template [ngIf]="isArray(field)">
+    <!-- <ng-template [ngIf]="field[0] == 'field-id'">
+      <span>{{ getFieldFullName(field) }}</span>
+    </ng-template>
+    <ng-template [ngIf]="field[0] == 'joined-field'"
+      ><span>{{ field[1] }}.{{ field[2][1] }}</span>
+    </ng-template> -->
+    <span>{{ getFieldFullName(field) }}</span>
+  </ng-template>
+  <ng-template [ngIf]="!isArray(field)">
+    <span>{{ field }}</span>
+  </ng-template>
+</ng-template>
+<ng-template #aggregationFieldTpl let-field="field">
+  <span>{{ getAggregationDisplayName(field) }}</span>
+</ng-template>

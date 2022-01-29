@@ -1,0 +1,11 @@
+<span [ngClass]="getParentClass()">
+  <span *ngFor="
+      let item of createSpans(source);
+      index as index;
+      first as first;
+      last as last;
+      odd as odd;
+      even as even
+    " [ngClass]="getChildClass(item.kind)">{{item.text}}
+  </span>
+</span>

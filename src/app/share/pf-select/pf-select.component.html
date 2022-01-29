@@ -1,0 +1,61 @@
+<!--input不能自动宽度,感觉不太好-->
+<!-- <input
+  type="text"
+  readonly
+  (click)="showPopups($event, pdp)"
+  [ngModel]="pfValue"
+  [disabled]="pfDisabled"
+  class="pf-select-input"
+/> -->
+
+<!-- <div
+  (click)="showPopups($event, pdp)"
+  class="pf-select-input"
+  [style.backgroundColor]="currentInputStyle.backgroundColor"
+  [style.border]="currentInputStyle.border"
+> -->
+<!-- <div
+  (click)="showPopups($event, pdp)"
+  class="pf-select-input"
+  [class.invalid]="!isValid2"
+> -->
+<div
+  (click)="showPopups($event, pdp)"
+  class="pf-select-input"
+  [class.invalid]="invalid"
+  nz-tooltip
+  [nzTooltipTitle]="errorMsg"
+>
+  <!-- <div
+  (click)="showPopups($event, pdp)"
+  class="pf-select-input"
+  [class.invalid]="control !== null && control !== undefined && control.invalid"
+> -->
+  <div [attr.contenteditable]="editable" style="display: inline-block">
+    {{
+      pfValue === null || pfValue === undefined || pfValue === ""
+        ? pfPlaceHolder
+        : pfValue
+    }}
+  </div>
+  <span>&nbsp;</span>
+  <i
+    nz-icon
+    nzType="down"
+    nzTheme="outline"
+    style="color: rgba(0, 0, 0, 0.25)"
+  ></i>
+  <!-- <div class="errorMessage" *ngIf="!isValid2">is required</div> -->
+</div>
+<pf-dropdown-popups #pdp>
+  <ul class="pf-select-ul">
+    <li
+      *ngFor="let item of list"
+      [attr.value]="item.key"
+      (click)="selectItem(item); pdp.close()"
+      [class.selected]="pfKey === item.key"
+    >
+      {{ item.value }}
+    </li>
+  </ul>
+</pf-dropdown-popups>

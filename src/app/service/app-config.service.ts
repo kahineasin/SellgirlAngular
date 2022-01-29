@@ -1,27 +1,34 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class ConfigService {
   //api 请求参数
-  private applicationId = "408D8304D4C36DA99A5C01486FD92360";
-  private applicationKey = "AppDesfefsfDfwerfweDsfsfds";
-  private secertKey = "DDfewfdsdsfafewfsfdsfdDsfewdDfsfafdf";
+  private applicationId = '408D8304D4C36DA99A5C01486FD92360';
+  private applicationKey = 'AppDesfefsfDfwerfweDsfsfds';
+  private secertKey = 'DDfewfdsdsfafewfsfdsfdDsfewdDfsfafdf';
+
+  // dataCenter
+  private dataCenterId = '7be12c8a496b78f254f39651ad71bced';
+  private dataCenterKey = 'AppDewfsdfwefdsfsfwefwfwfw';
+  private dataCenterSecertKey = 'SecretDadefwefsdfsfwefwfdfdfs';
 
   private requestBaseUrl =
-    "http://uat-cloud.perfect99.com:10142/NSCloud/SNSAPI/";
+    'http://uat-cloud.perfect99.com:10142/NSCloud/SNSAPI/';
+  private dataCenterUrl =
+    'http://uat-cloud.perfect99.com:10081/datacenter/SNSAPI/';
   private authorizationUrl =
-    "http://uat-cloud.perfect99.com:10142/NSCloud/Authorization/";
+    'http://uat-cloud.perfect99.com:10142/NSCloud/Authorization/';
 
   //private requestBaseUrl = "http://localhost:9099/NSCloud/SNSAPI/";
 
   //private authorizationUrl = "http://localhost:9099/NSCloud/Authorization/";
 
-  private registryUrl = "https://uat-registry.perfect99.com";
-  private mesosApiUrl = "http://uat-dcos.perfect99.com:8080";
+  private registryUrl = 'https://uat-registry.perfect99.com';
+  private mesosApiUrl = 'http://uat-dcos.perfect99.com:8080';
   // private fileUrl = "http://uat-dcos.perfect99.com:29201/download?filePath=";
-  private fileUrl = "http://uat-dcos.perfect99.com:29201/download";
-  private uploadBaseUrl = "http://uat-dcos.perfect99.com:29201";
-  private webshellUrl = "http://uat-registry.perfect99.com:4230/"; //?host=节点Ip&user=用户名&cmd=SSH
+  private fileUrl = 'http://uat-dcos.perfect99.com:29201/download';
+  private uploadBaseUrl = 'http://uat-dcos.perfect99.com:29201';
+  private webshellUrl = 'http://uat-registry.perfect99.com:4230/'; //?host=节点Ip&user=用户名&cmd=SSH
 
   public getRegistryUrl(): string {
     return this.registryUrl;
@@ -59,5 +66,20 @@ export class ConfigService {
   }
   public getWebshellUrl(): string {
     return this.webshellUrl;
+  }
+
+  public getDataCenterId(): string {
+    return this.dataCenterId;
+  }
+
+  public getDataCenterKey(): string {
+    return this.dataCenterKey;
+  }
+
+  public getDataCenterSecertKey(): string {
+    return this.dataCenterSecertKey;
+  }
+  public getDataCenterUrl(): string {
+    return this.dataCenterUrl;
   }
 }

@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4210",
+    "start 2": "node --max-old-space-size=10000000000 node_modules\\@angular\\cli\\bin\\ng serve --port 4210 ",
     "build": "ng build",
     "buildProd": "ng build --prod",
     "test": "ng test",
@@ -23,9 +24,13 @@
     "@sbzen/ng-cron": "^1.0.5",
     "@swimlane/ngx-graph": "^7.2.0",
     "@types/crypto-js": "^4.0.2",
+    "chevrotain": "^10.0.0",
     "crypto-js": "^3.3.0",
+    "dayjs": "^1.10.7",
     "guid-typescript": "^1.0.9",
+    "lodash.memoize": "^4.1.2",
     "ng-zorro-antd": "^11.4.2",
+    "regexp.escape": "^1.1.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.3"

@@ -1,0 +1,30 @@
+<div class="pf-select-input" [class.invalid]="invalid">
+  <input type="text" [(ngModel)]="pfValue" (ngModelChange)="onInputChange($event)" />
+  <input (click)="testClick1()" value="testClick1" type="button" />
+</div>
+
+<div (click)="showPopups($event, pdp)" class="pf-select-input" [class.invalid]="invalid">
+  <!-- <div
+  (click)="showPopups($event, pdp)"
+  class="pf-select-input"
+  [class.invalid]="control !== null && control !== undefined && control.invalid"
+> -->
+  <div [attr.contenteditable]="editable" style="display: inline-block">
+    {{
+    pfValue === null || pfValue === undefined || pfValue === ""
+    ? pfPlaceHolder
+    : pfValue
+    }}
+  </div>
+  <span>&nbsp;</span>
+  <i nz-icon nzType="down" nzTheme="outline" style="color: rgba(0, 0, 0, 0.25)"></i>
+  <!-- <div class="errorMessage" *ngIf="!isValid2">is required</div> -->
+</div>
+<pf-dropdown-popups #pdp>
+  <ul class="pf-select-ul">
+    <li *ngFor="let item of list" [attr.value]="item.key" (click)="selectItem(item); pdp.close()"
+      [class.selected]="pfKey === item.key">
+      {{ item.value }}
+    </li>
+  </ul>
+</pf-dropdown-popups>
