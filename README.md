@@ -103,3 +103,4 @@ npm install password-generator
 ## 打包
 
 ng build --prod
+iis上面应该需要设置svg的mimeType

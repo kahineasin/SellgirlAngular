@@ -85,6 +85,7 @@ import { PfHoverModule } from './share/pf-hover-style';
 import { SqlQueryAreaModule } from './sql-query-area';
 import { DatamodelQueryEditComponent } from './datamodel-query-edit/datamodel-query-edit.component';
 import { SqlQueryAreaImportTestModule } from './sql-query-area-import-test';
+import {HashLocationStrategy, LocationStrategy} from "@angular/common";
 
 const icons: IconDefinition[] = [
   MenuFoldOutline,
@@ -169,7 +170,10 @@ registerLocaleData(zh);
     SqlQueryAreaModule,
     NzIconModule.forRoot(icons),
   ],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }],
+  providers: [{ provide: NZ_I18N, useValue: zh_CN },{
+    provide:LocationStrategy,
+    useClass:HashLocationStrategy
+  }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
