@@ -471,7 +471,7 @@ export class CustomColumnStepComponent implements OnInit {
   }
   public saveCustomColumn() {
     const me = this;
-    // debugger;
+    debugger;
     // if (me.pfUtil.isAnyNull(me.query.expressions)) {
     //   me.query.expressions = {};//报错object is not extensible at CustomColumnStepComponent.saveCustomColumn估计是由于子组件不能直接改Input query(不是这个原因，需要用Object.assign解决)
     // }
