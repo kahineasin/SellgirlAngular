@@ -119,6 +119,7 @@ export class SqlQueryAreaComponent implements OnInit {
     aggregation: [136, 191, 77],
     order: [147, 161, 171],
     customColumn: [147, 161, 171],
+    limit: [147, 161, 171],
   };
   //@Output() public queryChange = new EventEmitter(); //命名一定要是上面的字段名后加Change
   //public databaseId: string = "";
@@ -149,6 +150,7 @@ export class SqlQueryAreaComponent implements OnInit {
   allowAggregation: boolean = true;
   allowCustomColumn: boolean = true;
   allowOrder: boolean = true;
+  public allowLimit: boolean = true;
 
   aggregationDelBtnVisible: boolean = false;
   delBtnVisible: Object = {};
@@ -419,51 +421,13 @@ export class SqlQueryAreaComponent implements OnInit {
     //me.allowAggregation = me.allowJoin;
     me.allowFilter = me.allowJoin;
     me.allowOrder = me.allowJoin;
+    me.allowLimit = me.allowJoin;
 
-    // if (!me.allowJoin) {
-    //   me.allowAggregation = false;
-    // } else {
-    //   if (me.isFirstFloor) {
-    //     if (
-    //       me.rowVisible["aggregation"] &&
-    //       me.pfUtil.isListEmpty(me.query.breakout)
-    //     ) {
-    //       me.allowAggregation = false;
-    //     } else {
-    //       me.allowAggregation = true;
-    //     }
-    //   } else {
-    //     if (me.rowVisible["aggregation"]) {
-    //       me.allowAggregation = false;
-    //     } else {
-    //       me.allowAggregation = true;
-    //     }
-    //   }
-    // }
-
-    //debugger;
-    // if (me.showAggregationForFirstTime) {
-    //   me.rowVisible["aggregation"] = true;
+    // // //本来写在这里,后来觉得可以移到ngChanges
+    // if (!me.pfUtil.isEmpty(me.showXForFirstTime)) {
+    //   me.rowVisible[me.showXForFirstTime] = true;
     //   //me.showAggregationForFirstTimeChange.emit(false);
     // }
-    if (!me.pfUtil.isEmpty(me.showXForFirstTime)) {
-      me.rowVisible[me.showXForFirstTime] = true;
-      //me.showAggregationForFirstTimeChange.emit(false);
-    }
-
-    // let a = me.pfUtil.isEmpty("");
-    // let b = me.pfUtil.isEmpty([]);
-    // let c = me.pfUtil.isEmpty({});
-    // let d = me.pfUtil.isEmpty(null);
-    // let e = me.pfUtil.isEmpty({ a });
-    // let f = me.pfUtil.isEmpty([1]);
-    // console.info("-----------------text isEmpty----------------");
-    // console.info(a);
-    // console.info(b);
-    // console.info(c);
-    // console.info(d);
-    // console.info(e);
-    // console.info(f);
 
     if (
       me.pfUtil.isAllNull(me.query['source-table'], me.query['source-query'])
@@ -506,62 +470,6 @@ export class SqlQueryAreaComponent implements OnInit {
     } else {
       me.allowAggregation = true;
       me.allowCustomColumn = true;
-      // if (false) {
-      // }
-      // // else if (
-      // //   me.rowVisible["aggregation"] &&
-      // //   me.pfUtil.isListEmpty(me.query.breakout)
-      // // ) {
-      // //   me.allowAggregation = false;
-      // // }
-      // //  else if (
-      // //   //开始新增未选择表时
-      // //   me.pfUtil.isAnyNull(me.query["source-table"]) &&
-      // //   me.pfUtil.isAnyNull(me.query["source-query"])
-      // // ) {
-      // //   me.allowAggregation = false;
-      // // }
-      // else if (
-      //   //最外层未选择breakout时
-      //   me.rowVisible["aggregation"] &&
-      //   me.pfUtil.isAnyNull(me.query["source-table"]) &&
-      //   !me.pfUtil.isAnyNull(me.query["source-query"]) &&
-      //   me.pfUtil.isListEmpty(me.query.breakout)
-      // ) {
-      //   me.allowAggregation = false;
-      // }
-      // // else if (
-      // //   //已经显示aggregation-step且非最外层
-      // //   me.rowVisible["aggregation"] &&
-      // //   !me.isFirstFloor
-      // // ) {
-      // //   me.allowAggregation = false;
-      // // }
-      // // else if (me.rowVisible["customColumn"]) {
-      // //   me.allowAggregation = false;
-      // // }
-      // else {
-      //   me.allowAggregation = true;
-      // }
-
-      // //debugger;
-      // // if (me.rowVisible["aggregation"]) {
-      // //   me.allowCustomColumn = false;
-      // // }
-      // if (
-      //   me.rowVisible["customColumn"] &&
-      //   me.pfUtil.isAnyNull(me.query.expressions)
-      // ) {
-      //   me.allowCustomColumn = false;
-      // } else if (
-      //   //已经显示step且非最外层
-      //   me.rowVisible["customColumn"] &&
-      //   !me.isFirstFloor
-      // ) {
-      //   me.allowCustomColumn = false;
-      // } else {
-      //   me.allowCustomColumn = true;
-      // }
     }
   }
   /**
@@ -621,11 +529,21 @@ export class SqlQueryAreaComponent implements OnInit {
         (a) => a['expressions']
       );
 
-      console.info('------aaa------');
-      //console.info(typeof me.query["expressions"]);
-      console.info(me.rowVisible['customColumn']);
-      console.info(me.rowVisible['aggregation']);
-      //debugger;
+      me.rowVisible['limit'] = !me.pfUtil.isAnyEmptyAction(
+        me.query,
+        (a) => a['limit']
+      );
+
+      if (!me.pfUtil.isEmpty(me.showXForFirstTime)) {
+        me.rowVisible[me.showXForFirstTime] = true;
+        //me.showAggregationForFirstTimeChange.emit(false);
+      }
+
+      // console.info("------aaa------");
+      // //console.info(typeof me.query["expressions"]);
+      // console.info(me.rowVisible["customColumn"]);
+      // console.info(me.rowVisible["aggregation"]);
+      // //debugger;
 
       if (
         // me.query != null &&
@@ -781,17 +699,20 @@ export class SqlQueryAreaComponent implements OnInit {
   getBackColor(colorName: string): string {
     const me = this;
     const color = me.cellColor[colorName];
-    return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',0.1)';
+    //return "rgba(" + color[0] + "," + color[1] + "," + color[2] + ",0.1)";
+    return me.sqlQueryUtil.getBackColor(color);
   }
   getFrontColor(colorName: string): string {
     const me = this;
     const color = me.cellColor[colorName];
-    return 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+    //return "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+    return me.sqlQueryUtil.getFrontColor(color);
   }
   getFrontHoverColor(colorName: string): string {
     const me = this;
     const color = me.cellColor[colorName];
-    return 'rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',0.8)';
+    //return "rgba(" + color[0] + "," + color[1] + "," + color[2] + ",0.8)";
+    return me.sqlQueryUtil.getFrontHoverColor(color);
   }
 
   // /**
@@ -1055,11 +976,11 @@ export class SqlQueryAreaComponent implements OnInit {
       me.queryDeleteLevel.emit(Object.assign({}, me.query['source-query'])); //query属性是@Input属性,不能在此组件中嵌套操作
     }
   }
-  public deleteRow() {
-    const me = this;
-    //debugger;
-    me.msg.info('aaa');
-  }
+  // public deleteRow() {
+  //   const me = this;
+  //   //debugger;
+  //   me.msg.info("aaa");
+  // }
   // public showDeleteBtn(b) {
   //   const me = this;
   //   me.aggregationDelBtnVisible = b;
@@ -1259,5 +1180,11 @@ export class SqlQueryAreaComponent implements OnInit {
   public getQueryClassString() {
     const me = this;
     return JSON.stringify(me.queryClass, undefined, 4);
+  }
+  public onLimitDelete() {
+    const me = this;
+    // me.query["limit"] = null;
+    delete me.query['limit'];
+    me.rowVisible['limit'] = false;
   }
 }

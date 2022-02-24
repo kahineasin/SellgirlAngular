@@ -127,6 +127,11 @@
     </custom-column-step>
   </step-row>
 
+  <step-row *ngIf="rowVisible['limit']" [title]="'行限制'" [color]="cellColor.limit" (delete)="onLimitDelete()">
+    <limit-step [query]="query" [color]="cellColor.limit" style="width: 70%">
+    </limit-step>
+  </step-row>
+
   <!-- <div>
     <filter-step *ngIf="hasFilter" [testCnt]="1"></filter-step>
     <filter-step *ngIf="hasFilter" [filter]="filter"></filter-step>
@@ -171,6 +176,15 @@
         <svg pfSvgIconPath [svgIconType]="'CUSTOM_COLUMN'"></svg>
       </i>
       自定义列
+    </button>
+
+    <button *ngIf="allowLimit && !rowVisible['limit']" nz-button nzSize="large" nzType="default" type="button"
+      (click)="rowVisible['limit'] = !rowVisible['limit']" [style.color]="getFrontColor('limit')"
+      [style.backgroundColor]="getBackColor('limit')">
+      <i nz-icon>
+        <svg pfSvgIconPath [svgIconType]="'SQL_LIMIT'"></svg>
+      </i>
+      行限制
     </button>
     <!-- </nz-space> -->
   </div>

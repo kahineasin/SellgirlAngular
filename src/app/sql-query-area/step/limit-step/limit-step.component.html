@@ -1,0 +1,9 @@
+<div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor()">
+    <!-- <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor()">
+        <input type="number" nz-input placeholder="输入限制行数" [(ngModel)]="limitNum" (change)="onLimitChange($event)" />
+        <nz-input-number [(ngModel)]="limitNum" [nzMin]="1" [nzStep]="1" (ngModelChange)="onLimitChange($event)"
+            [nzPlaceHolder]="'输入限制行数'"></nz-input-number>
+    </div> -->
+    <nz-input-number [(ngModel)]="limitNum" [nzMin]="1" [nzStep]="1" (ngModelChange)="onLimitChange($event)"
+        [nzPlaceHolder]="'输入限制行数'" style="width:200px"></nz-input-number>
+</div>

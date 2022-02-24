@@ -49,6 +49,8 @@ import { PfExpressionFieldComponent } from './pf-expression-field/pf-expression-
 import { PfExpressionFieldJqComponent } from './pf-expression-field-jq/pf-expression-field-jq.component';
 import { CustomColumnStepComponent } from './step/custom-column-step/custom-column-step.component';
 import { SqlSelectColumnUlComponent } from './share/sql-select-column-ul/sql-select-column-ul.component';
+import { LimitStepComponent } from './step/limit-step/limit-step.component';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 // 引入你需要的图标，比如你需要 fill 主题的 AccountBook Alert 和 outline 主题的 Alert，推荐 ✔️
 const icons: IconDefinition[] = [FilterFill, TableOutline, DatabaseOutline];
 
@@ -67,6 +69,7 @@ const icons: IconDefinition[] = [FilterFill, TableOutline, DatabaseOutline];
     PfDropdownPopupsModule,
     PfSelectModule,
     NzCheckboxModule,
+    NzInputNumberModule,
     PfHoverModule,
     NzIconModule.forRoot(icons),
   ],
@@ -80,6 +83,7 @@ const icons: IconDefinition[] = [FilterFill, TableOutline, DatabaseOutline];
     AggregationStepComponent,
     OrderStepComponent,
     CustomColumnStepComponent,
+    LimitStepComponent,
     TokenizedExpressionComponent,
     TokenizedInputComponent,
     //ExpressionEditorTextfieldComponent,
@@ -96,6 +100,7 @@ const icons: IconDefinition[] = [FilterFill, TableOutline, DatabaseOutline];
     AggregationStepComponent,
     OrderStepComponent,
     CustomColumnStepComponent,
+    LimitStepComponent,
     TokenizedExpressionComponent,
     TokenizedInputComponent,
     PfExpressionFieldJqComponent,
