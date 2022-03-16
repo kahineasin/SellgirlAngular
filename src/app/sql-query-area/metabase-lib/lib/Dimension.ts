@@ -88,7 +88,11 @@ export default class Dimension {
   /**
    * 只是为了防止循环引用的解耦--benjamin
    */
-  _fieldClass: IField;
+  // _fieldClass: IField;
+  /**
+   * 只是为了防止循环引用的解耦--benjamin
+   */
+  _objInitHelper: IObjInitHelper;
 
   // Display names provided by the backend
   _subDisplayName: String;
@@ -100,7 +104,8 @@ export default class Dimension {
   constructor(
     parent: Dimension,
     args: any[],
-    fieldClass: IField,
+    //fieldClass: IField,
+    objInitHelper: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ) {
@@ -108,7 +113,8 @@ export default class Dimension {
     this._args = args;
     this._metadata = metadata || (parent && parent._metadata);
     this._query = query || (parent && parent._query);
-    this._fieldClass = fieldClass;
+    //this._fieldClass = fieldClass;
+    this._objInitHelper = objInitHelper;
   }
 
   /**
@@ -117,7 +123,8 @@ export default class Dimension {
    */
   static parseMBQL(
     mbql: ConcreteField,
-    fieldClass: IField,
+    //fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ): Dimension {
@@ -133,7 +140,8 @@ export default class Dimension {
   parseMBQL(mbql: ConcreteField): Dimension {
     return Dimension.parseMBQL(
       mbql,
-      this._fieldClass,
+      //this._fieldClass,
+      this._objInitHelper,
       this._metadata,
       this._query as any
     );
@@ -145,7 +153,8 @@ export default class Dimension {
   static isEqual(
     a: Dimension | ConcreteField,
     b: Dimension,
-    fieldClass: IField,
+    //fieldClass: IField
+    fieldClass: IObjInitHelper
   ): boolean {
     const dimensionA: Dimension =
       a instanceof Dimension
@@ -166,7 +175,10 @@ export default class Dimension {
    */
   // TODO Atte Keinänen 5/21/17: Rename either this or the instance method with the same name
   // Also making it clear in the method name that we're working with sub-dimensions would be good
-  static dimensions(parent: Dimension, fieldClass: IField): Dimension[] {
+  static dimensions(
+    parent: Dimension,
+    fieldClass: IObjInitHelper
+  ): Dimension[] {
     return [];
   }
 
@@ -191,7 +203,7 @@ export default class Dimension {
     } else {
       return [].concat(
         ...(DimensionTypes || []).map((DimensionType) =>
-          DimensionType.dimensions(this, this._fieldClass)
+          DimensionType.dimensions(this, this._objInitHelper)
         )
       );
     }
@@ -289,7 +301,7 @@ export default class Dimension {
     return new FKDimension(
       this,
       [dimension.mbql()],
-      this._fieldClass,
+      this._objInitHelper,
       this._metadata,
       this._query as any
     );
@@ -299,7 +311,7 @@ export default class Dimension {
     return new DatetimeFieldDimension(
       this,
       [unit],
-      this._fieldClass,
+      this._objInitHelper,
       this._metadata,
       this._query as any
     );
@@ -310,7 +322,8 @@ export default class Dimension {
    */
   field(): IField {
     //return new IField();
-    return this._fieldClass.init();
+    // return this._fieldClass.init();
+    return this._objInitHelper.field();
   }
   // /**
   //  * The underlying field for this dimension
@@ -481,7 +494,8 @@ export class FieldDimension extends Dimension {
       return this._parent.field();
     }
     //return new IField();
-    return this._fieldClass.init();
+    // return this._fieldClass.init();
+    return this._objInitHelper.field();
   }
 
   displayName(): string {
@@ -520,7 +534,7 @@ export class FieldDimension extends Dimension {
 export class FieldIDDimension extends FieldDimension {
   static parseMBQL(
     mbql: ConcreteField,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ) {
@@ -547,7 +561,7 @@ export class FieldIDDimension extends FieldDimension {
     // return ((this._metadata && this._metadata.fields[this._args[0]]) ||
     //   new FieldClass({ id: this._args[0] })) as any;
     return ((this._metadata && this._metadata.fields[this._args[0]]) ||
-      this._fieldClass.init({ id: this._args[0] })) as any;
+      this._objInitHelper.fieldByObj({ id: this._args[0] })) as any;
   }
 }
 
@@ -557,7 +571,7 @@ export class FieldIDDimension extends FieldDimension {
 export class FieldLiteralDimension extends FieldDimension {
   static parseMBQL(
     mbql: ConcreteField,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ) {
@@ -623,7 +637,7 @@ export class FieldLiteralDimension extends FieldDimension {
     //     '=': { name: '=', verboseName: t`Is`, fields: [] },
     //   },
     // });
-    return this._fieldClass.init({
+    return this._objInitHelper.fieldByObj({
       id: this.mbql(),
       name: this.name(),
       // NOTE: this display_name will likely be incorrect
@@ -647,7 +661,7 @@ export class FKDimension extends FieldDimension {
   public _dest: any = null;
   static parseMBQL(
     mbql: ConcreteField,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ): Dimension {
@@ -666,7 +680,10 @@ export class FKDimension extends FieldDimension {
     return null;
   }
 
-  static dimensions(parent: Dimension, fieldClass: IField): Dimension[] {
+  static dimensions(
+    parent: Dimension,
+    fieldClass: IObjInitHelper
+  ): Dimension[] {
     if (parent instanceof FieldDimension) {
       const field = parent.field();
       if ((field as any).target && (field as any).target.table) {
@@ -688,7 +705,7 @@ export class FKDimension extends FieldDimension {
   constructor(
     parent: Dimension,
     args: any[],
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass //: Dimension
   ) {
@@ -730,6 +747,7 @@ export class FKDimension extends FieldDimension {
 //import { DATETIME_UNITS, formatBucketing } from "metabase/lib/query_time";
 import { DATETIME_UNITS, formatBucketing } from '../../lib/query_time';
 import type Aggregation from './queries/structured/Aggregation';
+import { IObjInitHelper } from '../../model/IObjInitHelper';
 
 const isFieldDimension = (dimension) =>
   dimension instanceof FieldIDDimension || dimension instanceof FKDimension;
@@ -740,7 +758,7 @@ const isFieldDimension = (dimension) =>
 export class DatetimeFieldDimension extends FieldDimension {
   static parseMBQL(
     mbql: ConcreteField,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ): Dimension {
@@ -840,7 +858,7 @@ export class DatetimeFieldDimension extends FieldDimension {
 export class BinnedDimension extends FieldDimension {
   static parseMBQL(
     mbql: ConcreteField,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ) {
@@ -890,7 +908,7 @@ export class ExpressionDimension extends Dimension {
 
   static parseMBQL(
     mbql: any,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ): Dimension {
@@ -922,7 +940,7 @@ export class ExpressionDimension extends Dimension {
   }
 
   field() {
-    return this._fieldClass.init({
+    return this._objInitHelper.fieldByObj({
       id: this.mbql(),
       name: this.name(),
       display_name: this.displayName(),
@@ -951,7 +969,7 @@ const UNAGGREGATED_SPECIAL_TYPES = new Set([TYPE.FK, TYPE.PK]);
 export class AggregationDimension extends Dimension {
   static parseMBQL(
     mbql: any,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ): Dimension {
@@ -986,7 +1004,7 @@ export class AggregationDimension extends Dimension {
     const dimension = aggregation.dimension();
     const field = dimension && dimension.field();
     const { special_type } = field || ({} as any);
-    return this._fieldClass.init({
+    return this._objInitHelper.fieldByObj({
       name: aggregation.columnName(),
       display_name: aggregation.displayName(),
       base_type: aggregation.baseType(),
@@ -1049,7 +1067,7 @@ export class AggregationDimension extends Dimension {
 export class JoinedDimension extends FieldDimension {
   static parseMBQL(
     mbql: ConcreteField,
-    fieldClass: IField,
+    fieldClass: IObjInitHelper,
     metadata?: MetadataClass,
     query?: StructuredQueryClass
   ): Dimension {

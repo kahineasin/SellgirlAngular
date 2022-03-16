@@ -2,6 +2,7 @@
 
 import Dimension from '../../metabase-lib/lib/Dimension';
 import { IField } from '../../model/IField';
+import { IObjInitHelper } from '../../model/IObjInitHelper';
 import { FK_SYMBOL } from '../formatting';
 import {
   OPERATORS,
@@ -189,7 +190,7 @@ export function isFunction(expr) {
   );
 }
 
-export function isDimension(expr, fieldClass: IField) {
+export function isDimension(expr, fieldClass: IObjInitHelper) {
   return !!Dimension.parseMBQL(expr, fieldClass);
 }
 

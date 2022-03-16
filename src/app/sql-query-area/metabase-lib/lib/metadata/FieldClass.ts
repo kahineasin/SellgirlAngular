@@ -77,9 +77,9 @@ export default class FieldClass extends Base implements IField {
     super.initPropertyByObject(object);
     //debugger;
   }
-  init(): IField {
-    return new FieldClass();
-  }
+  // init(): IField {
+  //   return new FieldClass();
+  // }
 
   parent() {
     return this.metadata ? this.metadata.fields[this.parent_id] : null;

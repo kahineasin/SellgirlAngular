@@ -59,6 +59,7 @@ import { TYPE } from '../../../lib/types';
 
 import { fieldRefForColumn } from '../../../lib/dataset';
 import { IStructuredQuery } from '../../../model/IStructuredQuery';
+import { ObjInitHelper } from '../../../model/ObjInitHelper';
 
 type DimensionFilter = (dimension: Dimension) => boolean;
 type FieldFilter = (filter: FieldClass) => boolean;
@@ -1301,7 +1302,7 @@ export default class StructuredQueryClass
       return new ExpressionDimension(
         null,
         [expressionName],
-        new FieldClass(),
+        new ObjInitHelper(),
         this._metadata,
         this
       );
@@ -1445,14 +1446,14 @@ export default class StructuredQueryClass
   }
 
   fieldReferenceForColumn(column) {
-    return fieldRefForColumn(column, new FieldClass());
+    return fieldRefForColumn(column, new ObjInitHelper());
   }
 
   // TODO: better name may be parseDimension?
   parseFieldReference(fieldRef): Dimension {
     return Dimension.parseMBQL(
       fieldRef,
-      new FieldClass(),
+      new ObjInitHelper(),
       this._metadata,
       this
     );

@@ -22,6 +22,7 @@ import {
 } from '.';
 import type StructuredQueryClass from '../../metabase-lib/lib/queries/StructuredQueryClass';
 import { IField } from '../../model/IField';
+import { IObjInitHelper } from '../../model/IObjInitHelper';
 
 export { DISPLAY_QUOTES, EDITOR_QUOTES, getExpressionName } from './config';
 
@@ -36,7 +37,7 @@ type FormatterOptions = {
 // convert a MBQL expression back into an expression string
 export function format(
   mbql: any,
-  fieldClass: IField,
+  fieldClass: IObjInitHelper,
   options: FormatterOptions = {} as any
 ) {
   //debugger;

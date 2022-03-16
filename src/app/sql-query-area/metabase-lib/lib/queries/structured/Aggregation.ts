@@ -17,6 +17,7 @@ import type { AggregationOperator } from '../../../../model/Metadata';
 import type { MetricId } from '../../../../model/Metric';
 import type { FieldId } from '../../../../model/Field';
 import FieldClass from '../../metadata/FieldClass';
+import { ObjInitHelper } from '../../../../model/ObjInitHelper';
 
 const INTEGER_AGGREGATIONS = new Set(['count', 'cum-count', 'distinct']);
 
@@ -273,7 +274,7 @@ export default class Aggregation extends MBQLClause {
     return new AggregationDimension(
       null,
       [this._index],
-      new FieldClass(),
+      new ObjInitHelper(),
       this._query.metadata(),
       this._query as any
     );

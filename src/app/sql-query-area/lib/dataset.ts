@@ -10,6 +10,7 @@ import type { Field as FieldReference } from '../model/Query';
 //import StructuredQueryClass from "../metabase-lib/lib/queries/StructuredQueryClass";
 import Dimension, { JoinedDimension } from '../metabase-lib/lib/Dimension';
 import { IField } from '../model/IField';
+import { IObjInitHelper } from '../model/IObjInitHelper';
 //import type Question from "../metabase-lib/lib/Question"; //benjamin todo
 
 type ColumnSetting = {
@@ -47,7 +48,7 @@ export const rangeForValue = (
  */
 export function fieldRefForColumn(
   column: Column,
-  fieldClass: IField
+  fieldClass: IObjInitHelper
 ): FieldReference {
   // NOTE: matching existing behavior of returning the unwrapped base dimension until we understand the implications of changing this
   return (
@@ -58,7 +59,10 @@ export function fieldRefForColumn(
   );
 }
 
-export const keyForColumn = (column: Column, fieldClass: IField): string => {
+export const keyForColumn = (
+  column: Column,
+  fieldClass: IObjInitHelper
+): string => {
   const ref = fieldRefForColumn(column, fieldClass);
   // match bug where joined-field returned field-id instead
   if (Array.isArray(ref) && ref[0] === 'joined-field') {
@@ -84,7 +88,7 @@ export const keyForColumn = (column: Column, fieldClass: IField): string => {
 export function findColumnForColumnSetting(
   columns: Column[],
   columnSetting: ColumnSetting,
-  fieldClass: IField
+  fieldClass: IObjInitHelper
 ): Column {
   const index = findColumnIndexForColumnSetting(
     columns,
@@ -100,7 +104,7 @@ export function findColumnForColumnSetting(
 
 export function normalizeFieldRef(
   fieldRef: FieldReference,
-  fieldClass: IField
+  fieldClass: IObjInitHelper
 ): FieldReference {
   const dimension = Dimension.parseMBQL(fieldRef as any, fieldClass);
   return dimension && (dimension.mbql() as any);
@@ -109,7 +113,7 @@ export function normalizeFieldRef(
 export function findColumnIndexForColumnSetting(
   columns: Column[],
   columnSetting: ColumnSetting,
-  fieldClass: IField
+  fieldClass: IObjInitHelper
 ): number {
   // NOTE: need to normalize field refs because they may be old style [fk->, 1, 2]
   const fieldRef = normalizeFieldRef(columnSetting.fieldRef, fieldClass);

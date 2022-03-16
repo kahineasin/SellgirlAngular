@@ -4,11 +4,11 @@ export interface IField {
   name: string;
   display_name: string;
   description: string;
-  // age: number;
-  // address: string;
-  //xxx: string;
-  init(): IField;
-  init(obj): IField;
+  // // age: number;
+  // // address: string;
+  // //xxx: string;
+  // init(): IField;
+  // init(obj): IField;
   filterOperator(operatorName);
   isDate(): boolean;
   aggregationOperators(): any[];
@@ -16,5 +16,5 @@ export interface IField {
   icon(): any;
   isCoordinate(): boolean;
   //removeJoin(index): any;
-  isFK():boolean;
+  isFK(): boolean;
 }
