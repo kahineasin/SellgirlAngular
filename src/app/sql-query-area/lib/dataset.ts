@@ -2,15 +2,15 @@
 /* @flow */
 
 //import _ from "underscore";
-import { PfUnderscore as _ } from './pf_underscore';
+import { PfUnderscore as _ } from "./pf_underscore";
 
-import type { Value, Column, ColumnName, DatasetData } from '../model/Dataset';
-import type { Field as FieldReference } from '../model/Query';
+import type { Value, Column, ColumnName, DatasetData } from "../model/Dataset";
+import type { QField as FieldReference } from "../model/Query";
 
 //import StructuredQueryClass from "../metabase-lib/lib/queries/StructuredQueryClass";
-import Dimension, { JoinedDimension } from '../metabase-lib/lib/Dimension';
-import { IField } from '../model/IField';
-import { IObjInitHelper } from '../model/IObjInitHelper';
+import Dimension, { JoinedDimension } from "../metabase-lib/lib/Dimension";
+import { IField } from "../model/IField";
+import { IObjInitHelper } from "../model/IObjInitHelper";
 //import type Question from "../metabase-lib/lib/Question"; //benjamin todo
 
 type ColumnSetting = {
@@ -31,7 +31,7 @@ export const rangeForValue = (
   column: Column
 ): [number, number] => {
   if (
-    typeof value === 'number' &&
+    typeof value === "number" &&
     column &&
     column.binning_info &&
     column.binning_info.bin_width
@@ -65,18 +65,18 @@ export const keyForColumn = (
 ): string => {
   const ref = fieldRefForColumn(column, fieldClass);
   // match bug where joined-field returned field-id instead
-  if (Array.isArray(ref) && ref[0] === 'joined-field') {
-    return JSON.stringify(['ref', ref[2]]);
+  if (Array.isArray(ref) && ref[0] === "joined-field") {
+    return JSON.stringify(["ref", ref[2]]);
   }
   // match legacy behavior which didn't have "field-literal" or "aggregation" field refs
   if (
     Array.isArray(ref) &&
-    ref[0] !== 'field-literal' &&
-    ref[0] !== 'aggregation'
+    ref[0] !== "field-literal" &&
+    ref[0] !== "aggregation"
   ) {
-    return JSON.stringify(['ref', ref]);
+    return JSON.stringify(["ref", ref]);
   }
-  return JSON.stringify(['name', column.name]);
+  return JSON.stringify(["name", column.name]);
 };
 
 /**

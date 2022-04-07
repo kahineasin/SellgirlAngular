@@ -11,6 +11,9 @@
     </div>
     <div class="right">
       <ng-container *ngIf="databaseId>-1" style="" class="toolbar">
+        <nz-switch [(ngModel)]="isFilterJsonVisible" nzCheckedChildren="显示json" nzUnCheckedChildren="隐藏json">
+        </nz-switch>
+        &nbsp;
         <button nz-button nzType="default" (click)="goTableListPage()" [disabled]="true">查看数据</button>
         &nbsp;
         <button nz-button nzType="default" (click)="openSqlPopups()" [disabled]="true">查看sql语句</button>
@@ -19,14 +22,15 @@
     <!-- </div> -->
   </div>
   <div class="page-form" style="position: relative; padding-left: 10px">
-    <div>{{ getCurrentFilter() }}</div>
+
+    <div *ngIf="isFilterJsonVisible">{{ getCurrentFilter() }}</div>
     <!-- <p>databaseUUID:{{databaseUUID}}</p> -->
     <sql-query-area *ngIf="query" [(databaseId)]="databaseId" [question]="question" [query]="query.query['query']"
       [isFirstFloor]="true" [(showXForFirstTime)]="showXForFirstTime" (queryAddLevel)="onQueryAddLevel($event)"
       (queryDeleteLevel)="onQueryDeleteLevel($event)" (tableIdChange)="onTableIdChange($event)"></sql-query-area>
   </div>
   <div class="page-bottom">
-    <button nz-button nzType="primary" type="button" (click)="confirm()"  [disabled]="true">
+    <button nz-button nzType="primary" type="button" (click)="confirm()" [disabled]="true">
       确定保存
     </button>
     <nz-modal [(nzVisible)]="isAddModelVisible" [nzTitle]="isDatamodelAdd ? '新增问题' : '编辑问题'"

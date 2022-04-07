@@ -14,7 +14,7 @@ import type {
   ExpressionClause,
   ExpressionName,
   Expression,
-  Field,
+  QField,
   FieldsClause,
 } from "../../model/Query";
 import { TableMetadata } from "../../model/Metadata";
@@ -112,9 +112,9 @@ export const clearOrderBy = (query: SQ) =>
 
 // FIELD
 export const getFields = (query: SQ) => FIELD.getFields(query.fields);
-export const addField = (query: SQ, field: Field) =>
+export const addField = (query: SQ, field: QField) =>
   setFieldsClause(query, FIELD.addField(query.fields, field));
-export const updateField = (query: SQ, index: number, field: Field) =>
+export const updateField = (query: SQ, index: number, field: QField) =>
   setFieldsClause(query, FIELD.updateField(query.fields, index, field));
 export const removeField = (query: SQ, index: number) =>
   setFieldsClause(query, FIELD.removeField(query.fields, index));

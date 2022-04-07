@@ -1,18 +1,18 @@
-import { NgModule } from '@angular/core';
+import { NgModule } from "@angular/core";
 
 //-------------------interface
 import type {
   FieldValues,
   Field,
   FieldId,
-} from '../sql-query-area/model/Field';
+} from "../sql-query-area/model/Field";
 import type {
   Value,
   Column,
   ColumnName,
   DatasetData,
-} from '../sql-query-area/model/Dataset';
-import type { IconName } from '../sql-query-area/metabase-types/types'; //benjamin
+} from "../sql-query-area/model/Dataset";
+import type { IconName } from "../sql-query-area/metabase-types/types"; //benjamin
 import type {
   ConcreteField,
   LocalFieldReference,
@@ -21,26 +21,26 @@ import type {
   ExpressionReference,
   DatetimeUnit,
   JoinedFieldReference,
-  Field as FieldReference,
-} from '../sql-query-area/model/Query';
+  QField as FieldReference,
+} from "../sql-query-area/model/Query";
 
-import type { Database, DatabaseId } from '../sql-query-area/model/Database';
-import type { Table, TableId } from '../sql-query-area/model/Table';
-import type { Segment, SegmentId } from '../sql-query-area/model/Segment';
-import type { Metric, MetricId } from '../sql-query-area/model/Metric';
+import type { Database, DatabaseId } from "../sql-query-area/model/Database";
+import type { Table, TableId } from "../sql-query-area/model/Table";
+import type { Segment, SegmentId } from "../sql-query-area/model/Segment";
+import type { Metric, MetricId } from "../sql-query-area/model/Metric";
 import type {
   AggregationOperator,
   FilterOperator,
-} from '../sql-query-area/model/Metadata'; //好像这个有问题 error 去掉里面的Dimension引用之后就正常了
+} from "../sql-query-area/model/Metadata"; //好像这个有问题 error 去掉里面的Dimension引用之后就正常了
 
 //-------------------function()
-import { ngettext, msgid } from '../sql-query-area/lib/pf_ttag';
-import { parseTimestamp, parseTime } from '../sql-query-area/lib/time';
-import { PfUnderscore as _ } from '../sql-query-area/lib/pf_underscore';
+import { ngettext, msgid } from "../sql-query-area/lib/pf_ttag";
+import { parseTimestamp, parseTime } from "../sql-query-area/lib/time";
+import { PfUnderscore as _ } from "../sql-query-area/lib/pf_underscore";
 import {
   DATETIME_UNITS,
   formatBucketing,
-} from '../sql-query-area/lib/query_time';
+} from "../sql-query-area/lib/query_time";
 
 import {
   noNullValues,
@@ -48,14 +48,14 @@ import {
   update,
   remove,
   clear,
-} from '../sql-query-area/lib/query/util';
+} from "../sql-query-area/lib/query/util";
 
-import { getFilterOperators } from '../sql-query-area/lib/schema_metadata';
-import { TYPE } from '../sql-query-area/lib/types';
+import { getFilterOperators } from "../sql-query-area/lib/schema_metadata";
+import { TYPE } from "../sql-query-area/lib/types";
 //import { createLookupByProperty } from "metabase/lib/table";
-import { createLookupByProperty } from '../sql-query-area/lib/table';
+import { createLookupByProperty } from "../sql-query-area/lib/table";
 //import * as Table2 from '../sql-query-area/lib/query/table';//这个可能有重名风险
-import { isJoinedField } from '../sql-query-area/lib/query/field_ref'; //error
+import { isJoinedField } from "../sql-query-area/lib/query/field_ref"; //error
 //import { isValidField } from '../sql-query-area/lib/query/field_ref'; //error
 //import { STANDARD_AGGREGATIONS } from "../sql-query-area/lib/expressions/config";
 
@@ -72,14 +72,14 @@ import { isJoinedField } from '../sql-query-area/lib/query/field_ref'; //error
 //import * as Q from '../sql-query-area/lib/query/query'; //error
 
 //-------------------class-------------------
-import Base from '../sql-query-area/metabase-lib/lib/metadata/Base';
-import MBQLClause from '../sql-query-area/metabase-lib/lib/queries/structured/MBQLClause'; //error,去掉StructuredQueryClass就ok
+import Base from "../sql-query-area/metabase-lib/lib/metadata/Base";
+import MBQLClause from "../sql-query-area/metabase-lib/lib/queries/structured/MBQLClause"; //error,去掉StructuredQueryClass就ok
 //import type StructuredQueryClass from '../sql-query-area/metabase-lib/lib/queries/StructuredQueryClass';//error
 
 //import type Aggregation from '../sql-query-area/metabase-lib/lib/queries/structured/Aggregation'; //这个有问题
 
 //-------------------third people
-import * as moment from 'dayjs';
+import * as moment from "dayjs";
 //import Humanize from "humanize-plus";
 //import React from "react";
 
@@ -89,20 +89,20 @@ import {
   DEFAULT_TIME_STYLE,
   getTimeFormatFromStyle,
   hasHour,
-} from '../sql-query-area/lib/formatting/date';
+} from "../sql-query-area/lib/formatting/date";
 
 import type {
   DateStyle,
   TimeStyle,
   TimeEnabled,
-} from '../sql-query-area/lib/formatting/date';
+} from "../sql-query-area/lib/formatting/date";
 
-import AaaClass from './aaa-class';
-import BbbClass from './bbb-class';
-import { isRegularField, getFieldTarget } from './ccc-class'; //
+import AaaClass from "./aaa-class";
+import BbbClass from "./bbb-class";
+import { isRegularField, getFieldTarget } from "./ccc-class"; //
 //------------------above is ok----------------
-import Dimension from '../sql-query-area/metabase-lib/lib/Dimension'; //发现问题在这里err 去掉./queries/structured/Aggregation的引用就ok
-import FieldClass from '../sql-query-area/metabase-lib/lib/metadata/FieldClass'; //err 删掉某些引用后就ok
+import Dimension from "../sql-query-area/metabase-lib/lib/Dimension"; //发现问题在这里err 去掉./queries/structured/Aggregation的引用就ok
+import FieldClass from "../sql-query-area/metabase-lib/lib/metadata/FieldClass"; //err 删掉某些引用后就ok
 // import TableClass from '../sql-query-area/metabase-lib/lib/metadata/TableClass'; //err
 
 //import Dimension from '../sql-query-area/metabase-lib/lib/Dimension';

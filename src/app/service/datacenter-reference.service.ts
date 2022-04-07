@@ -31,19 +31,38 @@ export class DataCenterReferenceService extends ReferenceService {
     if (me.pfUtil.isNull(limit)) {
       limit = 100;
     }
-    return me.httpResult<any>(
-      "POST",
-      "DataModel/Execute",
-      this.userProvider.getToken(),
-      null,
-      [
-        { key: "modelId", value: modelId },
-        { key: "limit", value: limit },
-        { key: "filterExpression", value: filterExpression },
-        { key: "aggregationExpression", value: aggregationExpression },
-        { key: "breakoutExpression", value: breakoutExpression },
-      ]
-    );
+    // return me.httpResult<any>(
+    //   "POST",
+    //   "DataModel/Execute",
+    //   this.userProvider.getToken(),
+    //   null,
+    //   [
+    //     { key: "modelId", value: modelId },
+    //     { key: "limit", value: limit },
+    //     { key: "filterExpression", value: filterExpression },
+    //     { key: "aggregationExpression", value: aggregationExpression },
+    //     { key: "breakoutExpression", value: breakoutExpression },
+    //   ]
+    // );
+
+    const observable = new Observable<any>((subscriber) => {
+      subscriber.next({
+        name: "test_table_list_01",
+        metabase: [
+          { name: "NEW_HY_QTY", type: "number" },
+          { name: "VALID_HY_QTY", type: "number" },
+          { name: "CMONTH", type: "time" },
+        ],
+        data: [
+          {
+            NEW_HY_QTY: 131992,
+            VALID_HY_QTY: 3715288,
+            CMONTH: "2011-04-01 00:00:00",
+          },
+        ],
+      });
+    });
+    return observable;
   }
   public datamodelExecute2(
     databaseId: number,

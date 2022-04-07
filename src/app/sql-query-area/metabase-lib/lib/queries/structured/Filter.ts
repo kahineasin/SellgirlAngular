@@ -4,7 +4,7 @@ import MBQLClause from "./MBQLClause";
 import {
   Filter as FilterObject,
   FieldFilter,
-  Field,
+  QField,
 } from "../../../../model/Query";
 import { FilterOperator } from "../../../../model/Metadata";
 import StructuredQueryClass from "../StructuredQueryClass";
@@ -229,7 +229,7 @@ export default class Filter extends MBQLClause {
   }
 
   setDimension(
-    fieldRef: Field | null | undefined,
+    fieldRef: QField | null | undefined,
     {
       useDefaultOperator = false,
     }: {

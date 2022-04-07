@@ -1,0 +1,85 @@
+<ul nz-menu *ngIf="'database' === step" [nzMode]="'inline'">
+    <li *ngFor="let item of databaseList" nz-menu-item (click)="goSelectTable(item)">
+        <i nz-icon nzType="database" nzTheme="outline"></i>
+        {{ item.DatabaseName }}
+    </li>
+    <li nz-submenu [nzTitle]="'保存的问题'" [nzIcon]="'group'">
+
+        <ul>
+            <li>
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="input search text" #searchBox2 [(ngModel)]="searchText2" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </li>
+            <ng-container *ngFor="let item of datamodelGroupList">
+                <li *ngIf="likeText(item.Name, searchBox2.value)" nz-menu-item (click)="goSelectDatamodel(item )">
+                    <i nz-icon nzType="folder" nzTheme="outline"></i>
+                    {{ item.Name }}
+                </li>
+            </ng-container>
+        </ul>
+    </li>
+</ul>
+
+<ng-template [ngIf]="'table' === step">
+    <a (click)="goSelectDatabase()" style="line-height: 50px"><i nz-icon nzType="left" nzTheme="outline"></i>
+        {{ getDatabaseName() }}
+    </a>
+    <ul nz-menu nzMode="inline">
+        <li>
+            <nz-input-group [nzSuffix]="suffixIconSearch">
+                <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+            </nz-input-group>
+            <ng-template #suffixIconSearch>
+                <i nz-icon nzType="search"></i>
+            </ng-template>
+        </li>
+        <ng-container *ngFor="
+          let item of tableList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        ">
+            <li *ngIf="likeText(item.TableName, searchBox.value)" nz-menu-item (click)="selectTable(item); ">
+                <i nz-icon nzType="table" nzTheme="outline"></i>
+                {{ item.TableName }}
+            </li>
+        </ng-container>
+    </ul>
+</ng-template>
+
+
+<ng-template [ngIf]="'datamodel' === step">
+    <a (click)="goSelectDatabase()" style="line-height: 50px"><i nz-icon nzType="left" nzTheme="outline"></i>
+        {{ getDatamodelGroupName() }}
+    </a>
+    <ul nz-menu nzMode="inline">
+        <li>
+            <nz-input-group [nzSuffix]="suffixIconSearch">
+                <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+            </nz-input-group>
+            <ng-template #suffixIconSearch>
+                <i nz-icon nzType="search"></i>
+            </ng-template>
+        </li>
+        <ng-container *ngFor="
+          let item of datamodelList;
+          index as index;
+          first as first;
+          last as last;
+          odd as odd;
+          even as even
+        ">
+            <li *ngIf="likeText(item.DatamodelQueryName, searchBox.value)" nz-menu-item
+                (click)="selectDatamodel(item); ">
+                <i nz-icon nzType="table" nzTheme="outline"></i>
+                {{ item.DatamodelQueryName }}
+            </li>
+        </ng-container>
+    </ul>
+</ng-template>

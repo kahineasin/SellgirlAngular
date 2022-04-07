@@ -5,30 +5,30 @@ import {
   EventEmitter,
   OnInit,
   ViewChild,
-} from '@angular/core';
+} from "@angular/core";
 import {
   Validators,
   FormBuilder,
   FormControl,
   ValidationErrors,
   FormGroup,
-} from '@angular/forms';
+} from "@angular/forms";
 
-import { Router, ActivatedRoute } from '@angular/router';
-import { Node } from '@swimlane/ngx-graph';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { Router, ActivatedRoute } from "@angular/router";
+import { Node } from "@swimlane/ngx-graph";
+import { NzMessageService } from "ng-zorro-antd/message";
 
-import { Guid } from 'guid-typescript';
-import format from 'date-fns/format';
+import { Guid } from "guid-typescript";
+import format from "date-fns/format";
 
-import { ComputesReferenceService } from '../service/computes-reference.service';
-import { UserProviderService } from '../service/user-provider.service';
+import { ComputesReferenceService } from "../service/computes-reference.service";
+import { UserProviderService } from "../service/user-provider.service";
 import {
   DcosReferenceService,
   RegistryImage,
-} from '../service/dcos-reference.service';
-import { fromEvent, Observable, Observer, Subject, Subscription } from 'rxjs';
-import { ConfigService } from '../service/app-config.service';
+} from "../service/dcos-reference.service";
+import { fromEvent, Observable, Observer, Subject, Subscription } from "rxjs";
+import { ConfigService } from "../service/app-config.service";
 
 import {
   HttpClient,
@@ -36,10 +36,10 @@ import {
   HttpEventType,
   HttpRequest,
   HttpResponse,
-} from '@angular/common/http';
-import { filter } from 'rxjs/operators';
-import { KeyValuePair } from '../common/pfModel';
-import { PfUtil, ProcedureManager } from '../common/pfUtil';
+} from "@angular/common/http";
+import { filter } from "rxjs/operators";
+import { KeyValuePair } from "../common/pfModel";
+import { PfUtil, ProcedureManager } from "../common/pfUtil";
 // import {
 //   FetchUri,
 //   LinkModel,
@@ -47,10 +47,10 @@ import { PfUtil, ProcedureManager } from '../common/pfUtil';
 //   ProcedureModel,
 //   ProcedureType,
 // } from '../../core/model/x-scheduler-job';
-import { NzModalService } from 'ng-zorro-antd/modal';
-import { DragType } from '../pf_drag/pf-drag.directive';
-import { PfClickArrowComponent } from '../pf-click-arrow/pf-click-arrow.component';
-import { PfDropModel } from '../pf_drag/pf-drop.directive';
+import { NzModalService } from "ng-zorro-antd/modal";
+import { DragType } from "../pf_drag/pf-drag.directive";
+import { PfClickArrowComponent } from "../pf-click-arrow/pf-click-arrow.component";
+import { PfDropModel } from "../pf_drag/pf-drop.directive";
 // import { timezone } from '../../../../core/declares/timezone';
 // import { DataQuery } from '../../core/model/report-card';
 import {
@@ -58,32 +58,33 @@ import {
   DatamodelQuery,
   DataTableModel,
   DataTableUIModel,
-} from '../model/data-integration';
+} from "../model/data-integration";
 import {
   DatasetQuery,
   StructuredDatasetQuery,
-} from '../sql-query-area/model/Card';
+} from "../sql-query-area/model/Card";
 // import StructuredQueryClass from '../sql-query-area/metabase-lib/lib/queries/StructuredQueryClass';
 // import PfStructuredQueryClass from '../sql-query-area/metabase-lib/lib/queries/PfStructuredQueryClass';
-import PfQuestion from '../sql-query-area/metabase-lib/lib/PfQuestion';
-import { SqlQueryUtil } from '../sql-query-area/sql-query-util';
-import { QueryAddLevelModel } from '../sql-query-area/sql-query-area.component';
-import { DataCenterReferenceService } from '../service/datacenter-reference.service';
+import PfQuestion from "../sql-query-area/metabase-lib/lib/PfQuestion";
+import { SqlQueryUtil } from "../sql-query-area/sql-query-util";
+import { QueryAddLevelModel } from "../sql-query-area/sql-query-area.component";
+import { DataCenterReferenceService } from "../service/datacenter-reference.service";
+import { TableIdChangeModel } from "../sql-query-area/step/select-step/select-step.component";
 // import { QuestionBase } from "../pf-dynamic-form/question-base";
 // import { QuestionService } from "../pf-dynamic-form/question.service";
 
 @Component({
-  selector: 'computes-datamodel-query-edit',
-  templateUrl: './datamodel-query-edit.component.html',
-  styleUrls: ['./datamodel-query-edit.component.scss'],
+  selector: "computes-datamodel-query-edit",
+  templateUrl: "./datamodel-query-edit.component.html",
+  styleUrls: ["./datamodel-query-edit.component.scss"],
   //providers: [QuestionService],
 })
 export class DatamodelQueryEditComponent implements OnInit {
   //路由过来的参数
   //datamodelQueryId = "";
-  datamodelId = '';
-  public datamodelQueryName = '';
-  public description = '';
+  datamodelId = "";
+  public datamodelQueryName = "";
+  public description = "";
 
   //public isAdd: boolean = true; // 当前如果点保存,是新增还是修改
   public isDatamodelAdd: boolean = true; // 当前如果点保存,是新增还是修改
@@ -93,41 +94,41 @@ export class DatamodelQueryEditComponent implements OnInit {
   // queryClass: PfStructuredQueryClass = null;
   //public cardForm;
   public databaseId: number = -1;
-  public databaseUUID = '';
+  public databaseUUID = "";
   //public expressionBase64 = "";
   //public tableList: DataTableUIModel[] = [];
   // databaseList: DatabaseModel[] = [];
 
   //public dataQuery: DataQuery[] = [];
   public selectedIndex: number = 0;
-  andOrData: string[] = ['and', 'or'];
-  testValue = '';
+  andOrData: string[] = ["and", "or"];
+  testValue = "";
   // testList = ["and", "and", "and"];
   testList2 = [
-    { key: '', value: '' },
-    { key: 'and', value: 'and' },
-    { key: 'or', value: 'or' },
+    { key: "", value: "" },
+    { key: "and", value: "and" },
+    { key: "or", value: "or" },
   ];
 
   //测试属性
-  isVisible = false;
+  isFilterJsonVisible = false;
   // questions$: Observable<QuestionBase<any>[]>;
 
   fieldForm: FormGroup = null;
   public baseForm?: FormGroup = null;
 
   public isAddModelVisible = false;
-  public groupSelectedValue = '';
+  public groupSelectedValue = "";
   public modelGroupList = [];
 
   //public showAggregationForFirstTime = false;
-  public showXForFirstTime = '';
+  public showXForFirstTime = "";
 
   // public testUserName1 = "";
   // public testUserName2 = "";
 
   public isSqlPopupsVisible = false;
-  public sql = '';
+  public sql = "";
 
   constructor(
     public config: ConfigService,
@@ -149,9 +150,9 @@ export class DatamodelQueryEditComponent implements OnInit {
 
     me.fieldForm = this.fb.group({
       //leftFieldId: ["51", Validators.required],
-      leftFieldId2: ['and', Validators.required],
-      leftFieldId3: ['and', [Validators.required, Validators.minLength(5)]],
-      rightFieldId: ['', Validators.required],
+      leftFieldId2: ["and", Validators.required],
+      leftFieldId3: ["and", [Validators.required, Validators.minLength(5)]],
+      rightFieldId: ["", Validators.required],
     });
   }
 
@@ -159,41 +160,40 @@ export class DatamodelQueryEditComponent implements OnInit {
     //console.log("ngOnInit enter");
     const me = this;
 
-    me.datamodelId = me.activatRouter.snapshot.paramMap.get('datamodelId');
+    me.datamodelId = me.activatRouter.snapshot.paramMap.get("datamodelId");
     let hasLocalQuery: boolean =
-      me.activatRouter.snapshot.queryParams['hasLocalQuery'];
+      me.activatRouter.snapshot.queryParams["hasLocalQuery"];
     // let expressionBase64 =
     //   me.activatRouter.snapshot.queryParams["expressionBase64"];
 
     this.isDatamodelAdd =
       me.datamodelId === undefined ||
       me.datamodelId == null ||
-      me.datamodelId === '';
+      me.datamodelId === "";
     //debugger;
     if (!this.isDatamodelAdd) {
-      this.reference.getDatamodelQuery(me.datamodelId).subscribe((response) => {
-        me.query = response;
-
-        //if (!me.pfUtil.isEmpty(expressionBase64)) {
-        if (hasLocalQuery) {
-          //编辑后未保存跳到其它页面再跳回来本页面的时候
-          // me.query.query = JSON.parse(
-          //   this.reference.base64Decode(expressionBase64)
-          // );
-          me.query.query = me.sqlQueryUtil.getLocalQuery(); //benjamin
-        } else {
-          me.query.query = JSON.parse(
-            this.reference.base64Decode(response.QueryConfig)
-          );
-        }
-
-        me.datamodelQueryName = response.DatamodelQueryName;
-        me.description = response.Description;
-        me.groupSelectedValue =
-          response.GroupId !== null ? response.GroupId.toLowerCase() : '';
-
-        me.updatePropertyByQuery();
-      });
+      this.reference
+        .getDatamodelQueryByUUID(me.datamodelId)
+        .subscribe((response) => {
+          me.query = response;
+          //if (!me.pfUtil.isEmpty(expressionBase64)) {
+          if (hasLocalQuery) {
+            //编辑后未保存跳到其它页面再跳回来本页面的时候
+            // me.query.query = JSON.parse(
+            //   this.reference.base64Decode(expressionBase64)
+            // );
+            me.query.query = me.sqlQueryUtil.getLocalQuery();
+          } else {
+            me.query.query = JSON.parse(
+              this.reference.base64Decode(response.QueryConfig)
+            );
+          }
+          me.datamodelQueryName = response.DatamodelQueryName;
+          me.description = response.Description;
+          me.groupSelectedValue =
+            response.GroupId !== null ? response.GroupId.toLowerCase() : "";
+          me.updatePropertyByQuery();
+        });
     } else {
       //测试时
       // me.query = {
@@ -239,24 +239,26 @@ export class DatamodelQueryEditComponent implements OnInit {
       me.query = {
         Id: Guid.create().toString(),
         DatamodelQueryId: 1,
-        DatamodelQueryName: '',
-        QueryConfig: '',
-        DatabaseId: '', //-1,
-        TableId: '',
-        QueryType: 'query',
+        DatamodelQueryName: "",
+        QueryConfig: "",
+        DatabaseId: "", //-1,
+        TableId: "",
+        QueryType: "query",
         //query: {},
         query: {
           database: -1,
           query: {},
-          type: 'query',
-          version: 'perfect',
+          type: "query",
+          version: "perfect",
         },
-        Description: '',
-        Time: '',
-        UpdateTime: '',
-        UserId: '',
+        Description: "",
+        Time: "",
+        UpdateTime: "",
+        UserId: "",
         Enable: true,
-        GroupId: '',
+        GroupId: "",
+        Cache: false,
+        CacheInterval: 0,
       };
       //if (!me.pfUtil.isEmpty(expressionBase64)) {
       if (hasLocalQuery) {
@@ -397,7 +399,7 @@ export class DatamodelQueryEditComponent implements OnInit {
     //me.showAggregationForFirstTime = true;
     me.showXForFirstTime = queryAddLevel.showXForFirstTime;
     (me.query.query as StructuredDatasetQuery).query = {
-      'source-query': queryAddLevel.innerQuery,
+      "source-query": queryAddLevel.innerQuery,
     };
   }
   public onQueryDeleteLevel(innerQuery) {
@@ -412,8 +414,8 @@ export class DatamodelQueryEditComponent implements OnInit {
   }
   addModelOk(): void {
     const me = this;
-    if (this.datamodelQueryName === '' || this.description === '') {
-      this.msg.success('参数不能为空');
+    if (this.datamodelQueryName === "" || this.description === "") {
+      this.msg.success("参数不能为空");
       return;
     }
     this.query.UserId = this.userProvider.getUserInfo().UserId;
@@ -423,20 +425,23 @@ export class DatamodelQueryEditComponent implements OnInit {
       JSON.stringify(this.query.query)
     );
     this.query.GroupId =
-      this.groupSelectedValue !== ''
+      this.groupSelectedValue !== ""
         ? this.groupSelectedValue.toUpperCase()
-        : '';
+        : "";
     me.query.DatabaseId = me.databaseUUID;
     //console.log("confirm == >" + JSON.stringify(this.query));
-
+    if (me.isDatamodelAdd) {
+      me.query.Cache = false;
+      me.query.CacheInterval = 0;
+    }
     me.reference
       .updateDatamodelQuery(me.query, me.isDatamodelAdd)
       .subscribe((response) => {
         if (response.Success) {
           this.isAddModelVisible = false;
-          this.router.navigate(['computes/datamodel']);
+          this.router.navigate(["computes/datamodel"]);
         } else {
-          me.msg.error(response.Message ?? '保存失败');
+          me.msg.error(response.Message ?? "保存失败");
         }
       });
   }
@@ -475,7 +480,7 @@ export class DatamodelQueryEditComponent implements OnInit {
     );
   }
 
-  public onTableIdChange(event: { tableId: number; databaseId: number }) {
+  public onTableIdChange(event: TableIdChangeModel) {
     const me = this;
 
     me.query.query.database = event.databaseId;
@@ -483,7 +488,8 @@ export class DatamodelQueryEditComponent implements OnInit {
     //debugger;
     (me.query.query as StructuredDatasetQuery).query = {
       //benjamin
-      'source-table': event.tableId,
+      "source-table": event.tableId,
+      "source-model": event.modelId,
     };
     if (me.pfUtil.isAnyNull(me.question)) {
       // me.updatePropertyByQuery();
@@ -526,19 +532,21 @@ export class DatamodelQueryEditComponent implements OnInit {
     //     "/" +
     //     me.reference.base64Encode(JSON.stringify(me.query.query)),
     // ]);
-    let backUrl = '';
+    let backUrl = "";
     if (me.isDatamodelAdd) {
-      backUrl = '/computes/datamodel-query-add';
+      backUrl = "/computes/datamodel-query-add";
     } else {
-      backUrl = '/computes/datamodel-query-edit/' + me.datamodelId;
+      backUrl = "/computes/datamodel-query-edit/" + me.datamodelId;
     }
     me.sqlQueryUtil.saveLocalQuery(me.query.query); //benjamin
     me.router.navigate(
       //["/computes/datamodel-table-list/" + me.reference.base64Encode(backUrl)],
-      ['/computes/datamodel-table-list/' + me.datamodelId],
+      ["/computes/datamodel-table-list/" + me.datamodelId],
       {
         queryParams: {
           //datamodelId: me.datamodelId,
+          datamodelName: me.datamodelQueryName,
+          //"source-model": event.modelId,
           databaseId: me.databaseId,
           // expressionBase64: me.reference.base64Encode(
           //   JSON.stringify(me.query.query)
@@ -584,6 +592,6 @@ export class DatamodelQueryEditComponent implements OnInit {
   public copySql() {
     const me = this;
     navigator.clipboard.writeText(me.sql);
-    me.msg.info('已复制');
+    me.msg.info("已复制");
   }
 }

@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NzIconService } from 'ng-zorro-antd/icon';
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { Component, Input, OnInit } from "@angular/core";
+import { NzIconService } from "ng-zorro-antd/icon";
+import { NzMessageService } from "ng-zorro-antd/message";
 //import { PfUtil } from "../../../../../../core/common/pfUtil";
-import { PfUtil } from '../../../common/pfUtil';
+import { PfUtil } from "../../../common/pfUtil";
 // import {
 //   DatabaseModel,
 //   DataColumnModel,
@@ -14,23 +14,23 @@ import {
   DataColumnModel,
   DataTableModel,
   DataTableUIModel,
-} from '../../../model/data-integration';
+} from "../../../model/data-integration";
 //import { ComputesReferenceService } from "../../../../core/services/computes-reference.service";
-import { ComputesReferenceService } from '../../../service/computes-reference.service';
-import { PfSvgIconPathDirective } from '../../../share/pf-svg-icon/pf-svg-icon-path.directive';
+import { ComputesReferenceService } from "../../../service/computes-reference.service";
+import { PfSvgIconPathDirective } from "../../../share/pf-svg-icon/pf-svg-icon-path.directive";
 import {
   Aggregation,
   ConcreteField,
   FieldLiteral,
   StructuredQuery,
-} from '../../model/Query';
-import { KeyValuePairT, SqlQueryUtil } from '../../sql-query-util';
+} from "../../model/Query";
+import { KeyValuePairT, SqlQueryUtil } from "../../sql-query-util";
 //import { KeyValuePairT } from "../filter-step/filter-step.component";
 
 @Component({
-  selector: 'limit-step',
-  templateUrl: './limit-step.component.html',
-  styleUrls: ['./limit-step.component.scss', '../sql-query-area-step.scss'],
+  selector: "limit-step",
+  templateUrl: "./limit-step.component.html",
+  styleUrls: ["./limit-step.component.scss", "../sql-query-area-step.scss"],
 })
 export class LimitStepComponent implements OnInit {
   //@Input() public query: DatamodelQuery = null;
@@ -105,8 +105,8 @@ export class LimitStepComponent implements OnInit {
     // );
     const me = this;
     this.iconService.addIconLiteral(
-      'pfIcon:LEFT_JOIN',
-      PfSvgIconPathDirective.getSvg('SQL_LEFT_JOIN')
+      "pfIcon:LEFT_JOIN",
+      PfSvgIconPathDirective.getSvg("SQL_LEFT_JOIN")
     );
   }
 

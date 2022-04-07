@@ -38,4 +38,5 @@ export type Table = {
 
   // updated_at: ISO8601Time,
   // created_at: ISO8601Time,
+  isDataModel: boolean;
 };

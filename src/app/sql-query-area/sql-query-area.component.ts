@@ -7,29 +7,29 @@ import {
   OnInit,
   Output,
   ViewChild,
-} from '@angular/core';
+} from "@angular/core";
 import {
   Validators,
   FormBuilder,
   FormControl,
   ValidationErrors,
-} from '@angular/forms';
+} from "@angular/forms";
 
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from "@angular/router";
 // import { Node } from "@swimlane/ngx-graph";
-import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzMessageService } from "ng-zorro-antd/message";
 
 // import { Guid } from "guid-typescript";
 // import format from "date-fns/format";
 
-import { ComputesReferenceService } from '../service/computes-reference.service';
-import { UserProviderService } from '../service/user-provider.service';
+import { ComputesReferenceService } from "../service/computes-reference.service";
+import { UserProviderService } from "../service/user-provider.service";
 import {
   DcosReferenceService,
   RegistryImage,
-} from '../service/dcos-reference.service';
+} from "../service/dcos-reference.service";
 // import { forkJoin, Observable, Observer, Subject, Subscription } from "rxjs";
-import { ConfigService } from '../service/app-config.service';
+import { ConfigService } from "../service/app-config.service";
 
 import {
   HttpClient,
@@ -37,11 +37,11 @@ import {
   // HttpEventType,
   // HttpRequest,
   // HttpResponse,
-} from '@angular/common/http';
+} from "@angular/common/http";
 // import { filter } from "rxjs/operators";
 //import { KeyValuePair } from "../../../../core/common/pfModel";
 //import { PfUtil, ProcedureManager } from "../../../../core/common/pfUtil";
-import { PfUtil } from '../common/pfUtil';
+import { PfUtil } from "../common/pfUtil";
 // import {
 //   FetchUri,
 //   LinkModel,
@@ -49,7 +49,7 @@ import { PfUtil } from '../common/pfUtil';
 //   ProcedureModel,
 //   ProcedureType,
 // } from "../../core/model/x-scheduler-job";
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalService } from "ng-zorro-antd/modal";
 // import { DragType } from "../../core/directive/drag.directive";
 // import { PfClickArrowComponent } from "../share/pf-click-arrow/pf-click-arrow.component";
 // import { DropModel } from "../../core/directive/drop.directive";
@@ -63,13 +63,14 @@ import {
   DataTableModel,
   DataTableUIModel,
   // DataTableModelClass,
-} from '../model/data-integration';
-import { ConcreteField, FieldLiteral, StructuredQuery } from './model/Query';
+} from "../model/data-integration";
+import { ConcreteField, FieldLiteral, StructuredQuery } from "./model/Query";
 //import { KeyValuePairT } from "./step/filter-step/filter-step.component";
-import { KeyValuePairT, SqlQueryUtil } from './sql-query-util';
-import PfStructuredQueryClass from './metabase-lib/lib/queries/PfStructuredQueryClass';
-import PfQuestion from './metabase-lib/lib/PfQuestion';
-import FieldClass from './metabase-lib/lib/metadata/FieldClass';
+import { KeyValuePairT, SqlQueryUtil } from "./sql-query-util";
+import PfStructuredQueryClass from "./metabase-lib/lib/queries/PfStructuredQueryClass";
+import PfQuestion from "./metabase-lib/lib/PfQuestion";
+import FieldClass from "./metabase-lib/lib/metadata/FieldClass";
+import { SelectColumnModel, SelectTableModel } from "./model/SelectColumnModel";
 
 export class QueryAddLevelModel {
   public showXForFirstTime: string;
@@ -77,9 +78,9 @@ export class QueryAddLevelModel {
 }
 
 @Component({
-  selector: 'sql-query-area',
-  templateUrl: './sql-query-area.component.html',
-  styleUrls: ['./sql-query-area.component.scss'],
+  selector: "sql-query-area",
+  templateUrl: "./sql-query-area.component.html",
+  styleUrls: ["./sql-query-area.component.scss"],
 })
 export class SqlQueryAreaComponent implements OnInit {
   @Input() public isFirstFloor: boolean = false; //SqlQueryArea是多级嵌套,会用到此属性
@@ -91,7 +92,7 @@ export class SqlQueryAreaComponent implements OnInit {
   //@Input() public query: DatamodelQuery = null;
   @Input() public query: StructuredQuery = null;
   //@Input() public showAggregationForFirstTime: boolean = false;
-  @Input() public showXForFirstTime: string = '';
+  @Input() public showXForFirstTime: string = "";
   @Input() public question: PfQuestion = null;
 
   @Output() public queryAddLevel = new EventEmitter<QueryAddLevelModel>();
@@ -132,11 +133,22 @@ export class SqlQueryAreaComponent implements OnInit {
    * 而且fieldList在此组件内是不会被修改的,所以最好从sql-query-area传进filter组件
    */
   //@Input() fieldList: KeyValuePairT<DataTableModel, DataColumnModel[]>[] = []; //结构如 [{tb,cols}]
+  /**
+   * @deprecated 改用 selectColumnList
+   */
   public fieldList: KeyValuePairT<DataTableUIModel, DataColumnModel[]>[] = []; //结构如 [{tb,cols}]
   /**
    * 内层source-query中的聚合输出字段
    */
   sourceOutFieldList: FieldLiteral[] = []; //ConcreteField
+  // public otherDataModelFieldList: KeyValuePairT<
+  //   DatamodelQuery,
+  //   FieldLiteral[]
+  // >[] = []; //结构如 [{tb,cols}]
+  public selectColumnList: KeyValuePairT<
+    SelectTableModel,
+    SelectColumnModel[]
+  >[] = []; //结构如 [{tb,cols}]
   //public joins: any[] = [];
   //public filter: any[] = [];
   // @Output() public tableListChange = new EventEmitter(); //命名一定要是上面的字段名后加Change
@@ -195,190 +207,11 @@ export class SqlQueryAreaComponent implements OnInit {
   ngOnInit(): void {
     const me = this;
     console.info(
-      '---------------------sql-query-area.component ngOnInit-----------------------'
+      "---------------------sql-query-area.component ngOnInit-----------------------"
     );
     if (me.query == null) {
       //新增
     }
-    // // me.tableList.push({
-    // //   SourceName: "a",
-    // //   SourceType: "a",
-    // //   DatabaseName: "a",
-    // //   Ip: "a",
-    // //   Port: "a",
-    // //   UserName: "a",
-    // //   Passwordame: "a",
-    // //   CreatorName: "a",
-    // //   MetaId: "a",
-    // //   TableName: "a",
-    // //   Enable: "a",
-    // //   Creator: "a",
-    // //   CreateTime: "a",
-    // //   SourceId: "a",
-    // //   UpdateTime: "a",
-    // //   ShortId: "a",
-    // // });
-    // //me.areaTableList=me.tableList;
-
-    // //这个逻辑应该放到idAdd==false 时
-    // //一层的情况,测试ok
-    // // me.filter = [
-    // //   "and",
-    // //   ["=", ["field-id", 276], "967122"],
-    // //   [">", ["field-id", 274], true],
-    // //   ["<=", ["joined-field", "chinese_city", ["field-id", 249]], "临沂市"],
-    // //   ["=", ["field-id", 149], "上海分公司"],
-    // //   [
-    // //     "contains",
-    // //     ["field-id", 147],
-    // //     "aa",
-    // //     {
-    // //       "case-sensitive": false,
-    // //     },
-    // //   ],
-    // // ];
-    // // //改造and配置方式(为了兼容or)
-    // // me.filter = [
-    // //   ["=", ["field-id", 276], "967122"],
-    // //   "and",
-    // //   [">", ["field-id", 274], true],
-    // //   "and",
-    // //   ["<=", ["joined-field", "chinese_city", ["field-id", 249]], "临沂市"],
-    // //   "and",
-    // //   [
-    // //     "contains",
-    // //     ["field-id", 147],
-    // //     "aa",
-    // //     {
-    // //       "case-sensitive": false,
-    // //     },
-    // //   ],
-    // // ];
-    // //me.filter = me.query.query;
-    // //旧版
-    // // me.filter = [
-    // //   "and",
-    // //   ["=", ["field-id", 276], "967122"],
-    // //   [">", ["field-id", 274], true],
-    // // ];
-    // //改造and配置方式(为了兼容or)
-    // // me.filter = [
-    // //   ["=", ["field-id", 276], "967122"],
-    // //   "and",
-    // //   ["=", ["field-id", 274], true],
-    // // ];
-    // //me.filter = [["=", ["field-id", 274], true]];
-    // // me.hasFilter =
-    // //   me.query != null &&
-    // //   me.query != undefined &&
-    // //   me.query.filter != null &&
-    // //   me.query.filter != undefined &&
-    // //   me.query.filter.length > 0;
-    // me.rowVisible["filter"] =
-    //   me.query != null &&
-    //   me.query != undefined &&
-    //   me.query.filter != null &&
-    //   me.query.filter != undefined &&
-    //   me.query.filter.length > 0;
-
-    // me.rowVisible["aggregation"] =
-    //   me.query != null &&
-    //   me.query != undefined &&
-    //   me.query.breakout != null &&
-    //   me.query.breakout != undefined &&
-    //   me.query.breakout.length > 0;
-    // me.rowVisible["join"] =
-    //   me.query != null &&
-    //   me.query != undefined &&
-    //   me.query.joins != null &&
-    //   me.query.joins != undefined &&
-    //   me.query.joins.length > 0;
-    // me.rowVisible["order"] =
-    //   !me.pfUtil.isAnyNull(me.query) &&
-    //   !me.pfUtil.isListEmpty(me.query["order-by"]);
-
-    // if (
-    //   // me.query != null &&
-    //   // me.query != undefined &&
-    //   // me.query.database != null &&
-    //   // me.query.database != undefined
-    //   !me.pfUtil.isAnyNull(me.query, me.databaseId)
-    // ) {
-    //   //me.databaseId = me.query.query.database.toString();
-    //   //me.databaseId = me.query.database;
-    //   me.databaseId = me.databaseId;
-    // }
-
-    // //console.info(me.query.database);
-    // // // 下拉框
-    // this.reference.getDatabasePageList().subscribe((response) => {
-    //   me.databaseList =
-    //     response.DataSource !== null
-    //       ? response.DataSource.map((a) => new DatabaseModelClass(a))
-    //       : null;
-
-    //   console.info(response.DataSource);
-    // });
-
-    // me.tableId = me.query["source-table"];
-    // me.onDatabaseChange(); //注意这里使用了异步,子组件的OnInit中无法使用tableList这个值
-    // //me.tableList = [new DataTableModelClass({})];
-
-    // //修改时先把已选表的字段查出来
-
-    // let tableIds: number[] = [];
-    // if (me.query["source-table"] != null) {
-    //   tableIds.push(me.query["source-table"]);
-    // }
-    // if (me.query.joins != null) {
-    //   for (let i = 0; i < me.query.joins.length; i++) {
-    //     tableIds.push(me.query.joins[i]["source-table"]);
-    //   }
-    // }
-
-    // // me.queryFields(tableIds).subscribe(
-    // //   (response) => {
-    // //     me.fieldList = [...me.fieldList, ...response];
-    // //   },
-    // //   (e) => {
-    // //     debugger;
-    // //   }
-    // // );
-    // // me.queryFields(tableIds).subscribe(
-    // //   (response) => {
-    // //     me.fieldList = response;
-    // //   },
-    // //   (e) => {
-    // //     debugger;
-    // //   }
-    // // );
-    // me.sqlQueryUtil.queryFields(this.databaseId, this.query).subscribe(
-    //   (response) => {
-    //     me.fieldList = response;
-    //   },
-    //   (e) => {
-    //     debugger;
-    //   }
-    // );
-    // me.sqlQueryUtil
-    //   .getSourceQueryOutFields(me.databaseId, me.query)
-    //   .subscribe((response) => {
-    //     me.sourceOutFieldList = response;
-    //   });
-    // me.updateBtnAllowStatus();
-
-    // me.queryClass = new PfStructuredQueryClass(
-    //   //new PfQuestion(),
-    //   me.question == null,
-    //   //Object.assign(new PfQuestion(), { _metadata: {} }),
-    //   {
-    //     type: "query",
-    //     database: me.databaseId,
-    //     query: me.query,
-    //     parameters: null,
-    //     version: "perfect",
-    //   }
-    // );
     me.initQueryClassByQuestion();
     // me.sqlQueryUtil.queryFields(this.databaseId,me.query).subscribe(
     //   (response) => {
@@ -401,11 +234,11 @@ export class SqlQueryAreaComponent implements OnInit {
         me.question,
         //Object.assign(new PfQuestion(), { _metadata: {} }),
         {
-          type: 'query',
+          type: "query",
           database: me.databaseId,
           query: me.query,
           parameters: null,
-          version: 'perfect',
+          version: "perfect",
         }
       );
     }
@@ -416,8 +249,9 @@ export class SqlQueryAreaComponent implements OnInit {
   updateBtnAllowStatus() {
     const me = this;
     me.allowJoin =
-      !me.pfUtil.isAnyNull(me.query['source-table']) ||
-      !me.pfUtil.isAnyNull(me.query['source-query']);
+      !me.pfUtil.isAnyNull(me.query["source-table"]) ||
+      !me.pfUtil.isAnyNull(me.query["source-query"]) ||
+      !me.pfUtil.isAnyNull(me.query["source-model"]);
     //me.allowAggregation = me.allowJoin;
     me.allowFilter = me.allowJoin;
     me.allowOrder = me.allowJoin;
@@ -430,13 +264,17 @@ export class SqlQueryAreaComponent implements OnInit {
     // }
 
     if (
-      me.pfUtil.isAllNull(me.query['source-table'], me.query['source-query'])
+      me.pfUtil.isAllNull(
+        me.query["source-table"],
+        me.query["source-query"],
+        me.query["source-model"]
+      )
     ) {
       //开始新增未选择表时
       me.allowAggregation = false;
       me.allowCustomColumn = false;
     } else if (
-      (me.rowVisible['aggregation'] || me.rowVisible['customColumn']) &&
+      (me.rowVisible["aggregation"] || me.rowVisible["customColumn"]) &&
       me.pfUtil.isAllEmpty(me.query.breakout, me.query.expressions)
     ) {
       //选择了汇总或自定义字段方式,但还未进行字段编辑时
@@ -457,15 +295,15 @@ export class SqlQueryAreaComponent implements OnInit {
       me.allowAggregation = true;
       me.allowCustomColumn = true;
     } else if (
-      (me.rowVisible['aggregation'] || me.rowVisible['customColumn']) &&
+      (me.rowVisible["aggregation"] || me.rowVisible["customColumn"]) &&
       !me.isFirstFloor
     ) {
       //已经显示aggregation或customColumn,且非最外层
       me.allowAggregation = false;
       me.allowCustomColumn = false;
-    } else if (me.rowVisible['aggregation']) {
+    } else if (me.rowVisible["aggregation"]) {
       me.allowCustomColumn = false;
-    } else if (me.rowVisible['customColumn']) {
+    } else if (me.rowVisible["customColumn"]) {
       me.allowAggregation = false;
     } else {
       me.allowAggregation = true;
@@ -479,7 +317,7 @@ export class SqlQueryAreaComponent implements OnInit {
     const me = this;
     me.isSourceQuery = !me.pfUtil.isAnyNullAction(
       me.query,
-      (a) => a['source-query']
+      (a) => a["source-query"]
     );
 
     // console.info(
@@ -488,7 +326,7 @@ export class SqlQueryAreaComponent implements OnInit {
     //debugger;
     //本来应该不需要这个判断,但当删除最外层query时,不知为何会有query为undefined的情况,估计和组件消毁的过程有关
     if (!me.pfUtil.isAnyNull(me.query)) {
-      me.rowVisible['filter'] =
+      me.rowVisible["filter"] =
         me.query != null &&
         me.query != undefined &&
         me.query.filter != null &&
@@ -501,7 +339,7 @@ export class SqlQueryAreaComponent implements OnInit {
       //   me.query.breakout != null &&
       //   me.query.breakout != undefined &&
       //   me.query.breakout.length > 0;
-      me.rowVisible['aggregation'] =
+      me.rowVisible["aggregation"] =
         me.query != null &&
         me.query != undefined &&
         ((me.query.breakout != null &&
@@ -510,28 +348,28 @@ export class SqlQueryAreaComponent implements OnInit {
           (me.query.aggregation != null &&
             me.query.aggregation != undefined &&
             me.query.aggregation.length > 0));
-      me.rowVisible['join'] =
+      me.rowVisible["join"] =
         me.query != null &&
         me.query != undefined &&
         me.query.joins != null &&
         me.query.joins != undefined &&
         me.query.joins.length > 0;
-      me.rowVisible['order'] =
+      me.rowVisible["order"] =
         !me.pfUtil.isAnyNull(me.query) &&
-        !me.pfUtil.isListEmpty(me.query['order-by']);
+        !me.pfUtil.isListEmpty(me.query["order-by"]);
 
       // me.rowVisible["customColumn"] = !me.pfUtil.isAnyNullAction(
       //   me.query,
       //   (a) => a["expressions"]
       // );
-      me.rowVisible['customColumn'] = !me.pfUtil.isAnyEmptyAction(
+      me.rowVisible["customColumn"] = !me.pfUtil.isAnyEmptyAction(
         me.query,
-        (a) => a['expressions']
+        (a) => a["expressions"]
       );
 
-      me.rowVisible['limit'] = !me.pfUtil.isAnyEmptyAction(
+      me.rowVisible["limit"] = !me.pfUtil.isAnyEmptyAction(
         me.query,
-        (a) => a['limit']
+        (a) => a["limit"]
       );
 
       if (!me.pfUtil.isEmpty(me.showXForFirstTime)) {
@@ -568,19 +406,19 @@ export class SqlQueryAreaComponent implements OnInit {
         console.info(response.DataSource);
       });
 
-      me.tableId = me.query['source-table'];
+      me.tableId = me.query["source-table"];
       //me.onDatabaseChange(); //注意这里使用了异步,子组件的OnInit中无法使用tableList这个值
       //me.tableList = [new DataTableModelClass({})];
 
       //修改时先把已选表的字段查出来
 
       let tableIds: number[] = [];
-      if (me.query['source-table'] != null) {
-        tableIds.push(me.query['source-table']);
+      if (me.query["source-table"] != null) {
+        tableIds.push(me.query["source-table"]);
       }
       if (me.query.joins != null) {
         for (let i = 0; i < me.query.joins.length; i++) {
-          tableIds.push(me.query.joins[i]['source-table']);
+          tableIds.push(me.query.joins[i]["source-table"]);
         }
       }
 
@@ -603,71 +441,28 @@ export class SqlQueryAreaComponent implements OnInit {
       me.sqlQueryUtil.queryFields(this.databaseId, this.query).subscribe(
         (response) => {
           me.fieldList = response;
-          // const numbers = [1, 2, 3, 4, 5];
-          // const doubled = numbers.map((number) => number * 2);
-
-          // //me.fieldList = response;
-          // for (let i = 0; i < me.fieldList.length; i++) {
-          //   let fields = me.fieldList[i].value.map((a) => {
-          //     return {
-          //       id: a.ShortId,
-
-          //       name: a.ColumnName,
-          //       display_name: a.ColumnName,
-          //       description: a.Description,
-          //       base_type: a.DataType,
-
-          //       special_type: null,
-          //       active: null,
-          //       visibility_type: null,
-          //       preview_display: null,
-          //       position: null,
-          //       parent_id: null,
-
-          //       table_id: a.MetabaseShortId,
-
-          //       fk_target_field_id: null,
-
-          //       max_value: null,
-          //       min_value: null,
-
-          //       caveats: null,
-          //       points_of_interest: null,
-
-          //       last_analyzed: null,
-          //       created_at: null,
-          //       updated_at: null,
-
-          //       values: null,
-          //       dimensions: null,
-          //     };
-          //   });
-          //   me.queryClass.addFields(fields);
-          //   let table = me.fieldList[i].key;
-          //   me.queryClass.addTables([
-          //     {
-          //       id: table.ShortId,
-          //       db_id: table.SourceShortId,
-
-          //       schema: null,
-          //       name: table.TableName,
-          //       display_name: table.TableName,
-
-          //       description: table.TableName,
-          //       active: null,
-          //       visibility_type: null,
-
-          //       fields: fields, //.map((a) => a)
-          //       segments: [],
-          //       metrics: [],
-          //       rows: null,
-
-          //       caveats: null,
-          //       points_of_interest: null,
-          //       show_in_getting_started: null,
-          //     },
-          //   ]);
-          // }
+        },
+        (e) => {
+          debugger;
+        }
+      );
+      // me.sqlQueryUtil
+      //   .queryOtherDataModelFields(this.databaseId, this.query)
+      //   .subscribe(
+      //     (response) => {
+      //       me.otherDataModelFieldList = response;
+      //     },
+      //     (e) => {
+      //       debugger;
+      //     }
+      //   );
+      me.sqlQueryUtil.querySelectColumn(this.databaseId, this.query).subscribe(
+        (response) => {
+          me.selectColumnList = response;
+          // console.info(
+          //   "----------------------sql-query-area.component querySelectColumn test ok--------------------------"
+          // );
+          // console.info(me.selectColumnList);
         },
         (e) => {
           debugger;
@@ -808,10 +603,10 @@ export class SqlQueryAreaComponent implements OnInit {
     if (me.pfUtil.isAnyNull(me.query.joins)) {
       me.query.joins = [];
     }
-    if (me.rowVisible['filter']) {
-      me.rowVisible['filter'] = !me.rowVisible['filter'];
+    if (me.rowVisible["filter"]) {
+      me.rowVisible["filter"] = !me.rowVisible["filter"];
     } else {
-      me.rowVisible['filter'] = !me.rowVisible['filter'];
+      me.rowVisible["filter"] = !me.rowVisible["filter"];
       // //me.rowVisible["join"] = true;
       // me.query.joins.push({
       //   // fields: [
@@ -832,13 +627,13 @@ export class SqlQueryAreaComponent implements OnInit {
       //me.joins.push();
       setTimeout(function () {
         let cellItem = me.el.nativeElement //.getElementsByClassName("JoinRTableCellItem")
-          .querySelectorAll('filter-step .NotebookCellItem');
+          .querySelectorAll("filter-step .NotebookCellItem");
         me.pfUtil.triggerEvent(
           me.el.nativeElement.ownerDocument,
           // ".addConditionBtn",
           // me.el.nativeElement.querySelector(".addConditionBtn"),
           cellItem[cellItem.length - 1],
-          'click'
+          "click"
         );
       }, 100);
     }
@@ -849,33 +644,33 @@ export class SqlQueryAreaComponent implements OnInit {
     if (me.pfUtil.isAnyNull(me.query.joins)) {
       me.query.joins = [];
     }
-    me.rowVisible['join'] = true;
+    me.rowVisible["join"] = true;
     me.query.joins.push({
       // fields: [
       //   // ["joined-field", "chinese_city", ["field-id", 251]],
       //   // ["joined-field", "chinese_city", ["field-id", 250]],
       //   // ["joined-field", "chinese_city", ["field-id", 252]]
       // ],
-      fields: 'all',
+      fields: "all",
       //"source-table": me.query["source-table"],
       // "condition": ["=", ["field-id", 152],
       //   ["joined-field", "chinese_city", ["field-id", 252]]
       // ],
       condition: [],
       //"alias": "chinese_city",
-      strategy: 'left-join',
+      strategy: "left-join",
     });
 
     //me.joins.push();
     setTimeout(function () {
       let cellItem =
-        me.el.nativeElement.getElementsByClassName('JoinRTableCellItem');
+        me.el.nativeElement.getElementsByClassName("JoinRTableCellItem");
       me.pfUtil.triggerEvent(
         me.el.nativeElement.ownerDocument,
         // ".addConditionBtn",
         // me.el.nativeElement.querySelector(".addConditionBtn"),
         cellItem[cellItem.length - 1],
-        'click'
+        "click"
       );
     }, 100);
   }
@@ -931,7 +726,7 @@ export class SqlQueryAreaComponent implements OnInit {
     //   }
     // }
     if (me.pfUtil.isAllEmpty(me.query.breakout, me.query.expressions)) {
-      me.rowVisible['aggregation'] = true;
+      me.rowVisible["aggregation"] = true;
       // me.allowAggregation = false;
       me.updateBtnAllowStatus();
     } else {
@@ -940,7 +735,7 @@ export class SqlQueryAreaComponent implements OnInit {
         me.queryAddLevel.emit(
           Object.assign(
             {},
-            { innerQuery: me.query, showXForFirstTime: 'aggregation' }
+            { innerQuery: me.query, showXForFirstTime: "aggregation" }
           )
         );
       }
@@ -954,7 +749,7 @@ export class SqlQueryAreaComponent implements OnInit {
     }
     //debugger;
     if (me.pfUtil.isAllEmpty(me.query.breakout, me.query.expressions)) {
-      me.rowVisible['customColumn'] = true;
+      me.rowVisible["customColumn"] = true;
       //me.allowCustomColumn = false;
       me.updateBtnAllowStatus();
     } else {
@@ -963,7 +758,7 @@ export class SqlQueryAreaComponent implements OnInit {
         me.queryAddLevel.emit(
           Object.assign(
             {},
-            { innerQuery: me.query, showXForFirstTime: 'customColumn' }
+            { innerQuery: me.query, showXForFirstTime: "customColumn" }
           )
         );
       }
@@ -973,7 +768,7 @@ export class SqlQueryAreaComponent implements OnInit {
     const me = this;
     if (me.isFirstFloor) {
       //debugger;
-      me.queryDeleteLevel.emit(Object.assign({}, me.query['source-query'])); //query属性是@Input属性,不能在此组件中嵌套操作
+      me.queryDeleteLevel.emit(Object.assign({}, me.query["source-query"])); //query属性是@Input属性,不能在此组件中嵌套操作
     }
   }
   // public deleteRow() {
@@ -1035,17 +830,22 @@ export class SqlQueryAreaComponent implements OnInit {
   }
   public onJoinTableIdChange() {
     const me = this;
-    //debugger;
-    // me.allowJoin = !me.pfUtil.isAnyNull(me.query["source-table"]);
-    // me.allowAggregation = me.allowJoin;
-    // me.query.joins = [];
-    // me.query.filter = [];
-    // me.updateFieldList();
+    // //debugger;
+    // // me.allowJoin = !me.pfUtil.isAnyNull(me.query["source-table"]);
+    // // me.allowAggregation = me.allowJoin;
+    // // me.query.joins = [];
+    // // me.query.filter = [];
+    // // me.updateFieldList();
+    // me.sqlQueryUtil
+    //   .queryFields(me.databaseId, me.query)
+    //   .subscribe((response) => {
+    //     me.fieldList = response;
+    //     //me.updateBtnAllowStatus();
+    //   });
     me.sqlQueryUtil
-      .queryFields(me.databaseId, me.query)
+      .querySelectColumn(me.databaseId, me.query)
       .subscribe((response) => {
-        me.fieldList = response;
-        //me.updateBtnAllowStatus();
+        me.selectColumnList = response;
       });
   }
   public onBreakoutChange(event) {
@@ -1083,8 +883,9 @@ export class SqlQueryAreaComponent implements OnInit {
   public onInnerOutFieldChange() {
     const me = this;
     console.info(
-      '---------------------sql-query-area.component onInnerOutFieldChange-----------------------'
+      "---------------------sql-query-area.component onInnerOutFieldChange-----------------------"
     );
+    debugger;
     me.sqlQueryUtil
       .getSourceQueryOutFields(me.databaseId, me.query)
       .subscribe((response) => {
@@ -1184,7 +985,7 @@ export class SqlQueryAreaComponent implements OnInit {
   public onLimitDelete() {
     const me = this;
     // me.query["limit"] = null;
-    delete me.query['limit'];
-    me.rowVisible['limit'] = false;
+    delete me.query["limit"];
+    me.rowVisible["limit"] = false;
   }
 }

@@ -1,37 +1,41 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NzIconService } from 'ng-zorro-antd/icon';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { Subject } from 'rxjs';
-import { PfUtil } from '../../../common/pfUtil';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { NzIconService } from "ng-zorro-antd/icon";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { Subject } from "rxjs";
+import { PfUtil } from "../../../common/pfUtil";
 import {
   DatabaseModel,
   DataColumnModel,
   DataTableModel,
   DataTableUIModel,
-} from '../../../model/data-integration';
-import { ComputesReferenceService } from '../../../service/computes-reference.service';
-import { PfSvgIconPathDirective } from '../../../share/pf-svg-icon/pf-svg-icon-path.directive';
-import PfStructuredQueryClass from '../../metabase-lib/lib/queries/PfStructuredQueryClass';
+} from "../../../model/data-integration";
+import { ComputesReferenceService } from "../../../service/computes-reference.service";
+import { PfSvgIconPathDirective } from "../../../share/pf-svg-icon/pf-svg-icon-path.directive";
+import PfStructuredQueryClass from "../../metabase-lib/lib/queries/PfStructuredQueryClass";
 import {
   Aggregation,
   ConcreteField,
   FieldLiteral,
   StructuredQuery,
-} from '../../model/Query';
-import { KeyValuePairT, SqlQueryUtil } from '../../sql-query-util';
+} from "../../model/Query";
+import {
+  SelectColumnModel,
+  SelectTableModel,
+} from "../../model/SelectColumnModel";
+import { KeyValuePairT, SqlQueryUtil } from "../../sql-query-util";
 //import { KeyValuePairT } from "../filter-step/filter-step.component";
 
 //import { parseOperators } from "../../lib/expressions/compile";
 
-export type aggregationStep = 'type' | 'field' | 'custom';
+export type aggregationStep = "type" | "field" | "custom";
 
 @Component({
-  selector: 'aggregation-step',
-  templateUrl: './aggregation-step.component.html',
+  selector: "aggregation-step",
+  templateUrl: "./aggregation-step.component.html",
   styleUrls: [
-    './aggregation-step.component.scss',
-    '../sql-query-area-step.scss',
+    "./aggregation-step.component.scss",
+    "../sql-query-area-step.scss",
   ],
 })
 export class AggregationStepComponent implements OnInit {
@@ -42,11 +46,18 @@ export class AggregationStepComponent implements OnInit {
   // @Input() public databaseList: DatabaseModel[] = [];
   //@Input() public tableId?: number = null; //"jack";
   //@Input() public tableList: DataTableModel[] = [];
+  /**
+   * @deprecated 用 selectColumnList
+   */
   @Input() fieldList: KeyValuePairT<DataTableUIModel, DataColumnModel[]>[] = []; //结构如 [{tb,cols}]
   /**
    * 内层source-query中的聚合输出字段(外层传入比较好)
    */
   @Input() sourceOutFieldList: FieldLiteral[] = []; //ConcreteField
+  @Input() public selectColumnList: KeyValuePairT<
+    SelectTableModel,
+    SelectColumnModel[]
+  >[] = []; //结构如 [{tb,cols}]
   @Input() color: number[] = [0, 0, 0];
   /**
    * 暂时是为了在sql-query-field里判断聚合按钮是否需要更新显示状态
@@ -78,23 +89,23 @@ export class AggregationStepComponent implements OnInit {
 
   isAdd = true;
 
-  aggregationStep: aggregationStep = 'type';
+  aggregationStep: aggregationStep = "type";
   aggregationTypeList: any = [
-    { key: 'count', value: '总行数', des: '' },
-    { key: 'sum', value: '总和', des: '' },
-    { key: 'avg', value: '平均值', des: '' },
-    { key: 'distinct', value: '不重复值的总数', des: '' },
-    { key: 'cum-sum', value: '累积求和', des: '' },
-    { key: 'cum-count', value: '累积行数', des: '' },
-    { key: 'stddev', value: '标准差', des: '' },
-    { key: 'min', value: '最小值', des: '' },
-    { key: 'max', value: '最大值', des: '' },
+    { key: "count", value: "总行数", des: "" },
+    { key: "sum", value: "总和", des: "" },
+    { key: "avg", value: "平均值", des: "" },
+    { key: "distinct", value: "不重复值的总数", des: "" },
+    { key: "cum-sum", value: "累积求和", des: "" },
+    { key: "cum-count", value: "累积行数", des: "" },
+    { key: "stddev", value: "标准差", des: "" },
+    { key: "min", value: "最小值", des: "" },
+    { key: "max", value: "最大值", des: "" },
   ];
-  aggregationType: string = '';
+  aggregationType: string = "";
   /**
    * 如果不双向绑定1个变量,那后面if的过滤就只会在input失去焦点时才触发
    */
-  searchText = '';
+  searchText = "";
 
   isSourceQuery: boolean = false;
   // /**
@@ -111,19 +122,27 @@ export class AggregationStepComponent implements OnInit {
   // >[] = [];
   // public _breakoutSourceOutFieldList: FieldLiteral[] = []; //ConcreteField
 
-  public breakoutFieldFilter: (
-    field: DataColumnModel,
-    table: DataTableUIModel
+  // public breakoutFieldFilter: (
+  //   field: DataColumnModel,
+  //   table: DataTableUIModel
+  // ) => boolean = null;
+  // public breakoutSourceOutFieldFilter: (field: FieldLiteral) => boolean = null;
+  public breakoutSelectColumnFilter: (
+    field: SelectColumnModel,
+    table: SelectTableModel
   ) => boolean = null;
 
-  public breakoutSourceOutFieldFilter: (field: FieldLiteral) => boolean = null;
-  public aggregationFieldFilter: (
-    field: DataColumnModel,
-    table: DataTableUIModel
-  ) => boolean = null;
+  // public aggregationFieldFilter: (
+  //   field: DataColumnModel,
+  //   table: DataTableUIModel
+  // ) => boolean = null;
 
-  public aggregationSourceOutFieldFilter: (field: FieldLiteral) => boolean =
-    null;
+  // public aggregationSourceOutFieldFilter: (field: FieldLiteral) => boolean =
+  //   null;
+  public aggregationSelectColumnFilter: (
+    field: SelectColumnModel,
+    table: SelectTableModel
+  ) => boolean = null;
   constructor(
     private reference: ComputesReferenceService,
     private sqlQueryUtil: SqlQueryUtil,
@@ -138,11 +157,11 @@ export class AggregationStepComponent implements OnInit {
     // );
     this.addingCustomForm = this.fb.group({
       //customOption: ["", Validators.required],
-      addingCustomName: ['', Validators.required],
+      addingCustomName: ["", Validators.required],
     });
     this.iconService.addIconLiteral(
-      'pfIcon:LEFT_JOIN',
-      PfSvgIconPathDirective.getSvg('SQL_LEFT_JOIN')
+      "pfIcon:LEFT_JOIN",
+      PfSvgIconPathDirective.getSvg("SQL_LEFT_JOIN")
     );
   }
 
@@ -165,26 +184,36 @@ export class AggregationStepComponent implements OnInit {
     //   .subscribe((response) => {
     //     me.sourceOutFieldList = response;
     //   });
-    me.breakoutFieldFilter = (field, table) => {
-      let r = !me.isExistInBreakout(field, table);
+
+    // me.breakoutFieldFilter = (field, table) => {
+    //   let r = !me.isExistInBreakout(field, table);
+    //   return r;
+    // };
+    // me.breakoutSourceOutFieldFilter = (field) => {
+    //   let r = !me.hasBreakout(field);
+    //   return r;
+    // };
+    me.breakoutSelectColumnFilter = (field, table) => {
+      let r = !me.isExistInBreakout2(field, table);
       return r;
     };
-    me.breakoutSourceOutFieldFilter = (field) => {
-      let r = !me.hasBreakout(field);
-      return r;
-    };
-    me.aggregationFieldFilter = (field, table) => {
-      let r = !me.isExistInAggregation(field, table);
-      return r;
-    };
-    me.aggregationSourceOutFieldFilter = (field) => {
-      let r = !me.hasAggregation(field);
+
+    // me.aggregationFieldFilter = (field, table) => {
+    //   let r = !me.isExistInAggregation(field, table);
+    //   return r;
+    // };
+    // me.aggregationSourceOutFieldFilter = (field) => {
+    //   let r = !me.hasAggregation(field);
+    //   return r;
+    // };
+    me.aggregationSelectColumnFilter = (field, table) => {
+      let r = !me.isExistInAggregation2(field, table);
       return r;
     };
   }
   ngOnChanges() {
     const me = this;
-    me.isSourceQuery = !me.pfUtil.isAnyNull(me.query['source-query']);
+    me.isSourceQuery = !me.pfUtil.isAnyNull(me.query["source-query"]);
     // me.sqlQueryUtil
     //   .getSourceQueryOutFields(me.databaseId, me.query)
     //   .subscribe((response) => {
@@ -290,7 +319,7 @@ export class AggregationStepComponent implements OnInit {
   public initAggregationAddingParam() {
     const me = this;
     me.initAddingParam();
-    me.aggregationStep = 'type';
+    me.aggregationStep = "type";
 
     me.pfUtil.resetForm(me.addingCustomForm);
     me.addingCustomOption = null;
@@ -303,14 +332,14 @@ export class AggregationStepComponent implements OnInit {
     me.initEditingParam(idx);
     me.aggregationType = filter[0];
     if (me.isAggregationNoField(filter[0])) {
-      me.aggregationStep = 'type';
-    } else if ('aggregation-options' === filter[0]) {
+      me.aggregationStep = "type";
+    } else if ("aggregation-options" === filter[0]) {
       //me.msg.warning("自定义汇总未实现");
-      me.aggregationStep = 'custom';
+      me.aggregationStep = "custom";
       //debugger;
       // me.addingCustomName = filter[2]["display-name"];
       me.addingCustomForm.patchValue({
-        addingCustomName: filter[2]['display-name'],
+        addingCustomName: filter[2]["display-name"],
       });
       me.addingCustomOption = filter[1];
       //setTimeout(function () {
@@ -318,7 +347,7 @@ export class AggregationStepComponent implements OnInit {
       //}, 1);
       return;
     } else {
-      me.aggregationStep = 'field';
+      me.aggregationStep = "field";
     }
   }
 
@@ -388,47 +417,74 @@ export class AggregationStepComponent implements OnInit {
     //me.addingFilter = filter;
     me.addingIdx = idx;
   }
-  public saveBreakout(column: DataColumnModel, table: DataTableUIModel) {
+  // public saveBreakout(column: DataColumnModel, table: DataTableUIModel) {
+  //   const me = this;
+  //   if (me.pfUtil.isAnyNull(me.query.breakout)) {
+  //     me.query.breakout = [];
+  //   }
+  //   let tmp: any = me.query.breakout;
+
+  //   let tmpFilter = me.sqlQueryUtil.getFilterByColumn(column, table);
+
+  //   if (me.isAdd) {
+  //     tmp.push(tmpFilter);
+  //   } else {
+  //     me.query.breakout[me.addingIdx] = tmpFilter;
+  //   }
+  //   me.breakoutChange.emit();
+  // }
+  // public saveBreakoutBySourceOut(field: FieldLiteral) {
+  //   const me = this;
+  //   if (me.pfUtil.isAnyNull(me.query.breakout)) {
+  //     me.query.breakout = [];
+  //   }
+  //   let tmp: any = me.query.breakout;
+  //   //debugger;
+  //   if (me.isAdd) {
+  //     tmp.push(field);
+  //   } else {
+  //     tmp[me.addingIdx] = field;
+  //   }
+  //   me.breakoutChange.emit();
+  // }
+  // public saveBreakoutByFieldModel(column: SqlSelectColumnModel) {
+  //   const me = this;
+  //   if (me.pfUtil.isAnyNull(me.query.breakout)) {
+  //     me.query.breakout = [];
+  //   }
+  //   let tmp: any = me.query.breakout;
+  //   debugger;
+  //   if (me.isAdd) {
+  //     tmp.push(column.field);
+  //   } else {
+  //     tmp[me.addingIdx] = column.field;
+  //   }
+  //   me.breakoutChange.emit();
+  // }
+  public saveBreakoutBySelectColumnModel(event: {
+    field: SelectColumnModel;
+    table: SelectTableModel;
+  }) {
     const me = this;
     if (me.pfUtil.isAnyNull(me.query.breakout)) {
       me.query.breakout = [];
     }
     let tmp: any = me.query.breakout;
-    // let tmpFilter = me.sqlQueryUtil.getFilterByField(
-    //   column,
-    //   table,
-    //   me.fieldList
-    // );
-    //let tmpFilter = me.sqlQueryUtil.getJoinFilterByColumn(column, table);
-    let tmpFilter = me.sqlQueryUtil.getFilterByColumn(column, table);
     //debugger;
+    // let tmpField = event.field.isLiteralField
+    //   ? event.field.literalField
+    //   : me.sqlQueryUtil.getFilterByColumn(
+    //       me.sqlQueryUtil.FieldTypeToUIModel(event.field.column),
+    //       me.sqlQueryUtil.TableTypeToUIModel(event.table.table)
+    //     );
+    let tmpField = me.sqlQueryUtil.getConcreteFieldBySelectColumn(
+      event.field,
+      event.table
+    );
     if (me.isAdd) {
-      tmp.push(tmpFilter);
+      tmp.push(tmpField);
     } else {
-      // // let tmpFilter: any = me.filter;
-      // // tmpFilter[0] = me.compare;
-      // // tmpFilter[1] = me.getFilterByAdding();
-      // // tmpFilter[2] = filterValue;
-      // me.addingFilter = tmpFilter;
-      me.query.breakout[me.addingIdx] = tmpFilter;
-    }
-    // me.addStep = "compare";
-    // me.addingColumn = column;
-    // me.addingTable = table;
-    //me.filter.push();
-    me.breakoutChange.emit();
-  }
-  public saveBreakoutBySourceOut(field: FieldLiteral) {
-    const me = this;
-    if (me.pfUtil.isAnyNull(me.query.breakout)) {
-      me.query.breakout = [];
-    }
-    let tmp: any = me.query.breakout;
-    //debugger;
-    if (me.isAdd) {
-      tmp.push(field);
-    } else {
-      tmp[me.addingIdx] = field;
+      tmp[me.addingIdx] = tmpField;
     }
     me.breakoutChange.emit();
   }
@@ -468,26 +524,51 @@ export class AggregationStepComponent implements OnInit {
     }
     return me.query.breakout.findIndex((a) => a[1] === field[1]) > -1;
   }
-  public saveAggregation(column: DataColumnModel, table: DataTableUIModel) {
-    const me = this;
-    if (me.pfUtil.isAnyNull(me.query.aggregation)) {
-      me.query.aggregation = [];
-    }
-    let tmp: any = me.query.aggregation;
-    let tmpFilter = [
-      me.aggregationType,
-      //me.sqlQueryUtil.getFilterByField(column, table, me.fieldList),
-      me.sqlQueryUtil.getFilterByColumn(column, table),
-    ];
-    //debugger;
-    if (me.isAdd) {
-      tmp.push(tmpFilter);
-    } else {
-      me.query.aggregation[me.addingIdx] = tmpFilter;
-    }
-    me.breakoutChange.emit();
-  }
-  public saveAggregationBySourceOut(field: FieldLiteral) {
+  // public saveAggregation(column: DataColumnModel, table: DataTableUIModel) {
+  //   const me = this;
+  //   if (me.pfUtil.isAnyNull(me.query.aggregation)) {
+  //     me.query.aggregation = [];
+  //   }
+  //   let tmp: any = me.query.aggregation;
+  //   let tmpFilter = [
+  //     me.aggregationType,
+  //     //me.sqlQueryUtil.getFilterByField(column, table, me.fieldList),
+  //     me.sqlQueryUtil.getFilterByColumn(column, table),
+  //   ];
+  //   //debugger;
+  //   if (me.isAdd) {
+  //     tmp.push(tmpFilter);
+  //   } else {
+  //     me.query.aggregation[me.addingIdx] = tmpFilter;
+  //   }
+  //   me.breakoutChange.emit();
+  // }
+  // public saveAggregationBySourceOut(field: FieldLiteral) {
+  //   const me = this;
+  //   if (me.pfUtil.isAnyNull(me.query.aggregation)) {
+  //     me.query.aggregation = [];
+  //   }
+  //   // let tmp: any = me.query.aggregation;
+  //   // //debugger;
+  //   // if (me.isAdd) {
+  //   //   tmp.push(field);
+  //   // } else {
+  //   //   tmp[me.addingIdx] = field;
+  //   // }
+  //   let tmp: any = me.query.aggregation;
+  //   let tmpFilter = [me.aggregationType, field];
+  //   //debugger;
+  //   if (me.isAdd) {
+  //     tmp.push(tmpFilter);
+  //   } else {
+  //     me.query.aggregation[me.addingIdx] = tmpFilter;
+  //   }
+  //   me.breakoutChange.emit();
+  // }
+  public saveAggregationBySelectColumnModel(
+    field: SelectColumnModel,
+    table: SelectTableModel
+  ) {
     const me = this;
     if (me.pfUtil.isAnyNull(me.query.aggregation)) {
       me.query.aggregation = [];
@@ -500,7 +581,8 @@ export class AggregationStepComponent implements OnInit {
     //   tmp[me.addingIdx] = field;
     // }
     let tmp: any = me.query.aggregation;
-    let tmpFilter = [me.aggregationType, field];
+    let tmpField = me.sqlQueryUtil.getConcreteFieldBySelectColumn(field, table);
+    let tmpFilter = [me.aggregationType, tmpField];
     //debugger;
     if (me.isAdd) {
       tmp.push(tmpFilter);
@@ -517,10 +599,10 @@ export class AggregationStepComponent implements OnInit {
     let tmp: any = me.query.aggregation;
     let addCustom = me.addingCustomForm.value;
     let tmpFilter = [
-      'aggregation-options',
+      "aggregation-options",
       me.addingCustomOption,
       //{ "display-name": me.addingCustomName },
-      { 'display-name': addCustom.addingCustomName },
+      { "display-name": addCustom.addingCustomName },
     ];
     //debugger;
     if (me.isAdd) {
@@ -548,17 +630,11 @@ export class AggregationStepComponent implements OnInit {
   }
   getFieldFullName(field: ConcreteField) {
     const me = this;
-    // if (me.fieldList.length > 0) {
-    //   debugger;
-    // }
-    // if (
-    //   !me.pfUtil.isListEmpty(field) &&
-    //   field[1] === 15 &&
-    //   !me.pfUtil.isListEmpty(me.fieldList)
-    // ) {
-    //   debugger;
-    // }
-    return me.sqlQueryUtil.getFieldFullName(field, me.fieldList);
+    //return me.sqlQueryUtil.getFieldFullName(field, me.fieldList);
+    return me.sqlQueryUtil.getConcreteFieldFullNameBySelectColumn(
+      field,
+      me.selectColumnList
+    );
   }
   getFieldFullName2(field: ConcreteField) {
     const me = this;
@@ -603,6 +679,40 @@ export class AggregationStepComponent implements OnInit {
     //   -1
     // );
   }
+  isExistInAggregation2(
+    column: SelectColumnModel,
+    table: SelectTableModel
+  ): boolean {
+    const me = this;
+    if (me.query.aggregation === null || me.query.aggregation === undefined) {
+      return false;
+    }
+    if (column.isLiteralField) {
+      return (
+        me.query.aggregation.findIndex(
+          (a) =>
+            me.sqlQueryUtil.isLiteralFieldEqual(a[1], column.literalField) && //每种聚合类型的字段要唯一，否则拼接到select的*列表时重名不好处理，而且重复也是没用处的
+            //a[1][1] === field[1] &&
+            a[0] === me.aggregationType
+        ) > -1
+      );
+    } else {
+      return (
+        me.query.aggregation.findIndex((a) => {
+          //debugger;
+          return (
+            me.sqlQueryUtil.isFilterMatchField(
+              a[1],
+              me.sqlQueryUtil.FieldTypeToUIModel(column.column),
+              me.sqlQueryUtil.TableTypeToUIModel(table.table)
+            ) && me.aggregationType === a[0]
+          );
+          // const f = me.sqlQueryUti.getFieldByFilter(a, me.fieldList);
+          // return f !== null;
+        }) > -1
+      );
+    }
+  }
   isExistInBreakout(column: DataColumnModel, table: DataTableModel): boolean {
     const me = this;
     if (me.query.breakout === null || me.query.breakout === undefined) {
@@ -610,12 +720,41 @@ export class AggregationStepComponent implements OnInit {
     }
     return (
       me.query.breakout.findIndex((a) => {
-        //debugger;
         return me.sqlQueryUtil.isFilterMatchField(a, column, table);
-        // const f = me.sqlQueryUti.getFieldByFilter(a, me.fieldList);
-        // return f !== null;
       }) > -1
     );
+  }
+  isExistInBreakout2(
+    column: SelectColumnModel,
+    table: SelectTableModel
+  ): boolean {
+    const me = this;
+    if (me.query.breakout === null || me.query.breakout === undefined) {
+      return false;
+    }
+    if (column.isLiteralField) {
+      return (
+        me.query.breakout.findIndex((a) => {
+          //debugger;
+          return me.sqlQueryUtil.isLiteralFieldEqual(a, column.literalField);
+          // const f = me.sqlQueryUti.getFieldByFilter(a, me.fieldList);
+          // return f !== null;
+        }) > -1
+      );
+    } else {
+      return (
+        me.query.breakout.findIndex((a) => {
+          //debugger;
+          return me.sqlQueryUtil.isFilterMatchField(
+            a,
+            me.sqlQueryUtil.FieldTypeToUIModel(column.column),
+            me.sqlQueryUtil.TableTypeToUIModel(table.table)
+          );
+          // const f = me.sqlQueryUti.getFieldByFilter(a, me.fieldList);
+          // return f !== null;
+        }) > -1
+      );
+    }
     // if (me.pfUtil.isListEmpty(me.fieldList)) {
     //   return false;
     // }
@@ -632,39 +771,48 @@ export class AggregationStepComponent implements OnInit {
   getAggregationDisplayName(filter: Aggregation) {
     const me = this;
 
-    if ('count' === filter[0]) {
-      return '总行数';
+    if ("count" === filter[0]) {
+      return "总行数";
     }
-    if ('cum-count' === filter[0]) {
-      return '累积行数';
+    if ("cum-count" === filter[0]) {
+      return "累积行数";
     }
-    if ('aggregation-options' === filter[0]) {
+    if ("aggregation-options" === filter[0]) {
       //自定义字段
-      return filter[2]['display-name'];
+      return filter[2]["display-name"];
     }
     const t = me.aggregationTypeList.find((a) => a.key == filter[0]);
 
-    if (me.sqlQueryUtil.isLiteralField(filter[1])) {
-      return me.sqlQueryUtil.getLiteralFieldName(filter[1]) + ' ' + t.value;
-    } else {
-      const f = me.sqlQueryUtil.getFieldByFilter(filter[1], me.fieldList);
+    // if (me.sqlQueryUtil.isLiteralField(filter[1])) {
+    //   return me.sqlQueryUtil.getLiteralFieldName(filter[1]) + " " + t.value;
+    // } else {
+    //   const f = me.sqlQueryUtil.getFieldByFilter(filter[1], me.fieldList);
 
-      if (f !== null && f !== undefined) {
-        if (t !== null) {
-          return (
-            me.sqlQueryUtil.getFieldFullName(filter[1], me.fieldList) +
-            ' ' +
-            t.value
-          );
-          // if ("field-id" === filter[1][0]) {
-          //   return f.value.ColumnName + " " + t.value;
-          // } else if ("joined-field" === filter[1][0]) {
-          //   return f.key.TableName + "→" + f.value.ColumnName + " " + t.value;
-          // }
-        }
-      }
-    }
-    return '';
+    //   if (f !== null && f !== undefined) {
+    //     if (t !== null) {
+    //       return (
+    //         me.sqlQueryUtil.getFieldFullName(filter[1], me.fieldList) +
+    //         " " +
+    //         t.value
+    //       );
+    //       // if ("field-id" === filter[1][0]) {
+    //       //   return f.value.ColumnName + " " + t.value;
+    //       // } else if ("joined-field" === filter[1][0]) {
+    //       //   return f.key.TableName + "→" + f.value.ColumnName + " " + t.value;
+    //       // }
+    //     }
+    //   }
+    // }
+    // return "";
+
+    return (
+      me.sqlQueryUtil.getConcreteFieldFullNameBySelectColumn(
+        filter[1],
+        me.selectColumnList
+      ) +
+      " " +
+      t.value
+    );
   }
   getAggregationTypeName() {
     const me = this;
@@ -672,11 +820,11 @@ export class AggregationStepComponent implements OnInit {
     if (!me.pfUtil.isAnyNull(t)) {
       return t.value;
     }
-    return '';
+    return "";
   }
   private isAggregationNoField(t: string) {
     const me = this;
-    return ['count', 'cum-count'].indexOf(t) > -1;
+    return ["count", "cum-count"].indexOf(t) > -1;
   }
   goSelectAggregationField(aggregationType: string, selectAggregationPopups) {
     const me = this;
@@ -695,7 +843,7 @@ export class AggregationStepComponent implements OnInit {
       me.breakoutChange.emit();
     } else {
       me.aggregationType = aggregationType;
-      me.aggregationStep = 'field';
+      me.aggregationStep = "field";
     }
   }
   // // deleteAggregation() {}

@@ -1,7 +1,7 @@
 //import _ from "underscore";
 import { PfUnderscore as _ } from "../pf_underscore";
 
-import type { Field as FieldReference, FieldsClause } from "../../model/Query";
+import type { QField as FieldReference, FieldsClause } from "../../model/Query";
 import type { Field, FieldValues } from "../../model/Field";
 import type { Value } from "../../model/Dataset";
 

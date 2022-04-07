@@ -1,0 +1,6 @@
+<div [attr.contenteditable]="editable" style="display: inline-block" class="pf-input" [class.invalid]="invalid"
+  nz-tooltip [nzTooltipTitle]="errorMsg">
+  {{
+  getDisplayValue()
+  }}
+</div>

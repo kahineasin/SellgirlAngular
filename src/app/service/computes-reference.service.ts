@@ -1,42 +1,47 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+/**
+ * 注意,此service改为了local方法,所以不要全复盖,1个1个方法加过来吧
+ */
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 // import { ConfigService } from "../../../../core/services/app-config.service";
 // import { ReferenceService } from "../../../../core/services/app-reference.service";
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
 import {
   NetworkServiceResponse,
   PageResult,
   ReferenceService,
-} from './app-reference.service';
-import { ConfigService } from './app-config.service';
-import { UserProviderService } from './user-provider.service';
-import { KeyValuePair } from '../common/pfModel';
+} from "./app-reference.service";
+import { ConfigService } from "./app-config.service";
+import { UserProviderService } from "./user-provider.service";
+import { KeyValuePair } from "../common/pfModel";
 import {
   ImageDocker,
   JobFile,
   ProcedureModel,
   RegistryImage,
-} from '../model/job-model';
-import { Guid } from 'guid-typescript';
+} from "../model/job-model";
+import { Guid } from "guid-typescript";
 import {
   DatabaseModel,
   DatabaseModelClass,
   DataColumnModel,
   DataColumnUIModel,
   Datamodel,
+  DatamodelGroupModel,
   DatamodelQuery,
   DatamodelQueryUIModel,
   DataTableModel,
   DataTableUIModel,
-} from '../model/data-integration';
-import { map } from 'rxjs/operators';
+} from "../model/data-integration";
+import { map } from "rxjs/operators";
 import {
   databaseLocal,
   datamodelGroupLocal,
   datamodelLocal,
-} from './computes-local-test-data';
-import { datatableLocal } from './local-test-data/datatable-data';
-import { datacolumnLocal } from './local-test-data/datacolumn-data';
+} from "./computes-local-test-data";
+import { datatableLocal } from "./local-test-data/datatable-data";
+import { datacolumnLocal } from "./local-test-data/datacolumn-data";
+import { dataModelQueryLocal } from "./local-test-data/datamodelquery-data";
 // import { UserProviderService } from "../../../../core/services/user-provider.service";
 // import { KeyValuePair } from "../../../../core/common/pfModel";
 
@@ -55,14 +60,14 @@ export interface TaskModel {
   PageIndex: number;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class ComputesReferenceService extends ReferenceService {
   //userId="";
-  public normalColor: string = '#000000';
-  public finishedColor: string = '#1890ff';
-  public errorColor: string = 'red';
-  public validColor = '#1890ff';
-  public invalidColor = 'red';
+  public normalColor: string = "#000000";
+  public finishedColor: string = "#1890ff";
+  public errorColor: string = "red";
+  public validColor = "#1890ff";
+  public invalidColor = "red";
   constructor(
     protected appConfig: ConfigService,
     protected http: HttpClient,
@@ -71,8 +76,8 @@ export class ComputesReferenceService extends ReferenceService {
     super(appConfig, http);
     //this.userId=this.userProvider.getUserInfo()["UserId"];
   }
-  jobCacheKey = 'jobCacheKey';
-  fileCacheKey = 'fileCacheKey';
+  jobCacheKey = "jobCacheKey";
+  fileCacheKey = "fileCacheKey";
   public saveJob(job: any): Observable<boolean> {
     var me = this;
     const observable = new Observable<boolean>((subscriber) => {
@@ -121,8 +126,8 @@ export class ComputesReferenceService extends ReferenceService {
   ): Observable<PageResult<any>> {
     var me = this;
     return me.httpResult<any>(
-      'POST',
-      'XSchedulerJob/GetRecords',
+      "POST",
+      "XSchedulerJob/GetRecords",
       this.userProvider.getToken(),
       null,
       {
@@ -145,8 +150,8 @@ export class ComputesReferenceService extends ReferenceService {
     var me = this;
     const observable = new Observable<TaskModel[]>((subscriber) => {
       me.request(
-        'POST',
-        'XSchedulerTask/GetRecords',
+        "POST",
+        "XSchedulerTask/GetRecords",
         me.userProvider.getToken(),
 
         JSON.stringify({
@@ -160,7 +165,7 @@ export class ComputesReferenceService extends ReferenceService {
 
         true
       ).subscribe((response) => {
-        if (response.Success == 'True' && response.Result != null) {
+        if (response.Success == "True" && response.Result != null) {
           var data: TaskModel[] = JSON.parse(me.base64Decode(response.Result));
           subscriber.next(data);
         }
@@ -173,15 +178,15 @@ export class ComputesReferenceService extends ReferenceService {
     var me = this;
     const observable = new Observable<TaskModel>((subscriber) => {
       me.httpRequest(
-        'GET',
-        'XSchedulerTask/GetItemInfo',
+        "GET",
+        "XSchedulerTask/GetItemInfo",
         this.userProvider.getToken(),
-        [new KeyValuePair('taskId', taskId)],
+        [new KeyValuePair("taskId", taskId)],
 
         true
       ).subscribe((response) => {
         //debugger;
-        if (response.Success == 'True' && response.Result != null) {
+        if (response.Success == "True" && response.Result != null) {
           var data: TaskModel = JSON.parse(me.base64Decode(response.Result));
           subscriber.next(data);
         }
@@ -195,13 +200,13 @@ export class ComputesReferenceService extends ReferenceService {
     var me = this;
     const observable = new Observable<RegistryImage[]>((subscriber) => {
       var data: RegistryImage[] = [
-        { Name: 'jdk8-jre', Type: 'APP_JAVA' },
-        { Name: 'spark-client', Type: 'APP_SPARK' },
+        { Name: "jdk8-jre", Type: "APP_JAVA" },
+        { Name: "spark-client", Type: "APP_SPARK" },
       ];
       subscriber.next(
         data.filter(
           (a) =>
-            (name == '' || name == a.Name) && (type == '' || type == a.Type)
+            (name == "" || name == a.Name) && (type == "" || type == a.Type)
         )
       );
     });
@@ -212,8 +217,8 @@ export class ComputesReferenceService extends ReferenceService {
     var me = this;
     const observable = new Observable<string[]>((subscriber) => {
       var data: KeyValuePair[] = [
-        new KeyValuePair('jdk8-jre', ['1.8', '1.9']),
-        new KeyValuePair('spark-client', ['3.2', '3.3']),
+        new KeyValuePair("jdk8-jre", ["1.8", "1.9"]),
+        new KeyValuePair("spark-client", ["3.2", "3.3"]),
       ];
       var item = data.find((a) => a.key == image);
       if (item != null) {
@@ -244,14 +249,14 @@ export class ComputesReferenceService extends ReferenceService {
       // }
 
       var data: ImageDocker[] = [
-        { dockerName: 'jdk8-jre', tag: '1.8' },
-        { dockerName: 'jdk8-jre', tag: '1.9' },
-        { dockerName: 'spark-client', tag: '3.2' },
-        { dockerName: 'spark-client', tag: '3.3' },
+        { dockerName: "jdk8-jre", tag: "1.8" },
+        { dockerName: "jdk8-jre", tag: "1.9" },
+        { dockerName: "spark-client", tag: "3.2" },
+        { dockerName: "spark-client", tag: "3.3" },
       ];
       subscriber.next(
         data.filter(
-          (a) => containerImageName == '' || containerImageName == a.dockerName
+          (a) => containerImageName == "" || containerImageName == a.dockerName
         )
       );
     });
@@ -309,16 +314,16 @@ export class ComputesReferenceService extends ReferenceService {
       var d = new Date();
       //debugger;
       var ds =
-        '' +
+        "" +
         d.getFullYear() +
         me.pfUtil.padZeroLeft(d.getMonth() + 1, 2) +
         me.pfUtil.padZeroLeft(d.getDate(), 2) +
         me.pfUtil.padZeroLeft(d.getHours(), 2) +
         me.pfUtil.padZeroLeft(d.getMinutes(), 2) +
         me.pfUtil.padZeroLeft(d.getMinutes(), 2);
-      var fileName = 'xschedulerjob/' + pathArr[1] + ds + pathArr[2];
+      var fileName = "xschedulerjob/" + pathArr[1] + ds + pathArr[2];
       var file: JobFile = {
-        FileId: '',
+        FileId: "",
         Id: id,
         Name: name,
         Url: fileName,
@@ -395,12 +400,12 @@ export class ComputesReferenceService extends ReferenceService {
   }
 
   public isSvgIcon(procedureType: string): boolean {
-    return ['APP_JAVA'].indexOf(procedureType) < 0;
+    return ["APP_JAVA"].indexOf(procedureType) < 0;
   }
   public getProcedureIconImage(procedureType: string): boolean {
     var img = {
       //APP_JAVA: 'assets/img/xSchedulerJob/java.png',
-      APP_JAVA: 'assets/img/job-digraph/java.png',
+      APP_JAVA: "assets/img/job-digraph/java.png",
     };
     return img[procedureType];
   }
@@ -422,10 +427,10 @@ export class ComputesReferenceService extends ReferenceService {
   public scheduleJob(jobId: string): Observable<NetworkServiceResponse> {
     const me = this;
     return me.httpRequest(
-      'GET',
-      'XSchedulerJob/Schedule',
+      "GET",
+      "XSchedulerJob/Schedule",
       this.userProvider.getToken(),
-      [new KeyValuePair('jobId', jobId)],
+      [new KeyValuePair("jobId", jobId)],
       null
     );
   }
@@ -477,11 +482,11 @@ export class ComputesReferenceService extends ReferenceService {
   public getDatabaseByUUID(guid: string): Observable<DatabaseModelClass> {
     const me = this;
     const observable = me.httpResult<DatabaseModelClass>(
-      'POST',
-      'DataSource/GetItemInfo',
+      "POST",
+      "DataSource/GetItemInfo",
       this.userProvider.getToken(),
       null,
-      [new KeyValuePair('dataSourceId', guid)]
+      [new KeyValuePair("dataSourceId", guid)]
     );
     return observable;
   }
@@ -700,14 +705,14 @@ export class ComputesReferenceService extends ReferenceService {
   public getDataColumnList(tableId: string): Observable<DataColumnModel[]> {
     const me = this;
     return me.httpResult<DataColumnModel[]>(
-      'POST',
-      'DataMetabase/GetTableColumnsByMetaShortId',
+      "POST",
+      "DataMetabase/GetTableColumnsByMetaShortId",
       this.userProvider.getToken(),
       null,
       [
-        new KeyValuePair('metaShortId', tableId),
-        new KeyValuePair('pageSize', 0),
-        new KeyValuePair('pageIndex', 0),
+        new KeyValuePair("metaShortId", tableId),
+        new KeyValuePair("pageSize", 0),
+        new KeyValuePair("pageIndex", 0),
       ]
     );
   }
@@ -791,47 +796,78 @@ export class ComputesReferenceService extends ReferenceService {
   public getDatamodelQueryPageList(
     userId: String,
     roleId: String,
-    groupId: String,
+    groupUUID: String,
+    searchKey: String,
     pageSize: Number,
-    pageIndex: Number
-  ): Observable<PageResult<DatamodelQuery[]>> {
+    pageIndex: Number,
+    enable: boolean
+  ): Observable<PageResult<DatamodelQueryUIModel[]>> {
     var me = this;
-    return me.httpResult<PageResult<DatamodelQuery[]>>(
-      'POST',
-      'DataMdoel/GetItems',
-      this.userProvider.getToken(),
-      null,
-      // {
-      //   UserId: userId,
-      //   PageSize: pageSize,
-      //   PageIndex: pageIndex,
-      // }
-      [
-        { key: 'pageSize', value: pageSize },
-        { key: 'pageIndex', value: pageIndex },
-        { key: 'userId', value: userId },
-        { key: 'roleId', value: roleId },
-        { key: 'groupId', value: groupId },
-      ]
-    );
+    // return me
+    //   .httpResult<PageResult<DatamodelQuery[]>>(
+    //     "POST",
+    //     "DataModel/GetItems",
+    //     this.userProvider.getToken(),
+    //     null,
+    //     [
+    //       { key: "pageSize", value: pageSize },
+    //       { key: "pageIndex", value: pageIndex },
+    //       { key: "userId", value: userId },
+    //       { key: "roleId", value: roleId },
+    //       { key: "groupId", value: groupId },
+    //       { key: "searchKey", value: searchKey },
+    //       { key: "enable", value: enable },
+    //     ]
+    //   )
+    //   .pipe(
+    //     map((v) => {
+    //       //debugger;
+    //       v.DataSource = v.DataSource.map((a) => {
+    //         let r = new DatamodelQueryUIModel(a);
+    //         try {
+    //           r.query = JSON.parse(me.base64Decode(a.QueryConfig));
+    //         } catch (e) {
+    //           // debugger;
+    //           console.info(e);
+    //         }
+    //         return r;
+    //       });
+    //       return v as any;
+    //     })
+    //   );
 
-    // //未有后端,暂时测试
-    // return me.getJobPageList(userId, CardName, CardId, pageSize, pageIndex);
-    // // const observable = new Observable<boolean>((subscriber) => {
-    // //   subscriber.next([{true}]);
-    // // });
-    // // return observable;
+    const observable = new Observable<PageResult<DatamodelQueryUIModel[]>>(
+      (subscriber) => {
+        //var data: DatabaseModelClass[] = datamodelGroupLocal;
+        let list = dataModelQueryLocal.filter((a) => a.GroupId === groupUUID);
+        let data: PageResult<DatamodelQueryUIModel[]> = {
+          DataSource: list.map((a) => {
+            let r = new DatamodelQueryUIModel(a);
+            try {
+              r.query = JSON.parse(me.base64Decode(a.QueryConfig));
+            } catch (e) {
+              // debugger;
+              console.info(e);
+            }
+            return r;
+          }),
+          RecordCount: list.length,
+        };
+        subscriber.next(data);
+      }
+    );
+    return observable;
   }
 
-  public getDatamodelQuery(uuid: String): Observable<DatamodelQuery> {
+  public getDatamodelQueryByUUID(uuid: String): Observable<DatamodelQuery> {
     var me = this;
     return me
       .httpResult<DatamodelQuery>(
-        'POST',
-        'DataMdoel/GetItemInfo',
+        "POST",
+        "DataMdoel/GetItemInfo",
         this.userProvider.getToken(),
         null,
-        [{ key: 'Id', value: uuid }]
+        [{ key: "Id", value: uuid }]
       )
       .pipe(
         map((v) => {
@@ -841,14 +877,41 @@ export class ComputesReferenceService extends ReferenceService {
         })
       );
   }
+  public getDatamodelQuery(shortId: number): Observable<DatamodelQueryUIModel> {
+    var me = this;
+    // return me
+    //   .httpResult<DatamodelQuery>(
+    //     "POST",
+    //     "DataModel/GetItemInfoByShortId",
+    //     this.userProvider.getToken(),
+    //     null,
+    //     [{ key: "shortId", value: shortId }]
+    //   )
+    //   .pipe(
+    //     map((v) => {
+    //       let r: DatamodelQueryUIModel = new DatamodelQueryUIModel(v);
+    //       //这里也许应该把query序列化先--benjamin
+    //       r.query = JSON.parse(me.base64Decode(r.QueryConfig));
+    //       return r;
+    //     })
+    //   );
+
+    const observable = new Observable<DatamodelQueryUIModel>((subscriber) => {
+      var data: DatamodelQuery = dataModelQueryLocal.find(
+        (a) => shortId === a.DatamodelQueryId
+      );
+      subscriber.next(new DatamodelQueryUIModel(data));
+    });
+    return observable;
+  }
   public updateDatamodelQuery(
     query: DatamodelQuery,
     isAdd: boolean
   ): Observable<NetworkServiceResponse> {
     var me = this;
     return me.httpRequest(
-      'POST',
-      isAdd ? 'DataMdoel/Insert' : 'DataMdoel/Update',
+      "POST",
+      isAdd ? "DataMdoel/Insert" : "DataMdoel/Update",
       this.userProvider.getToken(),
       null,
       JSON.stringify(query)
@@ -867,16 +930,52 @@ export class ComputesReferenceService extends ReferenceService {
     return observable;
   }
 
+  getDatamodelGroupPageList(
+    groupType: Number,
+    userId: String,
+    roleId: String,
+    //searchKey: String,,
+    //enable: boolean
+    pageSize: Number,
+    pageIndex: Number
+  ): Observable<PageResult<DatamodelGroupModel[]>> {
+    // return this.httpResult<PageResult<DatamodelGroupModel[]>>(
+    //   "POST",
+    //   "DataModelGroup/GetItems",
+    //   this.userProvider.getToken(),
+    //   null,
+    //   [
+    //     { key: "pageSize", value: pageSize },
+    //     { key: "pageIndex", value: pageIndex },
+    //     { key: "userId", value: userId },
+    //     { key: "roleId", value: roleId },
+    //     { key: "groupType", value: groupType },
+    //   ]
+    // );
+
+    const observable = new Observable<PageResult<DatamodelGroupModel[]>>(
+      (subscriber) => {
+        //var data: DatabaseModelClass[] = datamodelGroupLocal;
+        let data: PageResult<DatamodelGroupModel[]> = {
+          DataSource: datamodelGroupLocal,
+          RecordCount: datamodelGroupLocal.length,
+        };
+        subscriber.next(data);
+      }
+    );
+    return observable;
+  }
+
   public getTableListByMetabaseShortId(
     metabaseShortId: number
   ): Observable<PageResult<any>> {
     const me = this;
     const observable = me.httpResult<PageResult<any>>(
-      'POST',
-      'DataMetabase/GetTableListByMetabaseShortId',
+      "POST",
+      "DataMetabase/GetTableListByMetabaseShortId",
       this.userProvider.getToken(),
       null,
-      [new KeyValuePair('metabaseShortId', metabaseShortId)]
+      [new KeyValuePair("metabaseShortId", metabaseShortId)]
     );
     return observable;
   }
@@ -884,14 +983,14 @@ export class ComputesReferenceService extends ReferenceService {
   public getTableColsFromMetabaseColumn(tableShortId: number): Observable<any> {
     const me = this;
     const observable = me.httpResult<any>(
-      'POST',
-      'DataMetabase/GetTableColumns',
+      "POST",
+      "DataMetabase/GetTableColumns",
       this.userProvider.getToken(),
       null,
       [
-        new KeyValuePair('tableShortId', tableShortId),
-        new KeyValuePair('pageSize', 0),
-        new KeyValuePair('pageIndex', 0),
+        new KeyValuePair("tableShortId", tableShortId),
+        new KeyValuePair("pageSize", 0),
+        new KeyValuePair("pageIndex", 0),
       ]
     );
     return observable;
@@ -903,13 +1002,13 @@ export class ComputesReferenceService extends ReferenceService {
   ): Observable<any> {
     const me = this;
     const observable = me.httpResult<any>(
-      'POST',
-      'DataMetabase/GetItemInfo',
+      "POST",
+      "DataMetabase/GetItemInfo",
       this.userProvider.getToken(),
       null,
       [
-        new KeyValuePair('metabaseId', metabaseId),
-        new KeyValuePair('tableShortId', tableShortId),
+        new KeyValuePair("metabaseId", metabaseId),
+        new KeyValuePair("tableShortId", tableShortId),
       ]
     );
     return observable;
@@ -948,17 +1047,17 @@ export class ComputesReferenceService extends ReferenceService {
   ): Observable<any> {
     const me = this;
     const observable = me.httpResult<any>(
-      'POST',
-      'DataSource/GetTableList',
+      "POST",
+      "DataSource/GetTableList",
       this.userProvider.getToken(),
       null,
       [
-        new KeyValuePair('dbType', dbType),
-        new KeyValuePair('ip', ip),
-        new KeyValuePair('port', port),
-        new KeyValuePair('user', user),
-        new KeyValuePair('pwd', pwd),
-        new KeyValuePair('database', database),
+        new KeyValuePair("dbType", dbType),
+        new KeyValuePair("ip", ip),
+        new KeyValuePair("port", port),
+        new KeyValuePair("user", user),
+        new KeyValuePair("pwd", pwd),
+        new KeyValuePair("database", database),
       ]
     );
     return observable;
@@ -970,10 +1069,10 @@ export class ComputesReferenceService extends ReferenceService {
   ): Observable<NetworkServiceResponse> {
     const me = this;
     const observable = me.httpResult<any>(
-      'POST',
+      "POST",
       isAdd
-        ? 'DataMetabase/InsertMetabaseTable'
-        : 'DataMetabase/UpdateMetabaseTable',
+        ? "DataMetabase/InsertMetabaseTable"
+        : "DataMetabase/UpdateMetabaseTable",
       this.userProvider.getToken(),
       null,
       JSON.stringify(data)

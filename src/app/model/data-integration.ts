@@ -1,6 +1,6 @@
 //import { bool } from "aws-sdk/clients/signer";
-import { deprecate } from 'util';
-import { DatasetQuery } from '../sql-query-area/model/Card';
+import { deprecate } from "util";
+import { DatasetQuery } from "../sql-query-area/model/Card";
 // import { StructuredQuery } from "../../components/sql-query-area/model/Query";
 
 export interface DatabaseModel {
@@ -25,21 +25,21 @@ export interface DatabaseModel {
  * 此模型暂时是为了解决后台返回的int变成字符串的问题
  */
 export class DatabaseModelClass {
-  DataSourceId: string = '';
-  SourceType: string = '';
-  SourceName: string = '';
-  IpAddress: string = '';
-  Port: string = '';
-  UserName: string = '';
-  Password: string = '';
-  DatabaseName: string = '';
-  Desc: string = '';
-  Enable: string = '';
-  Params: string = '';
-  Creator: string = '';
-  CreatorName: string = '';
-  CreateTime: string = '';
-  UpdateTime: string = '';
+  DataSourceId: string = "";
+  SourceType: string = "";
+  SourceName: string = "";
+  IpAddress: string = "";
+  Port: string = "";
+  UserName: string = "";
+  Password: string = "";
+  DatabaseName: string = "";
+  Desc: string = "";
+  Enable: string = "";
+  Params: string = "";
+  Creator: string = "";
+  CreatorName: string = "";
+  CreateTime: string = "";
+  UpdateTime: string = "";
   ShortId: number = -1;
   //constructor() {}
   constructor(m: any) {
@@ -89,23 +89,23 @@ export interface DataTableModel {
   // TableName
 }
 export class DataTableUIModel implements DataTableModel {
-  SourceName: string = '';
-  SourceType: string = '';
-  DatabaseName: string = '';
+  SourceName: string = "";
+  SourceType: string = "";
+  DatabaseName: string = "";
   MetabaseName: string;
-  Ip: string = '';
-  Port: string = '';
-  UserName: string = '';
-  Password: string = '';
-  CreatorName: string = '';
+  Ip: string = "";
+  Port: string = "";
+  UserName: string = "";
+  Password: string = "";
+  CreatorName: string = "";
   ShortId: number = 0;
-  MetaId: string = '';
-  TableName: string = '';
-  Enable: string = '';
-  Creator: string = '';
-  CreateTime: string = '';
-  SourceId: string = '';
-  UpdateTime: string = '';
+  MetaId: string = "";
+  TableName: string = "";
+  Enable: string = "";
+  Creator: string = "";
+  CreateTime: string = "";
+  SourceId: string = "";
+  UpdateTime: string = "";
   SourceShortId: number = 0;
 
   // //下面是非数据库字段,用于页面显示
@@ -114,7 +114,7 @@ export class DataTableUIModel implements DataTableModel {
   /**
    * Table唯一名,当join相当table时,后面要加_1 _2来区分
    */
-  TableIdxName: string = '';
+  TableIdxName: string = "";
   //TableShortId: number = 0;
   constructor(m: any) {
     const me = this;
@@ -158,14 +158,14 @@ export interface DataColumnModel {
 
 export class DataColumnUIModel implements DataColumnModel {
   ShortId: number = 0;
-  Status: string = '';
-  Id: string = '';
-  MetaId: string = '';
-  ColumnName: string = '';
-  ChineseName: string = '';
-  Description: string = '';
-  DataType: string = '';
-  Order: string = '';
+  Status: string = "";
+  Id: string = "";
+  MetaId: string = "";
+  ColumnName: string = "";
+  ChineseName: string = "";
+  Description: string = "";
+  DataType: string = "";
+  Order: string = "";
   MetabaseShortId: number = 0;
   TableShortId: number = 0;
   constructor(m: any) {
@@ -267,23 +267,36 @@ export interface DatamodelQuery {
   Enable: boolean;
 
   GroupId: string;
+
+  Cache: boolean;
+
+  CacheInterval: number;
 }
 
 export class DatamodelQueryUIModel implements DatamodelQuery {
   DatamodelQueryId: number = 0;
-  Id: string = '';
-  DatamodelQueryName: string = '';
-  QueryConfig: string = '';
+  Id: string = "";
+  DatamodelQueryName: string = "";
+  QueryConfig: string = "";
   query: DatasetQuery; //StructuredQuery;
   TableId: string;
   QueryType: string;
-  Description: string = '';
-  Time: string = '';
-  UpdateTime: string = '';
-  UserId: string = '';
+  Description: string = "";
+  Time: string = "";
+  UpdateTime: string = "";
+  UserId: string = "";
   Enable: boolean = false;
-  DatabaseId: string = '';
-  GroupId: string = '';
+  DatabaseId: string = "";
+  GroupId: string = "";
+  Cache: boolean = false;
+  CacheInterval: number = 0;
+  // //下面是非数据库字段,用于页面显示
+  isJoinedTable?: boolean = true;
+  isMenuOpened?: boolean = false;
+  /**
+   * Table唯一名,当join相当table时,后面要加_1 _2来区分
+   */
+  TableIdxName: string = "";
   constructor(m: any) {
     const me = this;
     me.DatamodelQueryId = parseInt(m.DatamodelQueryId);
@@ -300,5 +313,31 @@ export class DatamodelQueryUIModel implements DatamodelQuery {
     //me.DatabaseId = parseInt(m.DatabaseId);
     me.DatabaseId = m.DatabaseId;
     me.GroupId = m.GroupId;
+    me.Cache = m.Cache === "False" ? false : true;
+    me.CacheInterval = parseInt(m.CacheInterval);
+  }
+}
+
+export interface DatamodelGroupModel {
+  Id: string;
+  Name: string;
+  Time: string;
+  UserId: string;
+  GroupType: string;
+}
+
+export class DatamodelGroupUIModel implements DatamodelGroupModel {
+  Id: string = "";
+  Name: string = "";
+  Time: string = "";
+  UserId: string = "";
+  GroupType: string = "";
+  constructor(m: any) {
+    const me = this;
+    me.Id = m.Id;
+    me.Name = m.Name;
+    me.Time = m.Time;
+    me.UserId = m.UserId;
+    me.GroupType = m.GroupType;
   }
 }

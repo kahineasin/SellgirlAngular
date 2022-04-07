@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { FormGroup, ValidationErrors } from '@angular/forms';
-import { Guid } from 'guid-typescript';
-import { KeyValuePair, IPfObject } from './pfModel';
+import { Injectable } from "@angular/core";
+import { FormGroup, ValidationErrors } from "@angular/forms";
+import { Guid } from "guid-typescript";
+import { KeyValuePair, IPfObject } from "./pfModel";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class PfUtil {
   private pfIFrameMessageHandlers = {};
@@ -24,7 +24,7 @@ export class PfUtil {
   }
   getLocalStorage(key: any): any {
     var s = localStorage.getItem(key);
-    if (s !== null && s !== '') {
+    if (s !== null && s !== "") {
       //空字符串split后会有length:1
       //return s.split(',');
       return JSON.parse(s);
@@ -37,22 +37,22 @@ export class PfUtil {
     if (arr == null || arr === undefined) {
       return url;
     }
-    if (url.indexOf('?') < 0) {
-      url += '?';
+    if (url.indexOf("?") < 0) {
+      url += "?";
     } else {
       const lc = url[url.length - 1];
-      if (lc !== '?' && lc !== '&') {
-        url += '&';
+      if (lc !== "?" && lc !== "&") {
+        url += "&";
       }
     }
 
     function setParam(sUrl, name, val) {
       if (val instanceof Array) {
         for (const ch of val) {
-          sUrl += name + '=' + encodeURIComponent(ch) + '&';
+          sUrl += name + "=" + encodeURIComponent(ch) + "&";
         }
       } else {
-        sUrl += name + '=' + encodeURIComponent(val) + '&';
+        sUrl += name + "=" + encodeURIComponent(val) + "&";
       }
       return sUrl;
     }
@@ -60,10 +60,10 @@ export class PfUtil {
     function removeSameParam(sUrl, pName) {
       // 移除url中已经存在的同名参数,已考虑 xx[]的情况
       const patt1 = new RegExp(
-        '([&?]{1})' + pName + '[\\[\\]]{0,2}=[^&]*[&]{0,1}',
-        'g'
+        "([&?]{1})" + pName + "[\\[\\]]{0,2}=[^&]*[&]{0,1}",
+        "g"
       );
-      return sUrl.replace(patt1, '$1');
+      return sUrl.replace(patt1, "$1");
     }
 
     // 到这里url格式为 xx? 或者 xx?xx&
@@ -89,7 +89,7 @@ export class PfUtil {
         }
       }
     }
-    if (url[url.length - 1] === '&') {
+    if (url[url.length - 1] === "&") {
       url = url.substr(0, url.length - 1);
     }
     return url;
@@ -103,21 +103,21 @@ export class PfUtil {
    * fullPath
    */
   splitPath(fullPath: string): string[] {
-    fullPath = fullPath.replace('\\\\', '/');
-    if (fullPath.length > 0 && fullPath.charAt(0) == '/') {
+    fullPath = fullPath.replace("\\\\", "/");
+    if (fullPath.length > 0 && fullPath.charAt(0) == "/") {
       fullPath = fullPath.substring(1);
     }
-    const r: string[] = ['', '', ''];
-    const postIdx: number = fullPath.lastIndexOf('.');
-    const pathEndIdx: number = fullPath.lastIndexOf('/');
-    const postfix: string = postIdx > -1 ? fullPath.substring(postIdx) : ''; // 后缀,带.
+    const r: string[] = ["", "", ""];
+    const postIdx: number = fullPath.lastIndexOf(".");
+    const pathEndIdx: number = fullPath.lastIndexOf("/");
+    const postfix: string = postIdx > -1 ? fullPath.substring(postIdx) : ""; // 后缀,带.
     const path: string =
-      pathEndIdx > -1 ? fullPath.substring(0, pathEndIdx) : '';
+      pathEndIdx > -1 ? fullPath.substring(0, pathEndIdx) : "";
     let fileName: string = fullPath.substring(
       path.length,
       fullPath.length - postfix.length
     );
-    if (fileName.charAt(0) === '/') {
+    if (fileName.charAt(0) === "/") {
       // 当pathEndIdx是-1时,
       fileName = fileName.substring(1);
     }
@@ -135,7 +135,7 @@ export class PfUtil {
    */
   padZeroLeft(num: number, n: number) {
     return (
-      Array(n > ('' + num).length ? n - ('' + num).length + 1 : 0).join('0') +
+      Array(n > ("" + num).length ? n - ("" + num).length + 1 : 0).join("0") +
       num
     );
   }
@@ -180,7 +180,7 @@ export class PfUtil {
     if (dom == null) {
       return null;
     }
-    if (dom.style.position === 'relative') {
+    if (dom.style.position === "relative") {
       return dom;
     }
     if (dom.parentElement != null) {
@@ -255,7 +255,7 @@ export class PfUtil {
     //const targetElement = document.querySelector(selector);
     //const targetElement = selector.querySelector(selector);
     if (document.createEvent) {
-      const event = ownerDocument.createEvent('HTMLEvents');
+      const event = ownerDocument.createEvent("HTMLEvents");
       event.initEvent(eventName, true, false);
       targetElement.dispatchEvent(event);
     } else if (ownerDocument.createEventObject) {
@@ -284,24 +284,24 @@ export class PfUtil {
     if (dom === null || dom === undefined) {
       return false;
     }
-    if (typeof dom.className === 'string') {
+    if (typeof dom.className === "string") {
       return dom.className.indexOf(cls) > -1;
     }
-    if ('path' === dom.tagName) {
+    if ("path" === dom.tagName) {
       //path元素的className是SVGAnimatedString类型,内部有animVal和baseVal属性--benjamin todo
       return false;
     }
     return false;
   }
   public static newHashId(): string {
-    return PfUtil.replaceAll(Guid.create().toString(), '-', '');
+    return PfUtil.replaceAll(Guid.create().toString(), "-", "");
   }
   public static likeText(columnName: string, text: string) {
     if (text === null || text === undefined) {
-      text = '';
+      text = "";
     }
     if (text === null || text === undefined) {
-      columnName = '';
+      columnName = "";
     }
     return (
       columnName.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) > -1
@@ -311,7 +311,7 @@ export class PfUtil {
     return field instanceof Array;
   }
   public isObject(field): boolean {
-    return typeof field === 'object';
+    return typeof field === "object";
   }
   public arrayLastIndex<T>(
     list: Array<T>,
@@ -369,7 +369,7 @@ export class PfUtil {
    */
   public isNull(obj): boolean {
     const me = this;
-    if (obj === null || obj === undefined) {
+    if (obj === null || obj === undefined || "null" === obj) {
       return true;
     }
     return false;
@@ -388,7 +388,7 @@ export class PfUtil {
     if (me.isObject(obj) && me.isObjectEmpty(obj)) {
       return true;
     }
-    if (typeof obj === 'string' && '' === obj) {
+    if (typeof obj === "string" && "" === obj) {
       return true;
     }
     return false;
@@ -480,6 +480,51 @@ export class PfUtil {
     }
     return false;
   }
+
+  /**
+   * 格式化时间显示方式
+   * 用法:format="yyyy-MM-dd HH:mm:ss";
+   */
+  public formatTime = function (v, formatIn: string) {
+    if (!v) return "";
+    var d = v;
+    let format = formatIn.substring(0, formatIn.length); //为了不改变formatIn的引用
+    if (typeof v === "string") {
+      if (v.indexOf("/Date(") > -1)
+        d = new Date(parseInt(v.replace("/Date(", "").replace(")/", ""), 10));
+      else
+        d = new Date(
+          Date.parse(v.replace(/-/g, "/").replace("T", " ").split(".")[0])
+        ); //.split(".")[0] 用来处理出现毫秒的情况，截取掉.xxx，否则会出错
+    }
+    var o = {
+      "M+": d.getMonth() + 1, //month
+      "d+": d.getDate(), //day
+      "h+": d.getHours(), //hour
+      "H+": d.getHours(), //hour
+      "m+": d.getMinutes(), //minute
+      "s+": d.getSeconds(), //second
+      "q+": Math.floor((d.getMonth() + 3) / 3), //quarter
+      S: d.getMilliseconds(), //millisecond
+    };
+    if (/(y+)/.test(format)) {
+      format = format.replace(
+        RegExp.$1,
+        (d.getFullYear() + "").substr(4 - RegExp.$1.length)
+      );
+    }
+    for (var k in o) {
+      if (new RegExp("(" + k + ")").test(format)) {
+        format = format.replace(
+          RegExp.$1,
+          RegExp.$1.length == 1
+            ? o[k]
+            : ("00" + o[k]).substr(("" + o[k]).length)
+        );
+      }
+    }
+    return format;
+  };
   public resetForm(
     form: FormGroup,
     value?: any,
@@ -502,18 +547,18 @@ export class PfUtil {
     const me = this;
     const message = (validator: ValidationErrors, key: string): string => {
       switch (key) {
-        case 'required':
-          return '必填';
-        case 'pattern':
-          return '值不匹配正则';
-        case 'minlength':
-          return '最少' + validator[key]['requiredLength'] + '个字符';
-        case 'maxlength':
-          return '最多' + validator[key]['requiredLength'] + '个字符';
+        case "required":
+          return "必填";
+        case "pattern":
+          return "值不匹配正则";
+        case "minlength":
+          return "最少" + validator[key]["requiredLength"] + "个字符";
+        case "maxlength":
+          return "最多" + validator[key]["requiredLength"] + "个字符";
       }
 
       switch (typeof validator[key]) {
-        case 'string':
+        case "string":
           return <string>validator[key];
         default:
           return `验证失败: ${key}`;
@@ -521,11 +566,11 @@ export class PfUtil {
     };
     const r = Object.keys(error)
       .map((k) => message(error, k))
-      .filter((a) => '' !== a);
+      .filter((a) => "" !== a);
     if (!me.isListEmpty(r)) {
       return r[0];
     }
-    return '';
+    return "";
   }
 
   //var pfIFrameMessageHandlers = {};
@@ -563,7 +608,7 @@ export class PfUtil {
 
   public scrossMessageListen(win) {
     const me = this;
-    win.addEventListener('message', function (event) {
+    win.addEventListener("message", function (event) {
       //alert("message appear");
       for (var dataName in me.pfIFrameMessageHandlers) {
         if (
@@ -572,11 +617,11 @@ export class PfUtil {
         ) {
           event.source.postMessage(
             {
-              ['response_' + dataName]: me.pfIFrameMessageHandlers[dataName](
+              ["response_" + dataName]: me.pfIFrameMessageHandlers[dataName](
                 event.data[dataName]
               ),
             },
-            '*'
+            "*"
           );
         }
       }
@@ -585,12 +630,12 @@ export class PfUtil {
 
   public getMessageFromWindow(win, dataName, dataValue, callback) {
     const me = this;
-    var responseDataName = 'response_' + dataName;
+    var responseDataName = "response_" + dataName;
     me.addIFrameMessageListener(responseDataName, function (data) {
       callback(data);
       me.removeIFrameMessageListener(responseDataName);
     });
-    win.postMessage({ [dataName]: dataValue }, '*');
+    win.postMessage({ [dataName]: dataValue }, "*");
   }
 
   // public static getLocalizedText(...strings: string[]) {

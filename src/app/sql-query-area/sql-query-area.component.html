@@ -51,13 +51,7 @@
     </div>
   </step-row>
 
-  <!--<div *ngIf="hasJoin">关联</div>
-   <join-step
-    *ngIf="hasJoin"
-    [sourceTableId]="tableId"
-    [tableList]="tableList"
-    [fieldList]="fieldList"
-  ></join-step> -->
+
 
   <ng-container *ngFor="
       let item of query.joins;
@@ -79,9 +73,9 @@
         class="NotebookCell"
         style="background-color: rgba(80, 158, 227, 0.1); width: 100%"
       > -->
-      <join-step [databaseId]="databaseId" [color]="cellColor.join" [query]="query" [join]="item"
-        [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList" (tableIdChange)="onJoinTableIdChange()"
-        (joinFieldChange)="onJoinFieldChange()"></join-step>
+      <join-step [databaseId]="databaseId" [color]="cellColor.join" [query]="query" [queryClass]="queryClass"
+        [join]="item" [sourceOutFieldList]="sourceOutFieldList" [selectColumnList]="selectColumnList"
+        (tableIdChange)="onJoinTableIdChange()" (joinFieldChange)="onJoinFieldChange()"></join-step>
       <!-- </div> -->
     </step-row>
   </ng-container>
@@ -90,8 +84,12 @@
   <step-row *ngIf="rowVisible['filter']" [title]="'过滤器'" [color]="cellColor['filter']"
     (delete)="query.filter = []; rowVisible['filter'] = false">
     <div class="NotebookCell" style="width: 100%" [style.backgroundColor]="getBackColor('filter')">
-      <filter-step [query]="query" [filter]="query.filter" [isFirstFloor]="true" [fieldList]="fieldList"
-        [sourceOutFieldList]="sourceOutFieldList" (filterChange)="onFilterChange($event)"></filter-step>
+      <!-- <filter-step [query]="query" [filter]="query.filter" [isFirstFloor]="true" [fieldList]="fieldList"
+        [sourceOutFieldList]="sourceOutFieldList" [otherDataModelFieldList]="otherDataModelFieldList"
+        [selectColumnList]="selectColumnList" (filterChange)="onFilterChange($event)"></filter-step> -->
+      <filter-step [query]="query" [filter]="query.filter" [isFirstFloor]="true"
+        [sourceOutFieldList]="sourceOutFieldList" [selectColumnList]="selectColumnList"
+        (filterChange)="onFilterChange($event)"></filter-step>
     </div>
   </step-row>
 
@@ -106,13 +104,15 @@
       updateBtnAllowStatus()
     ">
     <aggregation-step [databaseId]="databaseId" [query]="query" [queryClass]="queryClass" [fieldList]="fieldList"
-      [sourceOutFieldList]="sourceOutFieldList" [color]="cellColor.aggregation" style="width: 70%"
-      (breakoutChange)="onBreakoutChange($event)"></aggregation-step>
+      [sourceOutFieldList]="sourceOutFieldList" [selectColumnList]="selectColumnList" [color]="cellColor.aggregation"
+      style="width: 70%" (breakoutChange)="onBreakoutChange($event)"></aggregation-step>
   </step-row>
 
   <step-row *ngIf="rowVisible['order']" [title]="'排序'" [color]="cellColor.order"
     (delete)="query['order-by'] = []; rowVisible['order'] = false">
-    <order-step [query]="query" [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList"
+    <!-- <order-step [query]="query" [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList"
+      [color]="cellColor.order" style="width: 70%"></order-step> -->
+    <order-step [query]="query" [sourceOutFieldList]="sourceOutFieldList" [selectColumnList]="selectColumnList"
       [color]="cellColor.order" style="width: 70%"></order-step>
   </step-row>
 
@@ -132,10 +132,7 @@
     </limit-step>
   </step-row>
 
-  <!-- <div>
-    <filter-step *ngIf="hasFilter" [testCnt]="1"></filter-step>
-    <filter-step *ngIf="hasFilter" [filter]="filter"></filter-step>
-  </div> -->
+
   <div style="" class="btnRow">
     <!-- <nz-space [nzSize]=""> -->
     <!--这-->

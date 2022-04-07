@@ -45,6 +45,9 @@ export type Field = {
 
   values?: FieldValues;
   dimensions?: FieldDimension;
+
+  //benjamin 20220331
+  isLiteralField: boolean;
 };
 
 export type RawFieldValue = Value;

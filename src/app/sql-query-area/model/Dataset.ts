@@ -3,7 +3,7 @@
 //import type { ISO8601Time } from ".";
 import type { FieldId } from "./Field";
 import type { DatasetQuery } from "./Card";
-import type { DatetimeUnit, FieldLiteral, Field } from "./Query";
+import type { DatetimeUnit, FieldLiteral, QField } from "./Query";
 
 export type ColumnName = string;
 
@@ -26,7 +26,7 @@ export type Column = {
   fk_field_id?: FieldId;
   expression_name?: any;
   settings?: ColumnSettings;
-  field_ref?: Field;
+  field_ref?: QField;
 };
 
 export type Value =

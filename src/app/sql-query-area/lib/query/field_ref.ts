@@ -1,52 +1,52 @@
 // import _ from "underscore";
-import { PfUnderscore as _ } from '../pf_underscore';
+import { PfUnderscore as _ } from "../pf_underscore";
 
-import { FieldId } from '../../model/Field';
-import { Field as FieldReference } from '../../model/Query';
+import { FieldId } from "../../model/Field";
+import { QField as FieldReference } from "../../model/Query";
 
-import FieldClass from '../../metabase-lib/lib/metadata/FieldClass';
-import * as Table from './table';
+import FieldClass from "../../metabase-lib/lib/metadata/FieldClass";
+import * as Table from "./table";
 
-import { getFilterOperators } from '../schema_metadata';
-import { TYPE } from '../types';
+import { getFilterOperators } from "../schema_metadata";
+import { TYPE } from "../types";
 //import { createLookupByProperty } from "metabase/lib/table";
-import { createLookupByProperty } from '../table';
+import { createLookupByProperty } from "../table";
 
 // DEPRECATED
 export function isRegularField(field: FieldReference): boolean {
-  return typeof field === 'number';
+  return typeof field === "number";
 }
 
 export function isLocalField(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'field-id';
+  return Array.isArray(field) && field[0] === "field-id";
 }
 
 export function isForeignKeyField(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'fk->';
+  return Array.isArray(field) && field[0] === "fk->";
 }
 
 export function isDatetimeField(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'datetime-field';
+  return Array.isArray(field) && field[0] === "datetime-field";
 }
 
 export function isBinningStrategy(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'binning-strategy';
+  return Array.isArray(field) && field[0] === "binning-strategy";
 }
 
 export function isFieldLiteral(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'field-literal';
+  return Array.isArray(field) && field[0] === "field-literal";
 }
 
 export function isExpressionField(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'expression';
+  return Array.isArray(field) && field[0] === "expression";
 }
 
 export function isAggregateField(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'aggregation';
+  return Array.isArray(field) && field[0] === "aggregation";
 }
 
 export function isJoinedField(field: FieldReference): boolean {
-  return Array.isArray(field) && field[0] === 'joined-field';
+  return Array.isArray(field) && field[0] === "joined-field";
 }
 
 export function isValidField(field): boolean {
@@ -61,12 +61,12 @@ export function isValidField(field): boolean {
     (isDatetimeField(field) &&
       isValidField(field[1]) &&
       (field.length === 4
-        ? field[2] === 'as' && typeof field[3] === 'string' // deprecated
-        : typeof field[2] === 'string')) ||
-    (isExpressionField(field) && typeof field[1] === 'string') ||
-    (isAggregateField(field) && typeof field[1] === 'number') ||
+        ? field[2] === "as" && typeof field[3] === "string" // deprecated
+        : typeof field[2] === "string")) ||
+    (isExpressionField(field) && typeof field[1] === "string") ||
+    (isAggregateField(field) && typeof field[1] === "number") ||
     (isJoinedField(field) &&
-      typeof field[1] === 'string' &&
+      typeof field[1] === "string" &&
       isValidField(field[2])) ||
     isFieldLiteral(field)
   );
@@ -100,7 +100,7 @@ export function getFieldTargetId(field: FieldReference): FieldId {
   } else if (isFieldLiteral(field)) {
     return field as any;
   }
-  console.warn('Unknown field type: ', field);
+  console.warn("Unknown field type: ", field);
 }
 
 // // gets the table and field definitions from from a raw, fk->, or datetime-field field
@@ -139,7 +139,7 @@ export function getFieldTarget(field, tableDef, path = []) {
       preview_display: true,
       special_type: null,
       target: null,
-      visibility_type: 'normal',
+      visibility_type: "normal",
     });
     fieldDef.filter_operators = getFilterOperators(
       fieldDef,
@@ -149,7 +149,7 @@ export function getFieldTarget(field, tableDef, path = []) {
     fieldDef.filter_operators_lookup = createLookupByProperty(
       //可能要接现在的api--benjamin todo
       fieldDef.filter_operators,
-      'name'
+      "name"
     );
 
     return {
@@ -161,7 +161,7 @@ export function getFieldTarget(field, tableDef, path = []) {
     return { table: tableDef, field: Table.getField(tableDef, field), path }; // just pretend it's a normal field
   }
 
-  console.warn('Unknown field type: ', field);
+  console.warn("Unknown field type: ", field);
 }
 
 export function getDatetimeUnit(field) {

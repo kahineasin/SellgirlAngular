@@ -127,76 +127,22 @@
     </li>
   </ul>
 
-  <!-- <ul *ngIf="'field' === aggregationStep" nz-menu nzMode="inline">
-    <li class="popupsBackTitle">
-      <a (click)="aggregationStep = 'type'" style=""><i nz-icon nzType="left" nzTheme="outline"></i>{{
-        getAggregationTypeName() }}</a>
-    </li>
-    <ng-container *ngFor="
-        let item of sourceOutFieldList;
-        index as index;
-        first as first;
-        last as last;
-        odd as odd;
-        even as even
-      ">
-      <li *ngIf="!hasAggregation(item)" nz-menu-item (click)="
-          saveAggregationBySourceOut(item); selectAggregationPopups.close()
-        ">
-        {{ item[1] }}
-      </li>
-    </ng-container>
-    <li *ngFor="
-        let item of fieldList;
-        index as index;
-        first as first;
-        last as last;
-        odd as odd;
-        even as even
-      " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
-      [nzOpen]="0 === index" [(nzOpen)]="item.key.isMenuOpened" (nzOpenChange)="openTableMenuHandler(item.key)">
-      <ul>
-        <li>
-          <nz-input-group [nzSuffix]="suffixIconSearch">
-            <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
-          </nz-input-group>
-          <ng-template #suffixIconSearch>
-            <i nz-icon nzType="search"></i>
-          </ng-template>
-        </li>
-        <ng-container *ngFor="
-            let item2 of item.value;
-            index2 as index;
-            first2 as first;
-            last2 as last;
-            odd2 as odd;
-            even2 as even
-          ">
-          <li *ngIf="
-              likeText(item2.ColumnName, searchBox.value) &&
-              !isExistInAggregation(item2, item.key)
-            " nz-menu-item (click)="
-              saveAggregation(item2, item.key); selectAggregationPopups.close()
-            ">
-            <i nz-icon class="fieldLiIcon ">
-              <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
-            </i>
-            {{ item2.ColumnName }}
-          </li>
-        </ng-container>
-      </ul>
-    </li>
-  </ul> -->
 
   <p *ngIf="'field' === aggregationStep" class="popupsBackTitle">
     <a (click)="aggregationStep = 'type'" style="">
       <i nz-icon nzType="left" nzTheme="outline"></i>{{
       getAggregationTypeName() }}</a>
   </p>
-  <sql-select-column-ul *ngIf="'field' === aggregationStep" [sourceOutFieldList]="sourceOutFieldList"
+  <!-- <sql-select-column-ul *ngIf="'field' === aggregationStep" [sourceOutFieldList]="sourceOutFieldList"
     [fieldList]="fieldList" (selectSourceOutField)="saveAggregationBySourceOut($event); selectAggregationPopups.close()"
     (selectField)="saveAggregation($event.field, $event.table); selectAggregationPopups.close()"
-    [sourceOutFieldFilter]="aggregationSourceOutFieldFilter" [fieldFilter]="aggregationFieldFilter">
+    [sourceOutFieldFilter]="aggregationSourceOutFieldFilter" [fieldFilter]="aggregationFieldFilter" [color]="color">
+  </sql-select-column-ul> -->
+
+  <sql-select-column-ul *ngIf="'field' === aggregationStep" [sourceOutFieldList]="sourceOutFieldList"
+    [selectColumnList]="selectColumnList"
+    (selectColumnModel)="saveAggregationBySelectColumnModel($event.field,$event.table); selectAggregationPopups.close()"
+    [selectColumnFilter]="aggregationSelectColumnFilter" [color]="color">
   </sql-select-column-ul>
 
   <ul *ngIf="'custom' === aggregationStep" style="width:500px" [formGroup]="addingCustomForm">
@@ -245,65 +191,21 @@
 </pf-dropdown-popups>
 
 <pf-dropdown-popups #selectBreakoutPopups>
-  <!-- <p *ngIf="'field' === addStep">选择表字段</p> -->
-  <!-- <ul nz-menu nzMode="inline">
-    <ng-container *ngFor="
-        let item of sourceOutFieldList;
-        index as index;
-        first as first;
-        last as last;
-        odd as odd;
-        even as even
-      ">
-      <li *ngIf="!hasBreakout(item)" nz-menu-item (click)="saveBreakoutBySourceOut(item); selectBreakoutPopups.close()">
-        {{ item[1] }}
-      </li>
-    </ng-container>
-    <li *ngFor="
-        let item of fieldList;
-        index as index;
-        first as first;
-        last as last;
-        odd as odd;
-        even as even
-      " nz-submenu [nzTitle]="item.key.TableIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
-      [nzOpen]="0 === index" [(nzOpen)]="item.key.isMenuOpened" (nzOpenChange)="openTableMenuHandler(item.key)">
-      <ul>
-        <li>
-          <nz-input-group [nzSuffix]="suffixIconSearch">
-            <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
-          </nz-input-group>
-          <ng-template #suffixIconSearch>
-            <i nz-icon nzType="search"></i>
-          </ng-template>
-        </li>
-        <ng-container *ngFor="
-            let item2 of item.value;
-            index2 as index;
-            first2 as first;
-            last2 as last;
-            odd2 as odd;
-            even2 as even
-          ">
-          <li *ngIf="
-              likeText(item2.ColumnName, searchBox.value) &&
-              !isExistInBreakout(item2, item.key)
-            " nz-menu-item (click)="
-              saveBreakout(item2, item.key); selectBreakoutPopups.close()
-            ">
-            <i nz-icon class="fieldLiIcon ">
-              <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
-            </i>
-            {{ item2.ColumnName }}
-          </li>
-        </ng-container>
-      </ul>
-    </li>
-  </ul> -->
-  <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
+
+  <!-- <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
     (selectSourceOutField)="saveBreakoutBySourceOut($event); selectBreakoutPopups.close()"
     (selectField)="saveBreakout($event.field, $event.table); selectBreakoutPopups.close()"
-    [sourceOutFieldFilter]="breakoutSourceOutFieldFilter" [fieldFilter]="breakoutFieldFilter">
+    [sourceOutFieldFilter]="breakoutSourceOutFieldFilter" [fieldFilter]="breakoutFieldFilter" [showFormatter]="true">
+  </sql-select-column-ul> -->
+
+  <!-- <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
+    (selectFieldModel)="saveBreakoutByFieldModel($event); selectBreakoutPopups.close()"
+    [sourceOutFieldFilter]="breakoutSourceOutFieldFilter" [fieldFilter]="breakoutFieldFilter" [showFormatter]="true"
+    [color]="color">
+  </sql-select-column-ul> -->
+  <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [selectColumnList]="selectColumnList"
+    (selectColumnModel)="saveBreakoutBySelectColumnModel($event); selectBreakoutPopups.close()"
+    [selectColumnFilter]="breakoutSelectColumnFilter" [showFormatter]="true" [color]="color">
   </sql-select-column-ul>
 </pf-dropdown-popups>
 

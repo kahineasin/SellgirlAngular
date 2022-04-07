@@ -1,11 +1,11 @@
 /* 此文件是从metabase上改造的,此文件的目的应该是要把filter等的数组结构定义成type */
 /* @flow */
 
-import type { TableId } from './Table';
-import type { FieldId, BaseType } from './Field';
-import type { SegmentId } from './Segment';
-import type { MetricId } from './Metric';
-import type { ParameterType } from './Parameter';
+import type { TableId } from "./Table";
+import type { FieldId, BaseType } from "./Field";
+import type { SegmentId } from "./Segment";
+import type { MetricId } from "./Metric";
+import type { ParameterType } from "./Parameter";
 //import { DatabaseId } from "./Database";
 
 export type ExpressionName = string;
@@ -22,44 +22,44 @@ export type Value =
   | DatetimeLiteral;
 export type OrderableValue = NumericLiteral | DatetimeLiteral;
 
-export type RelativeDatetimePeriod = 'current' | 'last' | 'next' | number;
+export type RelativeDatetimePeriod = "current" | "last" | "next" | number;
 export type RelativeDatetimeUnit =
-  | 'minute'
-  | 'hour'
-  | 'day'
-  | 'week'
-  | 'month'
-  | 'quarter'
-  | 'year';
+  | "minute"
+  | "hour"
+  | "day"
+  | "week"
+  | "month"
+  | "quarter"
+  | "year";
 export type DatetimeUnit =
-  | 'default'
-  | 'minute'
-  | 'minute-of-hour'
-  | 'hour'
-  | 'hour-of-day'
-  | 'day'
-  | 'day-of-week'
-  | 'day-of-month'
-  | 'day-of-year'
-  | 'week'
-  | 'week-of-year'
-  | 'month'
-  | 'month-of-year'
-  | 'quarter'
-  | 'quarter-of-year'
-  | 'year';
+  | "default"
+  | "minute"
+  | "minute-of-hour"
+  | "hour"
+  | "hour-of-day"
+  | "day"
+  | "day-of-week"
+  | "day-of-month"
+  | "day-of-year"
+  | "week"
+  | "week-of-year"
+  | "month"
+  | "month-of-year"
+  | "quarter"
+  | "quarter-of-year"
+  | "year";
 
 export type TemplateTagId = string;
 export type TemplateTagName = string;
-export type TemplateTagType = 'text' | 'number' | 'date' | 'dimension';
+export type TemplateTagType = "text" | "number" | "date" | "dimension";
 
 export type TemplateTag = {
   id: TemplateTagId;
   name: TemplateTagName;
-  'display-name': string;
+  "display-name": string;
   type: TemplateTagType;
   dimension?: LocalFieldReference;
-  'widget-type'?: ParameterType;
+  "widget-type"?: ParameterType;
   required?: boolean;
   default?: string;
 };
@@ -69,7 +69,7 @@ export type TemplateTags = { [key: string]: TemplateTag }; //这种写法编译�
 //应该是原生sql?
 export type NativeQuery = {
   query: string;
-  'template-tags': TemplateTags;
+  "template-tags": TemplateTags;
 };
 
 export type StructuredQuery = {
@@ -77,13 +77,17 @@ export type StructuredQuery = {
   //  * 还是有数据库id比较方便.但后来觉得,StructuredQuery是嵌套的,多层都是同一个数据库,不应该把此属性加到StructuredQuery
   //  */
   // database?: DatabaseId;
-  'source-table'?: TableId;
-  'source-query'?: StructuredQuery;
+  "source-table"?: TableId;
+  "source-query"?: StructuredQuery;
+  /**
+   * 这属性和metabase有些不一样,metabase是用 "source-table"?: "card__172" 来做的
+   */
+  "source-model"?: number;
   aggregation?: AggregationClause;
   breakout?: BreakoutClause;
   filter?: FilterClause;
   joins?: JoinClause;
-  'order-by'?: OrderByClause;
+  "order-by"?: OrderByClause;
   limit?: LimitClause;
   expressions?: ExpressionClause;
   /**
@@ -113,20 +117,20 @@ export type Aggregation =
   | MetricAgg
   | OptionAgg;
 
-type CountAgg = ['count'];
+type CountAgg = ["count"];
 
-type CountFieldAgg = ['count', ConcreteField];
-type AvgAgg = ['avg', ConcreteField];
-type CumSumAgg = ['cum-sum', ConcreteField];
-type CumCountAgg = ['cum-count']; //企业版有此汇总类型,我补上--benjamin20210924
-type DistinctAgg = ['distinct', ConcreteField];
-type StdDevAgg = ['stddev', ConcreteField];
-type SumAgg = ['sum', ConcreteField];
-type MinAgg = ['min', ConcreteField];
-type MaxAgg = ['max', ConcreteField];
+type CountFieldAgg = ["count", ConcreteField];
+type AvgAgg = ["avg", ConcreteField];
+type CumSumAgg = ["cum-sum", ConcreteField];
+type CumCountAgg = ["cum-count"]; //企业版有此汇总类型,我补上--benjamin20210924
+type DistinctAgg = ["distinct", ConcreteField];
+type StdDevAgg = ["stddev", ConcreteField];
+type SumAgg = ["sum", ConcreteField];
+type MinAgg = ["min", ConcreteField];
+type MaxAgg = ["max", ConcreteField];
 
-type MetricAgg = ['metric', MetricId];
-type OptionAgg = ['aggregation-options', any, any]; //我加的自定义汇总配置--benjamin20210924
+type MetricAgg = ["metric", MetricId];
+type OptionAgg = ["aggregation-options", any, any]; //我加的自定义汇总配置--benjamin20210924
 
 export type BreakoutClause = Array<Breakout>;
 export type Breakout = ConcreteField;
@@ -150,50 +154,50 @@ export type FieldFilter =
 //export type AndFilter = ["and", string, string]; //测试
 
 /**括号子句--benjamin */
-export type BracketClause = ['bracket', AndFilter];
+export type BracketClause = ["bracket", AndFilter];
 /**
  * 把metabase的[and,a,b,c]格式改为[a,and,b,or,c]格式 --benjamin20210910
  */
-export type AndFilterItem = 'and' | 'or' | Filter | BracketClause;
+export type AndFilterItem = "and" | "or" | Filter | BracketClause;
 export type AndFilter = AndFilterItem[]; //测试
 
-export type OrFilter = ['or', Filter, Filter];
+export type OrFilter = ["or", Filter, Filter];
 
-export type NotFilter = ['not', Filter];
+export type NotFilter = ["not", Filter];
 
-export type EqualityFilter = ['=' | '!=', ConcreteField, Value];
+export type EqualityFilter = ["=" | "!=", ConcreteField, Value];
 export type ComparisonFilter = [
-  '<' | '<=' | '>=' | '>',
+  "<" | "<=" | ">=" | ">",
   ConcreteField,
   OrderableValue
 ];
 export type BetweenFilter = [
-  'between',
+  "between",
   ConcreteField,
   OrderableValue,
   OrderableValue
 ];
 export type StringFilter =
   | [
-      'starts-with' | 'contains' | 'does-not-contain' | 'ends-with',
+      "starts-with" | "contains" | "does-not-contain" | "ends-with",
       ConcreteField,
       StringLiteral
     ]
   | [
-      'starts-with' | 'contains' | 'does-not-contain' | 'ends-with',
+      "starts-with" | "contains" | "does-not-contain" | "ends-with",
       ConcreteField,
       StringLiteral,
       StringFilterOptions
     ];
 
 export type StringFilterOptions = {
-  'case-sensitive'?: false;
+  "case-sensitive"?: false;
 };
 
-export type NullFilter = ['is-null', ConcreteField];
-export type NotNullFilter = ['not-null', ConcreteField];
+export type NullFilter = ["is-null", ConcreteField];
+export type NotNullFilter = ["not-null", ConcreteField];
 export type InsideFilter = [
-  'inside',
+  "inside",
   ConcreteField,
   ConcreteField,
   NumericLiteral,
@@ -203,13 +207,13 @@ export type InsideFilter = [
 ];
 export type TimeIntervalFilter =
   | [
-      'time-interval',
+      "time-interval",
       ConcreteField,
       RelativeDatetimePeriod,
       RelativeDatetimeUnit
     ]
   | [
-      'time-interval',
+      "time-interval",
       ConcreteField,
       RelativeDatetimePeriod,
       RelativeDatetimeUnit,
@@ -217,43 +221,43 @@ export type TimeIntervalFilter =
     ];
 
 export type TimeIntervalFilterOptions = {
-  'include-current'?: boolean;
+  "include-current"?: boolean;
 };
 
 export type FilterOptions = StringFilterOptions | TimeIntervalFilterOptions;
 
 // NOTE: currently the backend expects SEGMENT to be uppercase
-export type SegmentFilter = ['segment', SegmentId];
+export type SegmentFilter = ["segment", SegmentId];
 
 export type OrderByClause = Array<OrderBy>;
-export type OrderBy = ['asc' | 'desc', Field];
+export type OrderBy = ["asc" | "desc", QField];
 
 export type JoinStrategy =
-  | 'left-join'
-  | 'right-join'
-  | 'inner-join'
-  | 'full-join';
+  | "left-join"
+  | "right-join"
+  | "inner-join"
+  | "full-join";
 export type JoinAlias = string;
 //export type JoinCondition = Filter;//metabase原版这个类型是有问题的,根本不能给这种值 [=,field-id,joined-field]  --benjamin20210910
-export type JoinOn = ['=', Field, JoinedFieldReference]; //我加的--benjamin20210910
+export type JoinOn = ["=", QField, JoinedFieldReference]; //我加的--benjamin20210910
 
 //为了join可以多条件,前端暂可不考虑括号--benjamin
 export type CompoundJoinOnItem =
-  | 'and'
-  | 'or'
+  | "and"
+  | "or"
   | Filter
   | JoinOn
   | BracketJoinOnClause;
 export type CompoundJoinOn = CompoundJoinOnItem[]; //测试
-export type BracketJoinOnClause = ['bracket', CompoundJoinOn];
+export type BracketJoinOnClause = ["bracket", CompoundJoinOn];
 
 export type JoinCondition = Filter | JoinOn | CompoundJoinOn;
-export type JoinFields = 'all' | 'none' | JoinedFieldReference[];
+export type JoinFields = "all" | "none" | JoinedFieldReference[];
 
 export type JoinClause = Array<Join>;
 export type Join = {
-  'source-table'?: TableId;
-  'source-query'?: StructuredQuery;
+  "source-table"?: TableId;
+  "source-query"?: StructuredQuery;
   condition: JoinCondition;
   alias?: JoinAlias;
   strategy?: JoinStrategy;
@@ -262,7 +266,7 @@ export type Join = {
 
 export type LimitClause = number;
 
-export type Field = ConcreteField | AggregateField;
+export type QField = ConcreteField | AggregateField;
 
 export type ConcreteField =
   | LocalFieldReference
@@ -273,50 +277,50 @@ export type ConcreteField =
   | BinnedField
   | FieldLiteral; //看metabase实际保存的query,breakout应该有field-literal这种格式,是不是这里漏了,先补上--benjamin 20211014
 
-export type LocalFieldReference = ['field-id', FieldId] | FieldId; // @deprecated: use ["field-id", FieldId]
+export type LocalFieldReference = ["field-id", FieldId] | FieldId; // @deprecated: use ["field-id", FieldId]
 
 export type ForeignFieldReference = [
-  'fk->',
-  ['field-id', FieldId],
-  ['field-id', FieldId]
+  "fk->",
+  ["field-id", FieldId],
+  ["field-id", FieldId]
 ];
 
-export type ExpressionReference = ['expression', ExpressionName];
+export type ExpressionReference = ["expression", ExpressionName];
 
 //分析这个应是select嵌套时重命名字段给外层使用的方式--benjamin
-export type FieldLiteral = ['field-literal', string, BaseType]; // ["field-literal", name, base-type]
+export type FieldLiteral = ["field-literal", string, BaseType]; // ["field-literal", name, base-type]
 
-export type JoinedFieldReference = ['joined-field', JoinAlias, ConcreteField];
+export type JoinedFieldReference = ["joined-field", JoinAlias, ConcreteField];
 
 export type DatetimeField =
   | [
-      'datetime-field',
+      "datetime-field",
       LocalFieldReference | ForeignFieldReference,
       DatetimeUnit
     ]
   | [
-      'datetime-field',
+      "datetime-field",
       LocalFieldReference | ForeignFieldReference,
-      'as',
+      "as",
       DatetimeUnit
     ]; // @deprecated: don't include the "as" element
 
 export type BinnedField =
-  | ['binning-strategy', LocalFieldReference | ForeignFieldReference, 'default'] // default binning (as defined by backend)
+  | ["binning-strategy", LocalFieldReference | ForeignFieldReference, "default"] // default binning (as defined by backend)
   | [
-      'binning-strategy',
+      "binning-strategy",
       LocalFieldReference | ForeignFieldReference,
-      'num-bins',
+      "num-bins",
       number
     ] // number of bins
   | [
-      'binning-strategy',
+      "binning-strategy",
       LocalFieldReference | ForeignFieldReference,
-      'bin-width',
+      "bin-width",
       number
     ]; // width of each bin
 
-export type AggregateField = ['aggregation', number];
+export type AggregateField = ["aggregation", number];
 
 export type ExpressionClause = {
   [key: string]: Expression; //ExpressionName
@@ -328,7 +332,7 @@ export type Expression = [
   ExpressionOperand
 ];
 
-export type ExpressionOperator = '+' | '-' | '*' | '/';
+export type ExpressionOperator = "+" | "-" | "*" | "/";
 export type ExpressionOperand = ConcreteField | NumericLiteral | Expression;
 
 export type FieldsClause = ConcreteField[];

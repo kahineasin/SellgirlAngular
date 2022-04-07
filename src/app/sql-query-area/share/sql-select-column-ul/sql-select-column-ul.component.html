@@ -7,12 +7,15 @@
         odd as odd;
         even as even
       ">
-        <li *ngIf="null===sourceOutFieldFilter||sourceOutFieldFilter(item)" nz-menu-item
-            (click)="selectSourceOutField.emit(item)">
+        <!-- <li *ngIf="null===sourceOutFieldFilter||sourceOutFieldFilter(item)" nz-menu-item
+            (click)="selectSourceOutField.emit(item);selectFieldModel.emit({field:item})">
+            {{ item[1] }}
+        </li> -->
+        <li *ngIf="isLiteralFieldMatchSelectColumnFilter(item)" nz-menu-item (click)="onSourceOutFieldSelect(item)">
             {{ item[1] }}
         </li>
     </ng-container>
-    <li *ngFor="
+    <!-- <li *ngFor="
         let item of fieldList;
         index as index;
         first as first;
@@ -41,11 +44,106 @@
                 <li *ngIf="
               likeText(item2.ColumnName, searchBox.value)
               &&(null===fieldFilter||fieldFilter(item2,item.key))
-            " nz-menu-item (click)="selectField.emit({field:item2,table: item.key}) ">
-                    <i nz-icon class="fieldLiIcon ">
-                        <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
-                    </i>
-                    {{ item2.ColumnName }}
+            " nz-menu-item class="select-column-li">
+                    <span class="center"
+                        (click)="selectField.emit({field:item2,table: item.key});onColumnSelect(item2,item.key) ">
+                        <i nz-icon class="fieldLiIcon ">
+                            <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType(item2)"></svg>
+                        </i>
+                        {{ item2.ColumnName }}
+                    </span>
+                    <span class="right">
+                        <ng-container *ngIf="showFormatter&&sqlQueryUtil.isDateTimeColumn(item2)">
+                            <span (click)="dateTimeFormatPopups.open($event.currentTarget)">
+                                分组方式
+                            </span>
+                            <pf-dropdown-popups #dateTimeFormatPopups>
+                                <ul class="pf-select-ul">
+                                    <li *ngFor="let item3 of dateTimeFormatList;index as index; first as first; last as last; odd as odd; even as even;"
+                                        pfHover [hoverStyle]="{ backgroundColor: getFrontColor(), color: 'white' }"
+                                        (click)="selectDateTimeFormat(item2,item.key,item3.key);dateTimeFormatPopups.close()">
+                                        {{item3.value}}
+                                    </li>
+                                </ul>
+                            </pf-dropdown-popups>
+                        </ng-container>
+                    </span>
+                </li>
+            </ng-container>
+        </ul>
+    </li> -->
+
+    <!--新合并from OtherDataModel或From Table两种模式-->
+
+    <li *ngFor="
+        let item of selectColumnList;
+        index as index;
+        first as first;
+        last as last;
+        odd as odd;
+        even as even
+      " nz-submenu [nzTitle]="item.key.displayIdxName" [nzIcon]="item.key.isJoinedTable ? 'pfIcon:LEFT_JOIN' : 'table'"
+        [(nzOpen)]="item.key.isMenuOpened" (nzOpenChange)="openTableMenuHandler(item.key)">
+        <ul>
+            <li>
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </li>
+            <ng-container *ngFor="
+            let item2 of item.value;
+            index2 as index;
+            first2 as first;
+            last2 as last;
+            odd2 as odd;
+            even2 as even
+          ">
+                <!--*ngIf="
+              likeText(item2.name, searchBox.value)
+              &&(null===fieldFilter||fieldFilter(item2,item.key))  //这里要改为新版本--benjamin todo
+            " -->
+                <li *ngIf="
+              likeText(item2.name, searchBox.value)
+              &&(null===selectColumnFilter||selectColumnFilter(item2,item.key))
+            " nz-menu-item class="select-column-li">
+                    <span class="center" (click)="onColumnModelSelect(item2,item.key) ">
+                        <i nz-icon class="fieldLiIcon ">
+                            <svg pfSvgIconPath [svgIconType]="getIconTypeByDataType2(item2)"></svg>
+                        </i>
+                        {{ item2.name }}
+                    </span>
+                    <span class="right">
+                        <ng-container
+                            *ngIf="showFormatter&&(!item2.isLiteralField)&&sqlQueryUtil.isDateTimeColumn2(item2)">
+                            <span (click)="dateTimeFormatPopups.open($event.currentTarget)">
+                                分组方式
+                            </span>
+                            <pf-dropdown-popups #dateTimeFormatPopups>
+                                <ul class="pf-select-ul">
+                                    <li *ngFor="let item3 of dateTimeFormatList;index as index; first as first; last as last; odd as odd; even as even;"
+                                        pfHover [hoverStyle]="{ backgroundColor: getFrontColor(), color: 'white' }"
+                                        (click)="selectDateTimeFormat3(item2,item.key,item3.key);dateTimeFormatPopups.close()">
+                                        {{item3.value}}
+                                    </li>
+                                </ul>
+                                <!-- <pf-select-ul>
+                                        <li *ngFor="let item of dateTimeFormatList;index as index; first as first; last as last; odd as odd; even as even;"
+                                            (click)="selectDateTimeFormat(item.key)">
+                                            {{item.value}}
+                                        </li>
+                                    </pf-select-ul> -->
+                                <!-- <ul nz-menu nzMode="inline">
+                                    <li *ngFor="let item of dateTimeFormatList;index as index; first as first; last as last; odd as odd; even as even;"
+                                        nz-menu-item (click)="selectDateTimeFormat(item.key)">
+                                        {{item.value}}
+                                    </li>
+                                </ul> -->
+                            </pf-dropdown-popups>
+                        </ng-container>
+                    </span>
                 </li>
             </ng-container>
         </ul>

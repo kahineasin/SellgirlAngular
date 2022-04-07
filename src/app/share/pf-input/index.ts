@@ -6,6 +6,8 @@ import { PfDropdownPopupsModule } from "../pf-dropdown-popups";
 import { IconDefinition } from "@ant-design/icons-angular";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { DownOutline } from "@ant-design/icons-angular/icons";
+import { PfInputComponent } from "./pf-input.component";
+import { NzToolTipModule } from "ng-zorro-antd/tooltip";
 //import { PfInputComponent } from "./pf-input.component";
 //import { PfInputTest1Component } from "./pf-input-test1/pf-input-test1.component";
 //import { PfSelectModule } from "../pf-select";
@@ -20,11 +22,12 @@ const icons: IconDefinition[] = [DownOutline];
     // QuartzCronModule,
     // UnixCronModule,
     PfDropdownPopupsModule,
+    NzToolTipModule,
     // PfSelectModule,
     NzIconModule.forRoot(icons),
   ],
-  // declarations: [PfInputComponent],
-  // exports: [PfInputComponent],
+  declarations: [PfInputComponent],
+  exports: [PfInputComponent],
   // declarations: [PfInputTest1Component],
   // exports: [PfInputTest1Component],
 })

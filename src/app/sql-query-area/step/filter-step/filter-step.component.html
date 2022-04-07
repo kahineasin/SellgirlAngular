@@ -1,4 +1,5 @@
 <ng-template [ngIf]="!pfUtil.isListEmpty(filter)">
+  <!-- <p>{{datetimeFormat}}</p> -->
   <ng-template [ngIf]="
       (filter.length > 1 && (filter[1] === 'or' || filter[1] === 'and')) ||
       isArray(filter[0])
@@ -53,8 +54,9 @@
             </li>
           </ul>
         </nz-dropdown-menu>
-        <filter-step class="filter-step-node" *ngIf="even" [query]="query" [filter]="item" [fieldList]="fieldList"
-          [sourceOutFieldList]="sourceOutFieldList" (deleteStep)="onDelete(filter, index, first)"></filter-step>
+        <filter-step class="filter-step-node" *ngIf="even" [query]="query" [filter]="item" [filterParent]="filter"
+          [filterIdx]="index" [fieldList]="fieldList" [sourceOutFieldList]="sourceOutFieldList"
+          [selectColumnList]="selectColumnList" (deleteStep)="onDelete(filter, index, first)"></filter-step>
       </ng-container>
 
       <!-- <div
@@ -107,7 +109,7 @@
   </ng-template>
 
   <!-- <p>------------------{{ filter[0] }}-----------------</p> -->
-  <ng-template [ngIf]="xxxx()">
+  <ng-template [ngIf]="is2OperationMark()">
     <!-- <ng-template [ngIf]="'=' == filter[0]"> -->
     <!-- <p>dddddddd</p> -->
     <div class="NotebookCellItem" (click)="
@@ -142,32 +144,30 @@
       <ng-container *ngTemplateOutlet="deleteTpl"></ng-container>
     </div>
   </ng-template>
+  <ng-template [ngIf]="filter[0] == 'time-interval'">
+    <div class="NotebookCellItem" (click)="
+    initEditingParam(filter); addFilterPopups.open($event.currentTarget)
+  ">
+      <ng-container *ngTemplateOutlet="fieldTpl; context: { field: filter[1] }"></ng-container>
+      <span>&nbsp;当{{ getDatetimeCompare2Name('current',filter[3]) }}&nbsp;</span>
+      <!-- <ng-container *ngTemplateOutlet="fieldTpl; context: { field: filter[3] }"></ng-container> -->
+      <!-- <span>{{ getDatetimeCompare2Name('current',filter[3]) }}</span> -->
+      <ng-container *ngTemplateOutlet="deleteTpl"></ng-container>
+    </div>
+  </ng-template>
 
   <ng-template [ngIf]="filter[0] == 'bracket'">
     <div class="NotebookCell">
       <span>&nbsp;(&nbsp;</span>
-      <filter-step class="filter-step-node" [query]="query" [filter]="filter[1]" [fieldList]="fieldList"
-        [sourceOutFieldList]="sourceOutFieldList" (deleteStep)="deleteStep.emit()"></filter-step>
+      <filter-step class="filter-step-node" [query]="query" [filter]="filter[1]"
+        [sourceOutFieldList]="sourceOutFieldList" [selectColumnList]="selectColumnList"
+        (deleteStep)="deleteStep.emit()"></filter-step>
       <span>&nbsp;)&nbsp;</span>
     </div>
   </ng-template>
 </ng-template>
 
-<!-- <ng-template [ngIf]="filter.length <= 0 && isFirstFloor">
-  <div class="NotebookCell" style="line-height: 50px">
-    <div
-      class="NotebookCellItem"
-      nz-dropdown
-      [nzPlacement]="'topLeft'"
-      nzTrigger="click"
-      [nzDropdownMenu]="addCompareMenu"
-      [nzClickHide]="false"
-      (nzVisibleChange)="onAdd($event, addFilterPopups)"
-    >
-      <p style="display: inline">添加筛选条件来缩小你的答案范围</p>
-    </div>
-  </div>
-</ng-template> -->
+
 <ng-template [ngIf]="pfUtil.isListEmpty(filter) && isFirstFloor">
   <div class="NotebookCell" style="line-height: 50px">
     <div class="NotebookCellItem" (click)="initAddingParam(); onAdd($event, addFilterPopups)">
@@ -298,31 +298,90 @@
   </li>
   </ul>-->
 
-  <sql-select-column-ul *ngIf="'field' === addStep" [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
-    (selectSourceOutField)="selectColumnBySourceOut($event)" (selectField)="selectColumn($event.field, $event.table)">
+  <!-- <sql-select-column-ul *ngIf="'field' === addStep" [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
+    [otherDataModelFieldList]="otherDataModelFieldList" [selectColumnList]="selectColumnList"
+    (selectSourceOutField)="selectColumnBySourceOut($event)" (selectField)="selectColumn($event.field, $event.table)"
+    (selectFieldModel)="selectColumnModel($event.field, $event.table)">
+  </sql-select-column-ul> -->
+  <!-- <sql-select-column-ul *ngIf="'field' === addStep" [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
+    [otherDataModelFieldList]="otherDataModelFieldList" [selectColumnList]="selectColumnList"
+    (selectSourceOutField)="selectColumnBySourceOut($event)"
+    (selectColumnModel)="selectColumnModel($event.field,$event.table)">
+  </sql-select-column-ul> -->
+  <sql-select-column-ul *ngIf="'field' === addStep" [sourceOutFieldList]="sourceOutFieldList"
+    [selectColumnList]="selectColumnList" (selectColumnModel)="selectColumnModel($event.field,$event.table)">
   </sql-select-column-ul>
   <div *ngIf="'compare' === addStep">
-    <ul>
-      <li class="popupsBackTitle">
-        <a (click)="addStep = 'field'"><i nz-icon nzType="left" nzTheme="outline"></i>
-          <a *ngIf="!isAnyNull2(addingSourceOutField)">
-            {{ addingSourceOutField[1] }}
+    <ng-container *ngIf="!isDateField()">
+      <ul>
+        <li class="popupsBackTitle">
+          <a (click)="addStep = 'field'"><i nz-icon nzType="left" nzTheme="outline"></i>
+            <!-- <a *ngIf="!isAnyNull2(addingSourceOutField)">
+              {{ addingSourceOutField[1] }}
+            </a>
+            <a *ngIf="isAnyNull2(addingSourceOutField)">{{ getTableName() }}
+            </a> -->
+            <a>{{ getTableName() }}
+            </a>
           </a>
-          <a *ngIf="isAnyNull2(addingSourceOutField)">{{ getTableName() }}
+          <pf-select [(ngModel)]="compare" [list]="compareList" [disabled]="false" style="width: 80px">
+          </pf-select>
+        </li>
+        <li>
+          <input nz-input placeholder="输入过滤值" #filterValueTBox [(ngModel)]="compareValue" />
+        </li>
+        <li>
+          <!-- <button nz-button nzType="default" (click)="saveFilter(filterValueTBox.value); addFilterPopups.close()">
+            {{ isAdd ? "添加过滤器" : "修改过滤器" }}
+          </button> -->
+          <button nz-button nzType="default" (click)="saveFilter(); addFilterPopups.close()">
+            {{ isAdd ? "添加过滤器" : "修改过滤器" }}
+          </button>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-container *ngIf="isDateField()">
+      <ul>
+        <li class="popupsBackTitle">
+          <a (click)="addStep = 'field'"><i nz-icon nzType="left" nzTheme="outline"></i>
+            <!-- <a *ngIf="!isAnyNull2(addingSourceOutField)">
+              {{ addingSourceOutField[1] }}
+            </a>
+            <a *ngIf="isAnyNull2(addingSourceOutField)">{{ getTableName() }}
+            </a> -->
+            <a>{{ getTableName() }}
+            </a>
           </a>
-        </a>
-        <pf-select [(ngModel)]="compare" [list]="compareList" [disabled]="false" style="width: 80px">
-        </pf-select>
-      </li>
-      <li>
-        <input nz-input placeholder="输入过滤值" #filterValueTBox [(ngModel)]="compareValue" />
-      </li>
-      <li>
-        <button nz-button nzType="default" (click)="saveFilter(filterValueTBox.value); addFilterPopups.close()">
-          {{ isAdd ? "添加过滤器" : "修改过滤器" }}
-        </button>
-      </li>
-    </ul>
+          <!-- <pf-select [(ngModel)]="compare" [list]="compareList" [disabled]="false" style="width: 80px">
+          </pf-select> -->
+        </li>
+        <li>
+          <pf-select [(ngModel)]="compare" [list]="datetimeCompareList" [disabled]="false" style="width: 80px">
+          </pf-select>
+          <span>&nbsp;</span>
+          <pf-select *ngIf="compare==='current'" [(ngModel)]="compare2" [list]="datetimeCompareList2[compare]"
+            [disabled]="false" style="width: 80px">
+          </pf-select>
+        </li>
+        <!-- <p>日期比较</p> -->
+        <li *ngIf="compare!=='current'">
+          <!-- <input nz-input placeholder="输入过滤值" #filterValueTBox [(ngModel)]="compareValue" /> -->
+          <nz-date-picker [style.width]="showTime?'180px':'130px'" placeholder="输入过滤值"
+            [(ngModel)]="compareDatetimeValue" [nzDropdownClassName]="addFilterPopups.hashId"
+            [nzFormat]="datetimeFormat" [nzShowTime]="showTime">
+          </nz-date-picker>
+          <label nz-checkbox [(ngModel)]="showTime" (ngModelChange)="onShowTimeChange($event)">显示时间</label>
+        </li>
+        <li>
+          <!-- <button nz-button nzType="default" (click)="saveFilter(filterValueTBox.value); addFilterPopups.close()">
+            {{ isAdd ? "添加过滤器" : "修改过滤器" }}
+          </button> -->
+          <button nz-button nzType="default" (click)="saveFilter(); addFilterPopups.close()">
+            {{ isAdd ? "添加过滤器" : "修改过滤器" }}
+          </button>
+        </li>
+      </ul>
+    </ng-container>
   </div>
   <!-- </div> -->
 </pf-dropdown-popups>

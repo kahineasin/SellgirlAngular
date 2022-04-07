@@ -11,7 +11,7 @@ import {
   Renderer2,
   SkipSelf,
   ViewChild,
-} from '@angular/core';
+} from "@angular/core";
 import {
   AbstractControl,
   ControlContainer,
@@ -23,14 +23,15 @@ import {
   NG_VALUE_ACCESSOR,
   Validator,
   ValidatorFn,
-} from '@angular/forms';
-import { KeyValuePair } from '../../common/pfModel';
+} from "@angular/forms";
+import { KeyValuePair } from "../../common/pfModel";
 //import { PfUtil } from "../../../../../core/common/pfUtil";
-import { QuestionBase } from '../test-component/pf-dynamic-form/question-base';
-import { QuestionControlService } from '../test-component/pf-dynamic-form/question-control.service';
-import { TextboxQuestion } from '../test-component/pf-dynamic-form/question-textbox';
+import { QuestionBase } from "../test-component/pf-dynamic-form/question-base";
+import { QuestionControlService } from "../test-component/pf-dynamic-form/question-control.service";
+import { TextboxQuestion } from "../test-component/pf-dynamic-form/question-textbox";
 // import { ElementBase } from "../pf-form/form";
-import { PfInputComponent } from '../pf-input/pf-input.component';
+import { PfInputComponent } from "../pf-input/pf-input.component";
+import { PfInputBaseComponent } from "../pf-input/pf-input-base.component";
 
 /**
  * 用于替换ant的select组件
@@ -53,9 +54,9 @@ import { PfInputComponent } from '../pf-input/pf-input.component';
  * 3.不好判断它是在其它组件内部(因为浮动层生成在document.body下,不处于原来位置)
  */
 @Component({
-  selector: 'pf-select',
-  templateUrl: './pf-select.component.html',
-  styleUrls: ['./pf-select.component.scss'],
+  selector: "pf-select",
+  templateUrl: "./pf-select.component.html",
+  styleUrls: ["./pf-select.component.scss"],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -66,12 +67,12 @@ import { PfInputComponent } from '../pf-input/pf-input.component';
 })
 //extends ElementBase<string>
 export class PfSelectComponent
-  extends PfInputComponent
+  extends PfInputBaseComponent
   implements OnInit, ControlValueAccessor
 {
   @Input() list: KeyValuePair[] = [];
   @Input() editable = true;
-  @Input() pfPlaceHolder = '';
+  @Input() pfPlaceHolder = "";
   //@Input() formControlName: string;
   // protected getFormControlName() {
   //   return this.formControlName;
@@ -150,9 +151,9 @@ export class PfSelectComponent
       // }),
 
       new TextboxQuestion({
-        key: 'firstName',
-        label: 'First name',
-        value: 'Bombasto',
+        key: "firstName",
+        label: "First name",
+        value: "Bombasto",
         required: true,
         order: 1,
       }),
@@ -175,7 +176,7 @@ export class PfSelectComponent
     if (item !== null && item !== undefined) {
       me.pfValue = item.value;
     } else {
-      me.pfValue = '';
+      me.pfValue = "";
     }
     // if (!me.pfUtil.isAnyNull(me.control)) {
     //   me.control.statusChanges.subscribe((status) => {
@@ -313,6 +314,6 @@ export class PfSelectComponent
     const me = this;
     this.form.patchValue({ firstName: me.pfKey });
     //debugger;
-    return this.form.controls['firstName'].valid;
+    return this.form.controls["firstName"].valid;
   }
 }

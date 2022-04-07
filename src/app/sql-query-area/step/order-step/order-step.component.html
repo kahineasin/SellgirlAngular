@@ -110,9 +110,8 @@
     (selectSourceOutField)="saveOrderBySourceOut($event); selectBreakoutPopups.close()"
     (selectField)="saveOrder($event.field, $event.table); selectBreakoutPopups.close()" [fieldFilter]="fieldFilter">
   </sql-select-column-ul> -->
-  <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [fieldList]="fieldList"
-    (selectSourceOutField)="saveOrderBySourceOut($event); selectBreakoutPopups.close()"
-    (selectField)="saveOrder($event.field, $event.table); selectBreakoutPopups.close()"
+  <sql-select-column-ul [sourceOutFieldList]="sourceOutFieldList" [selectColumnList]="selectColumnList"
+    (selectColumnModel)="saveOrderBySelectColumnModel($event.field, $event.table); selectBreakoutPopups.close()"
     [sourceOutFieldFilter]="sourceOutFieldFilter" [fieldFilter]="fieldFilter">
   </sql-select-column-ul>
 </pf-dropdown-popups>
