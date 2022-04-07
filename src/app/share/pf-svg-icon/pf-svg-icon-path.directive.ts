@@ -25,7 +25,7 @@ import {
   OnChanges,
   OnInit,
   SimpleChange,
-} from '@angular/core';
+} from "@angular/core";
 //import { debug } from "console";
 //import { DragType, PfDragDirective } from "./pf-drag.directive";
 
@@ -45,7 +45,7 @@ import {
 //export type systemIconStringType = String;
 
 @Directive({
-  selector: '[pfSvgIconPath]',
+  selector: "[pfSvgIconPath]",
 })
 export class PfSvgIconPathDirective implements OnInit, OnChanges {
   @Input() svgIconType: string; //APP_JAVA等
@@ -113,35 +113,38 @@ export class PfSvgIconPathDirective implements OnInit, OnChanges {
       '<path d="M875.6 515.9c2.1.8 4.4-.3 5.2-2.4.2-.4.2-.9.2-1.4v-58.3c0-1.8-1.1-3.3-2.8-3.8-6-1.8-17.2-3-27.2-3-32.9 0-61.7 16.7-73.5 41.2v-28.6c0-4.4-3.6-8-8-8H717c-4.4 0-8 3.6-8 8V729c0 4.4 3.6 8 8 8h54.8c4.4 0 8-3.6 8-8V572.7c0-36.2 26.1-60.2 65.1-60.2 10.4.1 26.6 1.8 30.7 3.4zm-537-40.5l-54.7-12.6c-61.2-14.2-87.7-34.8-87.7-70.7 0-44.6 39.1-73.5 96.9-73.5 52.8 0 91.4 26.5 99.9 68.9h70C455.9 311.6 387.6 259 293.4 259c-103.3 0-171 55.5-171 139 0 68.6 38.6 109.5 122.2 128.5l61.6 14.3c63.6 14.9 91.6 37.1 91.6 75.1 0 44.1-43.5 75.2-102.5 75.2-60.6 0-104.5-27.2-112.8-70.5H111c7.2 79.9 75.6 130.4 179.1 130.4C402.3 751 471 695.2 471 605.3c0-70.2-38.6-108.5-132.4-129.9zM841 729a36 36 0 1072 0 36 36 0 10-72 0zM653 457.8h-51.4V396c0-4.4-3.6-8-8-8h-54.7c-4.4 0-8 3.6-8 8v61.8H495c-4.4 0-8 3.6-8 8v42.3c0 4.4 3.6 8 8 8h35.9v147.5c0 56.2 27.4 79.4 93.1 79.4 11.7 0 23.6-1.2 33.8-3.1 1.9-.3 3.2-2 3.2-3.9v-49.3c0-2.2-1.8-4-4-4h-.4c-4.9.5-6.2.6-8.3.8-4.1.3-7.8.5-12.6.5-24.1 0-34.1-10.3-34.1-35.6V516.1H653c4.4 0 8-3.6 8-8v-42.3c0-4.4-3.6-8-8-8z"></path>',
     FIELD_INT:
       '<path d="M872 394c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8H708V152c0-4.4-3.6-8-8-8h-64c-4.4 0-8 3.6-8 8v166H400V152c0-4.4-3.6-8-8-8h-64c-4.4 0-8 3.6-8 8v166H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h168v236H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h168v166c0 4.4 3.6 8 8 8h64c4.4 0 8-3.6 8-8V706h228v166c0 4.4 3.6 8 8 8h64c4.4 0 8-3.6 8-8V706h164c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8H708V394h164zM628 630H400V394h228v236z"></path>',
+    FIELD_DATETIME:
+      '<path d="M21,2 L21,0 L18,0 L18,2 L6,2 L6,0 L3,0 L3,2 L2.99109042,2 C1.34177063,2 0,3.34314575 0,5 L0,6.99502651 L0,20.009947 C0,22.2157067 1.78640758,24 3.99005301,24 L20.009947,24 C22.2157067,24 24,22.2135924 24,20.009947 L24,6.99502651 L24,5 C24,3.34651712 22.6608432,2 21.0089096,2 L21,2 L21,2 Z M22,8 L22,20.009947 C22,21.1099173 21.1102431,22 20.009947,22 L3.99005301,22 C2.89008272,22 2,21.1102431 2,20.009947 L2,8 L22,8 L22,8 Z M6,12 L10,12 L10,16 L6,16 L6,12 Z"></path>',
     //自定义列
     CUSTOM_COLUMN:
       '<path d="M0 8h5.926v6.208H0V8zm7.704 0h5.926v6.208H7.704V8zM0 16.07h5.926v6.209H0V16.07zm7.704 0h5.926v6.209H7.704V16.07zm7.703 0h5.926v6.209h-5.926V16.07zM0 24.142h5.926v6.208H0v-6.208zm7.704 0h5.926v6.208H7.704v-6.208zm7.703 0h5.926v6.208h-5.926v-6.208zM23.08 8.08V3h4.064v5.08h5.08v4.063h-5.08v5.08h-4.064v-5.08H18V8.079h5.08z"></path>',
   };
   public static readonly svgAttr = {
-    SQL_LEFT_JOIN: { viewBox: '0 0 32 32' },
-    SQL_RIGHT_JOIN: { viewBox: '0 0 32 32' },
-    SQL_INNER_JOIN: { viewBox: '0 0 32 32' },
-    SQL_AGGREGATION: { viewBox: '0 0 32 32' },
-    SQL_ORDER: { viewBox: '0 0 32 32' },
-    SQL_ORDER_ASC: { viewBox: '0 0 32 34' },
-    SQL_ORDER_DESC: { viewBox: '0 0 32 34' },
-    SQL_LIMIT: { viewBox: '0 0 32 32' },
-    CUSTOM_COLUMN: { viewBox: '0 0 32 32' },
+    SQL_LEFT_JOIN: { viewBox: "0 0 32 32" },
+    SQL_RIGHT_JOIN: { viewBox: "0 0 32 32" },
+    SQL_INNER_JOIN: { viewBox: "0 0 32 32" },
+    SQL_AGGREGATION: { viewBox: "0 0 32 32" },
+    SQL_ORDER: { viewBox: "0 0 32 32" },
+    SQL_ORDER_ASC: { viewBox: "0 0 32 34" },
+    SQL_ORDER_DESC: { viewBox: "0 0 32 34" },
+    SQL_LIMIT: { viewBox: "0 0 32 32" },
+    FIELD_DATETIME: { viewBox: "0 0 24 24" },
+    CUSTOM_COLUMN: { viewBox: "0 0 32 32" },
   };
   public static readonly svgStyle = {
-    SQL_RIGHT_JOIN: { transform: 'rotate(-180deg)' },
+    SQL_RIGHT_JOIN: { transform: "rotate(-180deg)" },
   };
   public static getSvg(t): string {
     const me = this;
-    let style = '';
-    let attr = '';
+    let style = "";
+    let attr = "";
     let idx = 0;
     if (me.svgAttr[t] !== undefined) {
       for (var j in me.svgAttr[t]) {
         if (me.svgAttr[t].hasOwnProperty(j)) {
           var fn = me.svgAttr[t][j];
           if (idx > 0) {
-            attr += ' ';
+            attr += " ";
           }
           attr += j + '="' + fn + '"';
         }
@@ -155,21 +158,21 @@ export class PfSvgIconPathDirective implements OnInit, OnChanges {
         if (me.svgStyle[t].hasOwnProperty(j)) {
           var fn = me.svgStyle[t][j];
           if (idx > 0) {
-            style += '; ';
+            style += "; ";
           }
-          style += j + ':' + fn;
+          style += j + ":" + fn;
         }
         idx++;
       }
     }
     return (
-      '<svg ' +
-      (style === '' ? '' : 'style="' + style + '"') +
-      ' ' +
+      "<svg " +
+      (style === "" ? "" : 'style="' + style + '"') +
+      " " +
       attr +
-      '>' +
+      ">" +
       me.systemIconType[t] +
-      '</svg>'
+      "</svg>"
     );
   }
   public ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -178,7 +181,7 @@ export class PfSvgIconPathDirective implements OnInit, OnChanges {
     for (let propName in changes) {
       let changedProp = changes[propName];
 
-      if ('svgIconType' == propName) {
+      if ("svgIconType" == propName) {
         //debugger;
 
         //本来打算把img的放一起，后来发现这样非常不好
@@ -204,7 +207,7 @@ export class PfSvgIconPathDirective implements OnInit, OnChanges {
         //   if()
         // }
 
-        var p: string = '';
+        var p: string = "";
 
         if (
           PfSvgIconPathDirective.systemIconType[changedProp.currentValue] !==

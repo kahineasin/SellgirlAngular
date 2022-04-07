@@ -3,20 +3,20 @@
  * 注意此文件当初是参考开源版本的旧版本,如果有问题,可以参照开源版本来修正,因为现在console项目里主要参照metabase的开源版本
  */
 
-import * as Q from '../../../lib/query/query';
-import { getUniqueExpressionName } from '../../../lib/query/expression';
+import * as Q from "../../../lib/query/query";
+import { getUniqueExpressionName } from "../../../lib/query/expression";
 import {
   format as formatExpression,
   DISPLAY_QUOTES,
-} from '../../../lib/expressions/format';
-import { isCompatibleAggregationOperatorForField } from '../../../lib/schema_metadata';
+} from "../../../lib/expressions/format";
+import { isCompatibleAggregationOperatorForField } from "../../../lib/schema_metadata";
 
 //import _ from "underscore";
 //import { chain, updateIn } from "icepick";
 //import { t } from "ttag";
-import { t } from '../../../lib/pf_ttag';
-import { PfUnderscore as _ } from '../../../lib/pf_underscore';
-import { memoize } from '../utils';
+import { t } from "../../../lib/pf_ttag";
+import { PfUnderscore as _ } from "../../../lib/pf_underscore";
+import { memoize } from "../utils";
 
 import type {
   StructuredQuery as StructuredQueryObject,
@@ -26,51 +26,51 @@ import type {
   LimitClause,
   OrderBy,
   StructuredQuery,
-} from '../../../model/Query';
-import type { DatasetQuery, StructuredDatasetQuery } from '../../../model/Card';
-import type { AggregationOperator } from '../../../model/Metadata';
+} from "../../../model/Query";
+import type { DatasetQuery, StructuredDatasetQuery } from "../../../model/Card";
+import type { AggregationOperator } from "../../../model/Metadata";
 
 import Dimension, {
   FieldDimension,
   ExpressionDimension,
   AggregationDimension,
-} from '../Dimension';
-import DimensionOptions from '../DimensionOptions';
+} from "../Dimension";
+import DimensionOptions from "../DimensionOptions";
 
-import type Segment from '../metadata/Segment';
-import type { DatabaseEngine, DatabaseId } from '../../../model/Database';
-import type DatabaseClass from '../metadata/DatabaseClass';
+import type Segment from "../metadata/Segment";
+import type { DatabaseEngine, DatabaseId } from "../../../model/Database";
+import type DatabaseClass from "../metadata/DatabaseClass";
 //import type Question from "../Question";
-import type { TableId } from '../../../model/Table';
-import type { Column } from '../../../model/Dataset';
+import type { TableId } from "../../../model/Table";
+import type { Column } from "../../../model/Dataset";
 
-import AtomicQuery from './AtomicQuery';
+import AtomicQuery from "./AtomicQuery";
 
-import AggregationWrapper from './structured/Aggregation';
-import BreakoutWrapper from './structured/Breakout';
-import FilterWrapper from './structured/Filter';
-import JoinWrapper from './structured/Join';
-import OrderByWrapper from './structured/OrderBy';
+import AggregationWrapper from "./structured/Aggregation";
+import BreakoutWrapper from "./structured/Breakout";
+import FilterWrapper from "./structured/Filter";
+import JoinWrapper from "./structured/Join";
+import OrderByWrapper from "./structured/OrderBy";
 
-import TableClass from '../metadata/TableClass';
-import FieldClass from '../metadata/FieldClass';
+import TableClass from "../metadata/TableClass";
+import FieldClass from "../metadata/FieldClass";
 
-import { TYPE } from '../../../lib/types';
+import { TYPE } from "../../../lib/types";
 
-import { fieldRefForColumn } from '../../../lib/dataset';
-import { IStructuredQuery } from '../../../model/IStructuredQuery';
-import { ObjInitHelper } from '../../../model/ObjInitHelper';
+import { fieldRefForColumn } from "../../../lib/dataset";
+import { IStructuredQuery } from "../../../model/IStructuredQuery";
+import { ObjInitHelper } from "../../../model/ObjInitHelper";
 
 type DimensionFilter = (dimension: Dimension) => boolean;
 type FieldFilter = (filter: FieldClass) => boolean;
 
 export const STRUCTURED_QUERY_TEMPLATE = {
   database: null,
-  type: 'query',
+  type: "query",
   query: {
-    'source-table': null,
+    "source-table": null,
   },
-  version: 'perfect',
+  version: "perfect",
 };
 
 /**
@@ -240,7 +240,12 @@ export default class StructuredQueryClass
    * @returns the table ID, if a table is selected.
    */
   sourceTableId(): TableId {
-    return this.query()['source-table'];
+    //benjamin20220330
+    const sourceTableId = this.query()["source-table"];
+    if (sourceTableId !== null && sourceTableId !== undefined) {
+      return sourceTableId;
+    }
+    return this.query()["source-model"];
   }
   /**
    * @returns a new query with the provided Table ID set.
@@ -256,7 +261,7 @@ export default class StructuredQueryClass
       // );
       let tmp = this.datasetQuery() as StructuredDatasetQuery;
       tmp.database = this.metadata().table(tableId).database.id;
-      tmp.query = { 'source-table': tableId };
+      tmp.query = { "source-table": tableId }; //这里可能要根据isDataModel来判断更新哪个属性--benjamin todo
       return new StructuredQueryClass(this._originalQuestion, tmp);
     } else {
       return this;
@@ -290,30 +295,30 @@ export default class StructuredQueryClass
     // NOTE: special case for Google Analytics which doesn't allow raw queries:
     if (
       table &&
-      table.entity_type === 'entity/GoogleAnalyticsTable' &&
+      table.entity_type === "entity/GoogleAnalyticsTable" &&
       !this.isEmpty() &&
       !this.hasAnyClauses()
     ) {
       // NOTE: shold we check that a
       //const dateField = _.findWhere(table.fields, { name: "ga:date" });
-      const dateField = table.fields.find((a) => a.name === 'ga:date');
+      const dateField = table.fields.find((a) => a.name === "ga:date");
       if (dateField) {
         return (
           this.filter([
-            'time-interval',
+            "time-interval",
             // ["field", dateField.id, null],
-            ['field-id', dateField.id],
+            ["field-id", dateField.id],
             -365,
-            'day',
+            "day",
           ] as any)
-            .aggregate(['metric', 'ga:users'] as any)
-            .aggregate(['metric', 'ga:pageviews'] as any)
+            .aggregate(["metric", "ga:users"] as any)
+            .aggregate(["metric", "ga:pageviews"] as any)
             // .breakout([
             //   "field",
             //   dateField.id,
             //   { "temporal-unit": "week" },
             // ] as any)
-            .breakout(['datetime-field', ['field-id', dateField.id], 'week'])
+            .breakout(["datetime-field", ["field-id", dateField.id], "week"])
         );
       }
     }
@@ -329,8 +334,8 @@ export default class StructuredQueryClass
     if (sourceQuery) {
       //测试通过,应该没问题,fields有值--benjamin
       let table = new TableClass({
-        name: '',
-        display_name: '',
+        name: "",
+        display_name: "",
         db: sourceQuery.database(),
         fields: sourceQuery.columns().map(
           (column) =>
@@ -344,8 +349,8 @@ export default class StructuredQueryClass
             // })
             new FieldClass({
               ...column,
-              id: ['field-literal', column.name, column.base_type],
-              source: 'fields',
+              id: ["field-literal", column.name, column.base_type],
+              source: "fields",
               // HACK: need to thread the query through to this fake Field
               query: this,
             })
@@ -410,7 +415,7 @@ export default class StructuredQueryClass
     this.joins().forEach((join, index) => {
       query = query.updateJoin(index, (join as any).clean()) as any;
     });
-    return query._cleanClauseList('joins');
+    return query._cleanClauseList("joins");
   }
 
   cleanExpressions(): StructuredQueryClass {
@@ -418,19 +423,19 @@ export default class StructuredQueryClass
   }
 
   cleanFilters(): StructuredQueryClass {
-    return this._cleanClauseList('filters');
+    return this._cleanClauseList("filters");
   }
 
   cleanAggregations(): StructuredQueryClass {
-    return this._cleanClauseList('aggregations');
+    return this._cleanClauseList("aggregations");
   }
 
   cleanBreakouts(): StructuredQueryClass {
-    return this._cleanClauseList('breakouts');
+    return this._cleanClauseList("breakouts");
   }
 
   cleanSorts(): StructuredQueryClass {
-    return this._cleanClauseList('sorts');
+    return this._cleanClauseList("sorts");
   }
 
   cleanLimit(): StructuredQueryClass {
@@ -462,16 +467,16 @@ export default class StructuredQueryClass
       return false;
     }
     if (
-      !this._isValidClauseList('joins') ||
-      !this._isValidClauseList('filters') ||
-      !this._isValidClauseList('aggregations') ||
-      !this._isValidClauseList('breakouts')
+      !this._isValidClauseList("joins") ||
+      !this._isValidClauseList("filters") ||
+      !this._isValidClauseList("aggregations") ||
+      !this._isValidClauseList("breakouts")
     ) {
       return false;
     }
     const table = this.table();
     // NOTE: special case for Google Analytics which requires an aggregation
-    if (table.entity_type === 'entity/GoogleAnalyticsTable') {
+    if (table.entity_type === "entity/GoogleAnalyticsTable") {
       if (!this.hasAggregations()) {
         return false;
       }
@@ -484,7 +489,7 @@ export default class StructuredQueryClass
     for (let index = 0; index < query[listName]().length; index++) {
       const clause = query[listName]()[index];
       if (!this._validateClause(clause)) {
-        console.warn('Removing invalid MBQL clause', clause);
+        console.warn("Removing invalid MBQL clause", clause);
         query = clause.remove();
         // since we're removing them in order we need to decrement index when we remove one
         index -= 1;
@@ -506,7 +511,7 @@ export default class StructuredQueryClass
     try {
       return clause.isValid();
     } catch (e) {
-      console.warn('Error thrown while validating clause', clause, e);
+      console.warn("Error thrown while validating clause", clause, e);
       return false;
     }
   }
@@ -654,7 +659,7 @@ export default class StructuredQueryClass
    */
   aggregationOperatorsWithoutRows(): AggregationOperator[] {
     return this.aggregationOperators().filter(
-      (option) => option.short !== 'rows'
+      (option) => option.short !== "rows"
     );
   }
 
@@ -663,7 +668,7 @@ export default class StructuredQueryClass
    */
   aggregationFieldOptions(agg: string | AggregationOperator): DimensionOptions {
     const aggregation: AggregationOperator =
-      typeof agg === 'string' ? this.table().aggregationOperator(agg) : agg;
+      typeof agg === "string" ? this.table().aggregationOperator(agg) : agg;
     if (aggregation) {
       const fieldOptions = this.fieldOptions((field) => {
         return (
@@ -863,8 +868,8 @@ export default class StructuredQueryClass
     return filterDimensionOptions.sections({
       extraItems: filterSegmentOptions.map((segment) => ({
         name: (segment as any).name,
-        icon: 'star_outline',
-        filter: ['segment', (segment as any).id],
+        icon: "star_outline",
+        filter: ["segment", (segment as any).id],
         query: this,
       })),
     });
@@ -1058,7 +1063,7 @@ export default class StructuredQueryClass
     // extra logic for adding expressions in fields clause
     // TODO: push into query/expression?
     if (query.hasFields() && query.isRaw()) {
-      query = query.addField(['expression', uniqueName], undefined);
+      query = query.addField(["expression", uniqueName], undefined);
     }
     return query;
   }
@@ -1076,9 +1081,9 @@ export default class StructuredQueryClass
     // extra logic for renaming expressions in fields clause
     // TODO: push into query/expression?
     if (isRename) {
-      const index = query._indexOfField(['expression', oldName]);
+      const index = query._indexOfField(["expression", oldName]);
       if (index >= 0) {
-        query = query.updateField(index, ['expression', uniqueName]);
+        query = query.updateField(index, ["expression", uniqueName]);
       }
     }
     return query;
@@ -1088,7 +1093,7 @@ export default class StructuredQueryClass
     let query = this._updateQuery(Q.removeExpression, arguments as any);
     // extra logic for removing expressions in fields clause
     // TODO: push into query/expression?
-    const index = query._indexOfField(['expression', name]);
+    const index = query._indexOfField(["expression", name]);
     if (index >= 0) {
       query = query.removeField(index);
     }
@@ -1100,7 +1105,7 @@ export default class StructuredQueryClass
     // extra logic for removing expressions in fields clause
     // TODO: push into query/expression?
     for (const name of Object.keys(this.expressions())) {
-      const index = query._indexOfField(['expression', name]);
+      const index = query._indexOfField(["expression", name]);
       if (index >= 0) {
         query = query.removeField(index);
       }
@@ -1285,7 +1290,7 @@ export default class StructuredQueryClass
   @memoize
   tableDimensions(): Dimension[] {
     const table: TableClass = this.table();
-    let dimen = table.dimensions(); //测试时暂加any
+    let dimen = table.dimensions();
     let r = table
       ? // HACK: ensure the dimensions are associated with this query
         dimen.map((d) => (d._query ? d : this.parseFieldReference(d.mbql())))
@@ -1376,16 +1381,16 @@ export default class StructuredQueryClass
           const f = d.field() as any;
           return (
             f.active !== false &&
-            f.visibility_type !== 'sensitive' &&
-            f.visibility_type !== 'retired' &&
+            f.visibility_type !== "sensitive" &&
+            f.visibility_type !== "retired" &&
             f.parent_id == null
           );
         })
         //.sortBy((d) => d.displayName().toLowerCase())
         .sort(function (a, b) {
           return (
-            parseInt('0x' + a.displayName().toLowerCase()) -
-            parseInt('0x' + b.displayName().toLowerCase())
+            parseInt("0x" + a.displayName().toLowerCase()) -
+            parseInt("0x" + b.displayName().toLowerCase())
           );
         })
         // .sortBy((d) => {
@@ -1476,12 +1481,12 @@ export default class StructuredQueryClass
   // NESTING
 
   nest(): StructuredQueryClass {
-    return this._updateQuery((query) => ({ 'source-query': query }));
+    return this._updateQuery((query) => ({ "source-query": query }));
   }
 
   canNest() {
     const db = this.database();
-    return db && db.hasFeature('nested-queries');
+    return db && db.hasFeature("nested-queries");
   }
 
   /**
@@ -1489,7 +1494,7 @@ export default class StructuredQueryClass
    */
   @memoize
   sourceQuery(): StructuredQueryClass {
-    const sourceQuery = this.query()['source-query'];
+    const sourceQuery = this.query()["source-query"];
     if (sourceQuery) {
       return new NestedStructuredQuery(
         this._originalQuestion,
@@ -1620,12 +1625,12 @@ export default class StructuredQueryClass
     // );
     return this._updateQuery((query) => {
       if (
-        query['source-table'] !== undefined &&
-        query['source-table'] !== null
+        query["source-table"] !== undefined &&
+        query["source-table"] !== null
       ) {
-        delete query['source-table'];
+        delete query["source-table"];
       }
-      query['source-query'] = sourceQuery as StructuredQuery;
+      query["source-query"] = sourceQuery as StructuredQuery;
       return query;
     });
   }
@@ -1658,7 +1663,7 @@ export default class StructuredQueryClass
     // source-table, if set
     const tableId = this.sourceTableId();
     if (tableId) {
-      addDependency({ type: 'table', id: tableId, foreignTables });
+      addDependency({ type: "table", id: tableId, foreignTables });
     }
 
     // any explicitly joined tables

@@ -274,6 +274,7 @@ export class FilterStepComponent implements OnInit {
   initAddingParam() {
     const me = this;
     me.isAddingBracket = false;
+    me.compare = "=";
     me.compareValue = "";
     me.compareDatetimeValue = null;
     me.addingColumn = null;

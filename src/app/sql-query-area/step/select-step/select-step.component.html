@@ -1,14 +1,13 @@
 <div class="NotebookCell" style="line-height: 50px; width: 100%" [style.backgroundColor]="getBackColor()">
-  <!-- <div
-    class="NotebookCellItem"
-    (click)="showSelectDatabasePopups($event, selectDatabasePopups)"
-  >
-    <span>
-      {{ getDatabaseName() }}
-    </span>
-  </div> -->
   <div class="NotebookCellItem" [style.backgroundColor]="getFrontColor()"
     (click)="showSelectTablePopups($event, selectTablePopups)">
+    <!-- <p>{{tableList.length}}</p> -->
+    <!-- <p>------------------------------</p>
+    <p style="color:black">{{isAllColumnSelected}}</p>
+    <p>------------------------------</p>
+    <div style="color:black;    white-space: normal;">{{testConsole1()}}</div>
+    <p>------------------------------</p>
+    <p style="color:black">{{testConsole2()}}</p> -->
     <span>
       {{ getTableName() }}
     </span>
@@ -35,85 +34,7 @@
 </pf-dropdown-popups>
 
 <pf-dropdown-popups #selectTablePopups>
-  <!-- <ul nz-menu *ngIf="'database' === step" [nzMode]="'inline'">
-    <li *ngFor="let item of databaseList" nz-menu-item (click)="goSelectTable(item, selectTablePopups)">
-      <i nz-icon nzType="database" nzTheme="outline"></i>
-      {{ item.DatabaseName }}
-    </li>
-    <li nz-submenu [nzTitle]="'保存的问题(开发中)'" [nzIcon]="'group'">
-
-      <ul>
-        <li *ngFor="let item of datamodelGroupList" nz-menu-item (click)="goSelectDatamodel(item, selectTablePopups)">
-          <i nz-icon nzType="folder" nzTheme="outline"></i>
-          {{ item.Name }}
-        </li>
-      </ul>
-    </li>
-  </ul>
-
-  <ng-template [ngIf]="'table' === step">
-    <a (click)="goSelectDatabase(selectTablePopups)" style="line-height: 50px"><i nz-icon nzType="left"
-        nzTheme="outline"></i>
-      {{ getDatabaseName() }}
-    </a>
-    <ul nz-menu nzMode="inline">
-      <li>
-        <nz-input-group [nzSuffix]="suffixIconSearch">
-          <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
-        </nz-input-group>
-        <ng-template #suffixIconSearch>
-          <i nz-icon nzType="search"></i>
-        </ng-template>
-      </li>
-      <ng-container *ngFor="
-          let item of tableList;
-          index as index;
-          first as first;
-          last as last;
-          odd as odd;
-          even as even
-        ">
-        <li *ngIf="likeText(item.TableName, searchBox.value)" nz-menu-item
-          (click)="selectTable(item); selectTablePopups.close()">
-          <i nz-icon nzType="table" nzTheme="outline"></i>
-          {{ item.TableName }}
-        </li>
-      </ng-container>
-    </ul>
-  </ng-template>
-
-  <ng-template [ngIf]="'datamodel' === step">
-    <a (click)="goSelectDatabase(selectTablePopups)" style="line-height: 50px"><i nz-icon nzType="left"
-        nzTheme="outline"></i>
-      {{ getDatamodelGroupName() }}
-    </a>
-    <ul nz-menu nzMode="inline">
-      <li>
-        <nz-input-group [nzSuffix]="suffixIconSearch">
-          <input type="text" nz-input placeholder="input search text" #searchBox [(ngModel)]="searchText" />
-        </nz-input-group>
-        <ng-template #suffixIconSearch>
-          <i nz-icon nzType="search"></i>
-        </ng-template>
-      </li>
-      <ng-container *ngFor="
-          let item of datamodelList;
-          index as index;
-          first as first;
-          last as last;
-          odd as odd;
-          even as even
-        ">
-        <li *ngIf="likeText(item.DatamodelQueryName, searchBox.value)" nz-menu-item
-          (click)="selectDatamodel(item); selectTablePopups.close()">
-          <i nz-icon nzType="table" nzTheme="outline"></i>
-          {{ item.DatamodelQueryName }}
-        </li>
-      </ng-container>
-    </ul>
-  </ng-template> -->
-
-  <sql-select-table-ul [databaseId]="databaseId"
+  <sql-select-table-ul [databaseId]="databaseId" [onlySameDatabase]="false"
     (selectTableModel)="selectTableModel($event); selectTablePopups.close()">
   </sql-select-table-ul>
 </pf-dropdown-popups>

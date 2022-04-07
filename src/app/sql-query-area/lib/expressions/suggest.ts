@@ -1,7 +1,7 @@
 //此文件现时是参照metabase开源版本,但看了收费版本之后,感觉开源版本的代码太杂乱无章了,有需要时把此文件改为收费版本试试--benjamin
 // import _ from "underscore";
-import { PfUnderscore as _ } from '../pf_underscore';
-import escape from 'regexp.escape';
+import { PfUnderscore as _ } from "../pf_underscore";
+import escape from "regexp.escape";
 
 import {
   //getExpressionName,
@@ -12,13 +12,13 @@ import {
   formatMetricName,
   // segments
   formatSegmentName,
-} from '../expressions';
+} from "../expressions";
 
 import {
   parserWithRecovery,
   ExpressionCstVisitor,
   ExpressionParser,
-} from './parser';
+} from "./parser";
 
 import {
   AdditiveOperator,
@@ -42,12 +42,12 @@ import {
   getSubTokenTypes,
   isTokenType,
   lexerWithRecovery,
-} from './lexer';
+} from "./lexer";
 
-import getHelpText from './helper_text_strings';
+import getHelpText from "./helper_text_strings";
 
 //import { ExpressionDimension } from "metabase-lib/lib/Dimension";
-import { ExpressionDimension } from '../../metabase-lib/lib/Dimension';
+import { ExpressionDimension } from "../../metabase-lib/lib/Dimension";
 
 import {
   FUNCTIONS,
@@ -58,9 +58,9 @@ import {
   EXPRESSION_TYPES,
   EDITOR_FK_SYMBOLS,
   getExpressionName,
-} from './config';
-import { PfUtil } from '../../../common/pfUtil';
-import PfStructuredQueryClass from '../../metabase-lib/lib/queries/PfStructuredQueryClass';
+} from "./config";
+import { PfUtil } from "../../../common/pfUtil";
+import PfStructuredQueryClass from "../../metabase-lib/lib/queries/PfStructuredQueryClass";
 
 const FUNCTIONS_BY_TYPE = {};
 const OPERATORS_BY_TYPE = {};
@@ -120,13 +120,13 @@ export function suggest({
     ? {
         // use the last token's pattern anchored to the end of the text
         prefixTrim: new RegExp(
-          (lastInputToken.tokenType.PATTERN as any).source + '$'
+          (lastInputToken.tokenType.PATTERN as any).source + "$"
         ),
       }
     : {
-        prefixTrim: new RegExp((Identifier.PATTERN as any).source + '$'),
+        prefixTrim: new RegExp((Identifier.PATTERN as any).source + "$"),
         postfixTrim: new RegExp(
-          '^' + (Identifier.PATTERN as any).source + '\\s*'
+          "^" + (Identifier.PATTERN as any).source + "\\s*"
         ),
       };
 
@@ -159,15 +159,15 @@ export function suggest({
       // fields, metrics, segments
       const parentRule = ruleStack.slice(-2, -1)[0];
       const isDimension =
-        parentRule === 'dimensionExpression' &&
-        (isExpressionType(expectedType, 'expression') ||
-          isExpressionType(expectedType, 'boolean'));
+        parentRule === "dimensionExpression" &&
+        (isExpressionType(expectedType, "expression") ||
+          isExpressionType(expectedType, "boolean"));
       const isSegment =
-        parentRule === 'segmentExpression' &&
-        isExpressionType(expectedType, 'boolean');
+        parentRule === "segmentExpression" &&
+        isExpressionType(expectedType, "boolean");
       const isMetric =
-        parentRule === 'metricExpression' &&
-        isExpressionType(expectedType, 'aggregation');
+        parentRule === "metricExpression" &&
+        isExpressionType(expectedType, "aggregation");
 
       // if(parentRule === "dimensionExpression"){
       //   debugger;
@@ -191,13 +191,13 @@ export function suggest({
             ) {
               return false;
             }
-            if (expectedType === 'expression' || expectedType === 'boolean') {
+            if (expectedType === "expression" || expectedType === "boolean") {
               return true;
             }
             const field = dimension.field();
             return (
-              (isExpressionType('number', expectedType) && field.isNumeric()) ||
-              (isExpressionType('string', expectedType) && field.isString())
+              (isExpressionType("number", expectedType) && field.isNumeric()) ||
+              (isExpressionType("string", expectedType) && field.isString())
             );
           };
           //debugger;
@@ -205,9 +205,9 @@ export function suggest({
         }
         finalSuggestions.push(
           ...dimensions.map((dimension) => ({
-            type: 'fields',
+            type: "fields",
             name: getDimensionName(dimension),
-            text: formatDimensionName(dimension) + ' ',
+            text: formatDimensionName(dimension) + " ",
             alternates: EDITOR_FK_SYMBOLS.symbols.map((symbol) =>
               getDimensionName(dimension, symbol)
             ),
@@ -218,7 +218,7 @@ export function suggest({
       if (isSegment) {
         finalSuggestions.push(
           ...(query.table() as any).segments.map((segment) => ({
-            type: 'segments',
+            type: "segments",
             name: segment.name,
             text: formatSegmentName(segment),
             ...identifierTrimOptions,
@@ -228,7 +228,7 @@ export function suggest({
       if (isMetric) {
         finalSuggestions.push(
           ...(query.table() as any).metrics.map((metric) => ({
-            type: 'metrics',
+            type: "metrics",
             name: metric.name,
             text: formatMetricName(metric),
             ...identifierTrimOptions,
@@ -242,8 +242,8 @@ export function suggest({
       nextTokenType === MultiplicativeOperator
     ) {
       if (
-        isExpressionType('number', expectedType) ||
-        isExpressionType('aggregation', expectedType)
+        isExpressionType("number", expectedType) ||
+        isExpressionType("aggregation", expectedType)
       ) {
         const tokenTypes = getSubTokenTypes(nextTokenType);
         finalSuggestions.push(
@@ -257,7 +257,7 @@ export function suggest({
       nextTokenType === BooleanOperatorBinary ||
       nextTokenType === FilterOperator
     ) {
-      if (isExpressionType(expectedType, 'boolean')) {
+      if (isExpressionType(expectedType, "boolean")) {
         const tokenTypes = getSubTokenTypes(nextTokenType);
         finalSuggestions.push(
           ...tokenTypes.map((tokenType) =>
@@ -271,7 +271,7 @@ export function suggest({
     ) {
       const database = query.database();
       let functions = [];
-      if (isExpressionType(expectedType, 'aggregation')) {
+      if (isExpressionType(expectedType, "aggregation")) {
         // special case for aggregation
         finalSuggestions.push(
           // ...query
@@ -284,44 +284,44 @@ export function suggest({
           //       aggregationOperator.fields.length > 0,
           //     ),
           //   ),
-          ...FUNCTIONS_BY_TYPE['aggregation']
+          ...FUNCTIONS_BY_TYPE["aggregation"]
             .filter((clause) => database.hasFeature(clause.requiresFeature))
             .map((clause) =>
               functionSuggestion(
-                'aggregations',
+                "aggregations",
                 clause.name,
                 clause.args.length > 0
               )
             )
         );
         finalSuggestions.push(
-          ...['sum-where', 'count-where', 'share'].map((short) =>
-            functionSuggestion('aggregations', short, true)
+          ...["sum-where", "count-where", "share"].map((short) =>
+            functionSuggestion("aggregations", short, true)
           )
         );
-        functions = FUNCTIONS_BY_TYPE['number'];
+        functions = FUNCTIONS_BY_TYPE["number"];
       } else {
         functions = FUNCTIONS_BY_TYPE[expectedType];
       }
       finalSuggestions.push(
         ...functions
           .filter((clause) => database.hasFeature(clause.requiresFeature))
-          .map((clause) => functionSuggestion('functions', clause.name))
+          .map((clause) => functionSuggestion("functions", clause.name))
       );
     } else if (nextTokenType === LParen) {
       finalSuggestions.push({
-        type: 'other',
-        name: '(',
-        text: ' (',
-        postfixText: ')',
+        type: "other",
+        name: "(",
+        text: " (",
+        postfixText: ")",
         prefixTrim: /\s*$/,
         postfixTrim: /^\s*\(?\s*/,
       });
     } else if (nextTokenType === RParen) {
       finalSuggestions.push({
-        type: 'other',
-        name: ')',
-        text: ') ',
+        type: "other",
+        name: ")",
+        text: ") ",
         prefixTrim: /\s*$/,
         postfixTrim: /^\s*\)?\s*/,
       });
@@ -332,10 +332,10 @@ export function suggest({
           context.index < context.clause.args.length - 1)
       ) {
         finalSuggestions.push({
-          type: 'other',
-          name: ',',
-          text: ', ',
-          postfixText: ',',
+          type: "other",
+          name: ",",
+          text: ", ",
+          postfixText: ",",
           prefixTrim: /\s*$/,
           postfixTrim: /^\s*,?\s*/,
         });
@@ -347,7 +347,7 @@ export function suggest({
     ) {
       // skip number/string literal
     } else {
-      console.warn('non exhaustive match', nextTokenType.name);
+      console.warn("non exhaustive match", nextTokenType.name);
     }
   }
 
@@ -363,7 +363,7 @@ export function suggest({
         suggestion.text,
         ...(suggestion.alternates || []),
       ]) {
-        const lower = (text || '').toLowerCase();
+        const lower = (text || "").toLowerCase();
         if (lower.startsWith(partial)) {
           suggestion.range = [0, partial.length];
           break suggestion;
@@ -401,10 +401,10 @@ export function suggest({
     suggestions: new PfUtil()
       .arrayUniq(finalSuggestions, (suggestion) => suggestion.text)
       .sort(function (a, b) {
-        return Number(a['name']) - Number(a['name']);
+        return Number(a["name"]) - Number(b["name"]);
       })
       .sort(function (a, b) {
-        return Number(a['type']) - Number(a['type']);
+        return Number(a["type"]) - Number(b["type"]);
       }),
   };
 }
@@ -412,11 +412,11 @@ export function suggest({
 function operatorSuggestion(clause) {
   const name = getExpressionName(clause);
   return {
-    type: 'operators',
+    type: "operators",
     name: name,
-    text: ' ' + name + ' ',
+    text: " " + name + " ",
     prefixTrim: /\s*$/,
-    postfixTrim: new RegExp('/^s*' + escape(name) + '?s*/'),
+    postfixTrim: new RegExp("/^s*" + escape(name) + "?s*/"),
   };
 }
 
@@ -425,8 +425,8 @@ function functionSuggestion(type, clause, parens = true) {
   return {
     type: type,
     name: name,
-    text: name + (parens ? '(' : ' '),
-    postfixText: parens ? ')' : ' ',
+    text: name + (parens ? "(" : " "),
+    postfixText: parens ? ")" : " ",
     prefixTrim: /\w+$/,
     postfixTrim: parens ? /^\w+(\(\)?|$)/ : /^\w+\s*/,
   };
@@ -487,12 +487,12 @@ export class ExpressionContextVisitor extends ExpressionCstVisitor {
     let expectedType = getFunctionArgType(clause, index);
 
     if (
-      (expectedType === 'expression' || expectedType === 'number') &&
+      (expectedType === "expression" || expectedType === "number") &&
       currentContext &&
-      currentContext.expectedType === 'aggregation' &&
-      clause.type !== 'aggregation'
+      currentContext.expectedType === "aggregation" &&
+      clause.type !== "aggregation"
     ) {
-      expectedType = 'aggregation';
+      expectedType = "aggregation";
     }
 
     return { clause, index, expectedType, clauseToken };
@@ -558,36 +558,36 @@ export class ExpressionContextVisitor extends ExpressionCstVisitor {
 }
 
 const ALL_RULES = [
-  'any',
-  'expression',
-  'aggregation',
-  'boolean',
-  'string',
-  'number',
-  'additionExpression',
-  'multiplicationExpression',
-  'functionExpression',
-  'caseExpression',
-  'metricExpression',
-  'segmentExpression',
-  'dimensionExpression',
-  'identifier',
-  'identifierString',
-  'stringLiteral',
-  'numberLiteral',
-  'atomicExpression',
-  'parenthesisExpression',
-  'booleanExpression',
-  'comparisonExpression',
-  'booleanUnaryExpression',
+  "any",
+  "expression",
+  "aggregation",
+  "boolean",
+  "string",
+  "number",
+  "additionExpression",
+  "multiplicationExpression",
+  "functionExpression",
+  "caseExpression",
+  "metricExpression",
+  "segmentExpression",
+  "dimensionExpression",
+  "identifier",
+  "identifierString",
+  "stringLiteral",
+  "numberLiteral",
+  "atomicExpression",
+  "parenthesisExpression",
+  "booleanExpression",
+  "comparisonExpression",
+  "booleanUnaryExpression",
 ];
 
 const TYPE_RULES = new Set([
-  'expression',
-  'aggregation',
-  'boolean',
-  'string',
-  'number',
+  "expression",
+  "aggregation",
+  "boolean",
+  "string",
+  "number",
 ]);
 
 for (const rule of ALL_RULES) {

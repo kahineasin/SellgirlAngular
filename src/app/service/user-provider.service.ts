@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { LoginReferenceService } from "./login-reference.service";
 import { Observable, Observer, of } from "rxjs";
+import { userInfoLocal } from "./local-test-data/user-info-data";
 
 interface UserInfoModel {
   Enabled: boolean;
@@ -21,40 +22,45 @@ interface UserInfoModel {
 export class UserProviderService {
   private token = "";
   private purviews: any[] = [];
-  private userInfo: UserInfoModel|null=null;
+  private userInfo: UserInfoModel | null = null;
   private timer: any = null;
-  private purviewId: string|null = null;
+  private purviewId: string | null = null;
   private moudleName = "";
 
   constructor(
     private reference: LoginReferenceService,
     private router: Router
   ) {
+    const me = this;
     if (localStorage) {
-      const token: string|null = localStorage.getItem("$token");
+      const token: string | null = localStorage.getItem("$token");
       if (token != null) {
         this.token = token;
       }
 
-      const info: string|null = localStorage.getItem("$userInfo");
+      const info: string | null = localStorage.getItem("$userInfo");
       if (info != null) {
         this.userInfo = JSON.parse(info);
       }
 
-      const ps: string|null = localStorage.getItem("$purviews");
+      const ps: string | null = localStorage.getItem("$purviews");
       if (ps != null) {
         this.purviews = JSON.parse(ps);
       }
 
-      const cps: string |null= localStorage.getItem("$purviewId");
+      const cps: string | null = localStorage.getItem("$purviewId");
       if (cps != null) {
         this.purviewId = cps;
       }
 
-      const mn: string |null= localStorage.getItem("$moudleName");
+      const mn: string | null = localStorage.getItem("$moudleName");
       if (mn != null) {
         this.moudleName = mn;
       }
+    }
+
+    if (null === me.userInfo) {
+      me.userInfo = userInfoLocal;
     }
 
     this.timer = setInterval(() => {
@@ -93,11 +99,11 @@ export class UserProviderService {
     }
   }
 
-  public getPurviewId(): string |null{
+  public getPurviewId(): string | null {
     return this.purviewId;
   }
 
-  public getUserInfo(): UserInfoModel|null {
+  public getUserInfo(): UserInfoModel | null {
     return this.userInfo;
   }
 
@@ -145,21 +151,20 @@ export class UserProviderService {
     //       }
     //     });
     // });
-    var me=this;
+    var me = this;
     const observable = new Observable<boolean>((subscriber) => {
       me.userInfo = {
-        
-  Enabled: true,
-  LastLoginIP: "",
-  LastLoginTime: new Date(),
-  Password: "string",
-  RealName: "string",
-  RelationId: "string",
-  RoleId: "string",
-  RoleName: "string",
-  Time: new Date(),
-  UserId: "1712002",
-  UserNo: "1712002",
+        Enabled: true,
+        LastLoginIP: "",
+        LastLoginTime: new Date(),
+        Password: "string",
+        RealName: "string",
+        RelationId: "string",
+        RoleId: "string",
+        RoleName: "string",
+        Time: new Date(),
+        UserId: "1712002",
+        UserNo: "1712002",
       };
       if (localStorage) {
         localStorage.setItem("$userInfo", JSON.stringify(this.userInfo));
@@ -171,9 +176,11 @@ export class UserProviderService {
   }
 
   public initPurviews(): Observable<boolean> {
-    var me=this;
+    var me = this;
     const observable = new Observable<boolean>((subscriber) => {
-      if(me.userInfo==null){return;}
+      if (me.userInfo == null) {
+        return;
+      }
       this.reference
         .request(
           "POST",
@@ -185,7 +192,7 @@ export class UserProviderService {
           ],
           false
         )
-        .subscribe((response:any) => {
+        .subscribe((response: any) => {
           if (response != null && response.Success === "True") {
             const data = JSON.parse(
               this.reference.base64Decode(response.Result)

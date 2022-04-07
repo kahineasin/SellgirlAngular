@@ -1,36 +1,36 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NzIconService } from 'ng-zorro-antd/icon';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { Subject } from 'rxjs';
-import { PfUtil } from '../../../common/pfUtil';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { NzIconService } from "ng-zorro-antd/icon";
+import { NzMessageService } from "ng-zorro-antd/message";
+import { Subject } from "rxjs";
+import { PfUtil } from "../../../common/pfUtil";
 import {
   DatabaseModel,
   DataColumnModel,
   DataTableModel,
   DataTableUIModel,
-} from '../../../model/data-integration';
-import { ComputesReferenceService } from '../../../service/computes-reference.service';
-import { PfSvgIconPathDirective } from '../../../share/pf-svg-icon/pf-svg-icon-path.directive';
-import PfStructuredQueryClass from '../../metabase-lib/lib/queries/PfStructuredQueryClass';
+} from "../../../model/data-integration";
+import { ComputesReferenceService } from "../../../service/computes-reference.service";
+import { PfSvgIconPathDirective } from "../../../share/pf-svg-icon/pf-svg-icon-path.directive";
+import PfStructuredQueryClass from "../../metabase-lib/lib/queries/PfStructuredQueryClass";
 import {
   Aggregation,
   ConcreteField,
   Expression,
   FieldLiteral,
   StructuredQuery,
-} from '../../model/Query';
-import { KeyValuePairT, SqlQueryUtil } from '../../sql-query-util';
+} from "../../model/Query";
+import { KeyValuePairT, SqlQueryUtil } from "../../sql-query-util";
 //import { KeyValuePairT } from "../filter-step/filter-step.component";
 
-export type aggregationStep = 'type' | 'field';
+export type aggregationStep = "type" | "field";
 
 @Component({
-  selector: 'custom-column-step',
-  templateUrl: './custom-column-step.component.html',
+  selector: "custom-column-step",
+  templateUrl: "./custom-column-step.component.html",
   styleUrls: [
-    './custom-column-step.component.scss',
-    '../sql-query-area-step.scss',
+    "./custom-column-step.component.scss",
+    "../sql-query-area-step.scss",
   ],
 })
 export class CustomColumnStepComponent implements OnInit {
@@ -55,28 +55,28 @@ export class CustomColumnStepComponent implements OnInit {
 
   isAdd = true;
 
-  aggregationStep: aggregationStep = 'type';
+  aggregationStep: aggregationStep = "type";
   aggregationTypeList: any = [
-    { key: 'count', value: '总行数', des: '' },
-    { key: 'sum', value: '总和', des: '' },
-    { key: 'avg', value: '平均值', des: '' },
-    { key: 'distinct', value: '不重复值的总数', des: '' },
-    { key: 'cum-sum', value: '累积求和', des: '' },
-    { key: 'cum-count', value: '累积行数', des: '' },
-    { key: 'stddev', value: '标准差', des: '' },
-    { key: 'min', value: '最小值', des: '' },
-    { key: 'max', value: '最大值', des: '' },
+    { key: "count", value: "总行数", des: "" },
+    { key: "sum", value: "总和", des: "" },
+    { key: "avg", value: "平均值", des: "" },
+    { key: "distinct", value: "不重复值的总数", des: "" },
+    { key: "cum-sum", value: "累积求和", des: "" },
+    { key: "cum-count", value: "累积行数", des: "" },
+    { key: "stddev", value: "标准差", des: "" },
+    { key: "min", value: "最小值", des: "" },
+    { key: "max", value: "最大值", des: "" },
   ];
-  aggregationType: string = '';
+  aggregationType: string = "";
   /**
    * 如果不双向绑定1个变量,那后面if的过滤就只会在input失去焦点时才触发
    */
-  searchText = '';
+  searchText = "";
   addingCustomOption?: any[] = [];
   /**
    * 编辑状态时的原名
    */
-  addingCustomOldName?: string = '';
+  addingCustomOldName?: string = "";
   public addingCustomForm: FormGroup = null;
 
   constructor(
@@ -93,11 +93,11 @@ export class CustomColumnStepComponent implements OnInit {
     // );
     this.addingCustomForm = this.fb.group({
       //customOption: ["", Validators.required],
-      addingCustomName: ['', Validators.required],
+      addingCustomName: ["", Validators.required],
     });
     this.iconService.addIconLiteral(
-      'pfIcon:LEFT_JOIN',
-      PfSvgIconPathDirective.getSvg('SQL_LEFT_JOIN')
+      "pfIcon:LEFT_JOIN",
+      PfSvgIconPathDirective.getSvg("SQL_LEFT_JOIN")
     );
   }
 
@@ -135,7 +135,7 @@ export class CustomColumnStepComponent implements OnInit {
   public initAggregationAddingParam() {
     const me = this;
     me.initAddingParam();
-    me.aggregationStep = 'type';
+    me.aggregationStep = "type";
   }
   // public initAggregationEditingParam(filter, idx) {
   //   const me = this;
@@ -292,17 +292,17 @@ export class CustomColumnStepComponent implements OnInit {
   getBackColor(): string {
     const me = this;
     return (
-      'rgba(' + me.color[0] + ',' + me.color[1] + ',' + me.color[2] + ',0.1)'
+      "rgba(" + me.color[0] + "," + me.color[1] + "," + me.color[2] + ",0.1)"
     );
   }
   getFrontColor(): string {
     const me = this;
-    return 'rgb(' + me.color[0] + ',' + me.color[1] + ',' + me.color[2] + ')';
+    return "rgb(" + me.color[0] + "," + me.color[1] + "," + me.color[2] + ")";
   }
   getFrontHoverColor(): string {
     const me = this;
     return (
-      'rgba(' + me.color[0] + ',' + me.color[1] + ',' + me.color[2] + ',0.8)'
+      "rgba(" + me.color[0] + "," + me.color[1] + "," + me.color[2] + ",0.8)"
     );
   }
   isArray(field): boolean {
@@ -444,7 +444,7 @@ export class CustomColumnStepComponent implements OnInit {
   // }
   private isAggregationNoField(t: string) {
     const me = this;
-    return ['count', 'cum-count'].indexOf(t) > -1;
+    return ["count", "cum-count"].indexOf(t) > -1;
   }
   goSelectAggregationField(aggregationType: string, selectAggregationPopups) {
     const me = this;
@@ -459,7 +459,7 @@ export class CustomColumnStepComponent implements OnInit {
       selectAggregationPopups.close();
     } else {
       me.aggregationType = aggregationType;
-      me.aggregationStep = 'field';
+      me.aggregationStep = "field";
     }
   }
   // deleteAggregation() {}
@@ -467,11 +467,11 @@ export class CustomColumnStepComponent implements OnInit {
   /*-------------------自定义表达式-------------------*/
   deleteExpression(key) {
     const me = this;
-    delete me.query['expressions'][key];
+    delete me.query["expressions"][key];
   }
   public saveCustomColumn() {
     const me = this;
-    debugger;
+    // debugger;
     // if (me.pfUtil.isAnyNull(me.query.expressions)) {
     //   me.query.expressions = {};//报错object is not extensible at CustomColumnStepComponent.saveCustomColumn估计是由于子组件不能直接改Input query(不是这个原因，需要用Object.assign解决)
     // }

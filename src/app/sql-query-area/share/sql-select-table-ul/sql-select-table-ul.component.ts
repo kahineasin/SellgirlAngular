@@ -29,7 +29,11 @@ import { KeyValuePairT, SqlQueryUtil } from "../../sql-query-util";
   styleUrls: ["./sql-select-table-ul.component.scss"],
 })
 export class SqlSelectTableUlComponent implements OnInit {
-  @Input() public databaseId = null;
+  @Input() public databaseId: number = null;
+  /**
+   * 只显示同一数据库内的
+   */
+  @Input() public onlySameDatabase: boolean = true;
   //@Input() public databaseList: DatabaseModel[] = [];
   @Output() public sizeChange = new EventEmitter(); //命名一定要是上面的字段名后加Change
   @Output() selectTableModel = new EventEmitter<
@@ -133,6 +137,15 @@ export class SqlSelectTableUlComponent implements OnInit {
     me.reference.getDatabasePageList().subscribe((response) => {
       //debugger;
       me.databaseList = response.DataSource;
+      if (
+        me.onlySameDatabase &&
+        !me.pfUtil.isNull(me.databaseId) &&
+        me.databaseId > -1
+      ) {
+        me.databaseList = me.databaseList.filter(
+          (a) => a.ShortId === me.databaseId
+        );
+      }
       //console.info(response.DataSource);
       //addFilterPopups.resize();
       me.sizeChange.emit();
@@ -160,7 +173,28 @@ export class SqlSelectTableUlComponent implements OnInit {
         (response) => {
           //debugger;
           me.datamodelList = response.DataSource;
-          //addFilterPopups.resize();
+
+          if (
+            me.onlySameDatabase &&
+            !me.pfUtil.isNull(me.databaseId) &&
+            me.databaseId > -1
+          ) {
+            // me.reference.getDatabase(me.databaseId).subscribe((response2) => {
+            //   me.datamodelList = me.datamodelList.filter(
+            //     (a) => a.DatabaseId === response2.DataSourceId
+            //   );
+            // });
+            me.datamodelList = me.datamodelList.filter(
+              (a) =>
+                !me.pfUtil.isAnyNullAction(a.query, (b) => b.database) &&
+                a.query.database === me.databaseId
+            );
+          }
+          // else {
+          //   me.sizeChange.emit();
+          // }
+
+          // //addFilterPopups.resize();
           me.sizeChange.emit();
         },
         (error) => {
